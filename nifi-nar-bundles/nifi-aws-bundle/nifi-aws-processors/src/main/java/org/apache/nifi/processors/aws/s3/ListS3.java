@@ -100,7 +100,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static org.apache.nifi.processors.aws.util.RegionUtilV1.REGION;
+import static org.apache.nifi.processors.aws.util.RegionUtilV1.S3_REGION;
 
 @PrimaryNodeOnly
 @TriggerSerially
@@ -146,12 +146,17 @@ public class ListS3 extends AbstractS3Processor implements VerifiableProcessor {
             " However an additional DistributedMapCache controller service is required and more JVM heap memory is used." +
             " For more information on how the 'Entity Tracking Time Window' property works, see the description.");
 
+    public static final AllowableValue NO_TRACKING = new AllowableValue("none", "No Tracking",
+            "This strategy lists all entities without any tracking. The same entities will be listed each time" +
+                    " this processor is scheduled. It is recommended to change the default run schedule value." +
+                    " Any property that relates to the persisting state will be ignored.");
+
     public static final PropertyDescriptor LISTING_STRATEGY = new Builder()
         .name("listing-strategy")
         .displayName("Listing Strategy")
         .description("Specify how to determine new/updated entities. See each strategy descriptions for detail.")
         .required(true)
-        .allowableValues(BY_TIMESTAMPS, BY_ENTITIES)
+        .allowableValues(BY_TIMESTAMPS, BY_ENTITIES, NO_TRACKING)
         .defaultValue(BY_TIMESTAMPS.getValue())
         .build();
 
@@ -344,7 +349,7 @@ public class ListS3 extends AbstractS3Processor implements VerifiableProcessor {
             try {
                 listedEntityTracker.clearListedEntities();
             } catch (IOException e) {
-                throw new RuntimeException("Failed to reset previously listed entities due to " + e, e);
+                throw new RuntimeException("Failed to reset previously listed entities", e);
             }
         }
         resetEntityTrackingState = false;
@@ -461,8 +466,89 @@ public class ListS3 extends AbstractS3Processor implements VerifiableProcessor {
             listByTrackingTimestamps(context, session);
         } else if (BY_ENTITIES.equals(listingStrategy)) {
             listByTrackingEntities(context, session);
+        } else if (NO_TRACKING.equals(listingStrategy)) {
+            listNoTracking(context, session);
         } else {
             throw new ProcessException("Unknown listing strategy: " + listingStrategy);
+        }
+    }
+
+    private void listNoTracking(ProcessContext context, ProcessSession session) {
+        final AmazonS3 client = getClient(context);
+
+        S3BucketLister bucketLister = getS3BucketLister(context, client);
+
+        final long startNanos = System.nanoTime();
+        final long minAgeMilliseconds = context.getProperty(MIN_AGE).asTimePeriod(TimeUnit.MILLISECONDS);
+        final Long maxAgeMilliseconds = context.getProperty(MAX_AGE) != null ? context.getProperty(MAX_AGE).asTimePeriod(TimeUnit.MILLISECONDS) : null;
+        final long listingTimestamp = System.currentTimeMillis();
+
+        final String bucket = context.getProperty(BUCKET).evaluateAttributeExpressions().getValue();
+        final int batchSize = context.getProperty(BATCH_SIZE).asInteger();
+
+        int listCount = 0;
+        int totalListCount = 0;
+
+        getLogger().trace("Start listing, listingTimestamp={}", listingTimestamp);
+
+        final S3ObjectWriter writer;
+        final RecordSetWriterFactory writerFactory = context.getProperty(RECORD_WRITER).asControllerService(RecordSetWriterFactory.class);
+        if (writerFactory == null) {
+            writer = new AttributeObjectWriter(session);
+        } else {
+            writer = new RecordObjectWriter(session, writerFactory, getLogger(), context.getProperty(S3_REGION).getValue());
+        }
+
+        try {
+            writer.beginListing();
+
+            do {
+                VersionListing versionListing = bucketLister.listVersions();
+                for (S3VersionSummary versionSummary : versionListing.getVersionSummaries()) {
+                    long lastModified = versionSummary.getLastModified().getTime();
+                    if ((maxAgeMilliseconds != null && (lastModified < (listingTimestamp - maxAgeMilliseconds)))
+                        || lastModified > (listingTimestamp - minAgeMilliseconds)) {
+                        continue;
+                    }
+
+                    getLogger().trace("Listed key={}, lastModified={}", versionSummary.getKey(), lastModified);
+
+                    GetObjectTaggingResult taggingResult = getTaggingResult(context, client, versionSummary);
+
+                    ObjectMetadata objectMetadata = getObjectMetadata(context, client, versionSummary);
+
+                    // Write the entity to the listing
+                    writer.addToListing(versionSummary, taggingResult, objectMetadata, context.getProperty(S3_REGION).getValue());
+
+                    listCount++;
+                }
+                bucketLister.setNextMarker();
+
+                totalListCount += listCount;
+
+                if (listCount >= batchSize && writer.isCheckpoint()) {
+                    getLogger().info("Successfully listed {} new files from S3; routing to success", listCount);
+                    session.commitAsync();
+                }
+
+                listCount = 0;
+            } while (bucketLister.isTruncated());
+
+            writer.finishListing();
+        } catch (final Exception e) {
+            getLogger().error("Failed to list contents of bucket", e);
+            writer.finishListingExceptionally(e);
+            session.rollback();
+            context.yield();
+            return;
+        }
+
+        final long listMillis = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startNanos);
+        getLogger().info("Successfully listed S3 bucket {} in {} millis", bucket, listMillis);
+
+        if (totalListCount == 0) {
+            getLogger().debug("No new objects in S3 bucket {} to list. Yielding.", bucket);
+            context.yield();
         }
     }
 
@@ -495,7 +581,7 @@ public class ListS3 extends AbstractS3Processor implements VerifiableProcessor {
         long latestListedTimestampInThisCycle = currentTimestamp;
 
         final Set<String> listedKeys = new HashSet<>();
-        getLogger().trace("Start listing, listingTimestamp={}, currentTimestamp={}, currentKeys={}", new Object[]{listingTimestamp, currentTimestamp, currentKeys});
+        getLogger().trace("Start listing, listingTimestamp={}, currentTimestamp={}, currentKeys={}", currentTimestamp, listingTimestamp, currentKeys);
 
         final S3ObjectWriter writer;
         final RecordSetWriterFactory writerFactory = context.getProperty(RECORD_WRITER).asControllerService(RecordSetWriterFactory.class);
@@ -519,7 +605,7 @@ public class ListS3 extends AbstractS3Processor implements VerifiableProcessor {
                         continue;
                     }
 
-                    getLogger().trace("Listed key={}, lastModified={}, currentKeys={}", new Object[]{versionSummary.getKey(), lastModified, currentKeys});
+                    getLogger().trace("Listed key={}, lastModified={}, currentKeys={}", versionSummary.getKey(), lastModified, currentKeys);
 
                     GetObjectTaggingResult taggingResult = getTaggingResult(context, client, versionSummary);
 
@@ -555,7 +641,7 @@ public class ListS3 extends AbstractS3Processor implements VerifiableProcessor {
 
             writer.finishListing();
         } catch (final Exception e) {
-            getLogger().error("Failed to list contents of bucket due to {}", new Object[] {e}, e);
+            getLogger().error("Failed to list contents of bucket", e);
             writer.finishListingExceptionally(e);
             session.rollback();
             context.yield();
@@ -576,10 +662,10 @@ public class ListS3 extends AbstractS3Processor implements VerifiableProcessor {
         });
 
         final long listMillis = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startNanos);
-        getLogger().info("Successfully listed S3 bucket {} in {} millis", new Object[]{bucket, listMillis});
+        getLogger().info("Successfully listed S3 bucket {} in {} millis", bucket, listMillis);
 
         if (totalListCount == 0) {
-            getLogger().debug("No new objects in S3 bucket {} to list. Yielding.", new Object[]{bucket});
+            getLogger().debug("No new objects in S3 bucket {} to list. Yielding.", bucket);
             context.yield();
         }
     }
@@ -616,7 +702,7 @@ public class ListS3 extends AbstractS3Processor implements VerifiableProcessor {
             ProcessContext context,
             ProcessSession session,
             List<ListableEntityWrapper<S3VersionSummary>> updatedEntities
-        ) throws IOException, SchemaNotFoundException {
+        ) {
             publishListing(context, session, updatedEntities);
         }
 
@@ -656,7 +742,7 @@ public class ListS3 extends AbstractS3Processor implements VerifiableProcessor {
                     listCount++;
 
                     if (listCount >= batchSize && writer.isCheckpoint()) {
-                        getLogger().info("Successfully listed {} new files from S3; routing to success", new Object[]{listCount});
+                        getLogger().info("Successfully listed {} new files from S3; routing to success", listCount);
                         session.commitAsync();
                     }
 
@@ -666,7 +752,7 @@ public class ListS3 extends AbstractS3Processor implements VerifiableProcessor {
 
                 writer.finishListing();
             } catch (final Exception e) {
-                getLogger().error("Failed to list contents of bucket due to {}", new Object[]{e}, e);
+                getLogger().error("Failed to list contents of bucket", e);
                 writer.finishListingExceptionally(e);
                 session.rollback();
                 context.yield();
@@ -1005,7 +1091,7 @@ public class ListS3 extends AbstractS3Processor implements VerifiableProcessor {
             try {
                 recordWriter.close();
             } catch (IOException e) {
-                logger.error("Failed to write listing as Records due to {}", new Object[] {e}, e);
+                logger.error("Failed to write listing as Records", e);
             }
 
             session.remove(flowFile);
@@ -1104,7 +1190,7 @@ public class ListS3 extends AbstractS3Processor implements VerifiableProcessor {
         }
 
         @Override
-        public void finishListing() throws IOException {
+        public void finishListing() {
         }
 
         @Override
