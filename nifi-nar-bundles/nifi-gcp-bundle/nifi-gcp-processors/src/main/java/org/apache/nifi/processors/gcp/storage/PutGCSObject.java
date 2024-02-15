@@ -33,16 +33,16 @@ import org.apache.nifi.annotation.documentation.SeeAlso;
 import org.apache.nifi.annotation.documentation.Tags;
 import org.apache.nifi.components.AllowableValue;
 import org.apache.nifi.components.PropertyDescriptor;
+import org.apache.nifi.fileresource.service.api.FileResource;
 import org.apache.nifi.expression.ExpressionLanguageScope;
 import org.apache.nifi.flowfile.FlowFile;
 import org.apache.nifi.flowfile.attributes.CoreAttributes;
 import org.apache.nifi.processor.ProcessContext;
 import org.apache.nifi.processor.ProcessSession;
 import org.apache.nifi.processor.exception.ProcessException;
-import org.apache.nifi.processor.io.InputStreamCallback;
 import org.apache.nifi.processor.util.StandardValidators;
+import org.apache.nifi.processors.transfer.ResourceTransferSource;
 
-import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -103,6 +103,9 @@ import static org.apache.nifi.processors.gcp.storage.StorageAttributes.UPDATE_TI
 import static org.apache.nifi.processors.gcp.storage.StorageAttributes.UPDATE_TIME_DESC;
 import static org.apache.nifi.processors.gcp.storage.StorageAttributes.URI_ATTR;
 import static org.apache.nifi.processors.gcp.storage.StorageAttributes.URI_DESC;
+import static org.apache.nifi.processors.transfer.ResourceTransferProperties.FILE_RESOURCE_SERVICE;
+import static org.apache.nifi.processors.transfer.ResourceTransferProperties.RESOURCE_TRANSFER_SOURCE;
+import static org.apache.nifi.processors.transfer.ResourceTransferUtils.getFileResource;
 
 
 @InputRequirement(InputRequirement.Requirement.INPUT_REQUIRED)
@@ -299,6 +302,8 @@ public class PutGCSObject extends AbstractGCSProcessor {
         final List<PropertyDescriptor> descriptors = new ArrayList<>(super.getSupportedPropertyDescriptors());
         descriptors.add(BUCKET);
         descriptors.add(KEY);
+        descriptors.add(RESOURCE_TRANSFER_SOURCE);
+        descriptors.add(FILE_RESOURCE_SERVICE);
         descriptors.add(CONTENT_TYPE);
         descriptors.add(MD5);
         descriptors.add(CRC32C);
@@ -332,26 +337,25 @@ public class PutGCSObject extends AbstractGCSProcessor {
             return;
         }
 
-        final long startNanos = System.nanoTime();
-
-        final String bucket = context.getProperty(BUCKET)
-                .evaluateAttributeExpressions(flowFile)
-                .getValue();
-        final String key = context.getProperty(KEY)
-                .evaluateAttributeExpressions(flowFile)
-                .getValue();
-        final boolean overwrite = context.getProperty(OVERWRITE).asBoolean();
-
-        final FlowFile ff = flowFile;
-        final String ffFilename = ff.getAttributes().get(CoreAttributes.FILENAME.key());
-        final Map<String, String> attributes = new HashMap<>();
-
         try {
+            final long startNanos = System.nanoTime();
+            final String bucket = context.getProperty(BUCKET)
+                .evaluateAttributeExpressions(flowFile)
+                .getValue();
+            final String key = context.getProperty(KEY)
+                .evaluateAttributeExpressions(flowFile)
+                .getValue();
+            final boolean overwrite = context.getProperty(OVERWRITE).asBoolean();
+
+            final FlowFile ff = flowFile;
+            final String ffFilename = ff.getAttributes().get(CoreAttributes.FILENAME.key());
+            final Map<String, String> attributes = new HashMap<>();
+            final ResourceTransferSource resourceTransferSource = ResourceTransferSource.valueOf(
+                context.getProperty(RESOURCE_TRANSFER_SOURCE).getValue());
             final Storage storage = getCloudService();
-            session.read(flowFile, new InputStreamCallback() {
-                @Override
-                public void process(InputStream rawIn) throws IOException {
-                    try (final InputStream in = new BufferedInputStream(rawIn)) {
+            try (final InputStream inputStream = getFileResource(resourceTransferSource, context, flowFile.getAttributes())
+                    .map(FileResource::getInputStream).orElseGet(() -> session.read(ff))) {
+
                         final BlobId id = BlobId.of(bucket, key);
                         final BlobInfo.Builder blobInfoBuilder = BlobInfo.newBuilder(id);
                         final List<Storage.BlobWriteOption> blobWriteOptions = new ArrayList<>();
@@ -418,7 +422,7 @@ public class PutGCSObject extends AbstractGCSProcessor {
 
                         try {
                             final Blob blob = storage.createFrom(blobInfoBuilder.build(),
-                                    in,
+                                    inputStream,
                                     blobWriteOptions.toArray(new Storage.BlobWriteOption[blobWriteOptions.size()])
                             );
 
@@ -524,16 +528,12 @@ public class PutGCSObject extends AbstractGCSProcessor {
                             if (blob.getUpdateTime() != null) {
                                 attributes.put(UPDATE_TIME_ATTR, String.valueOf(blob.getUpdateTime()));
                             }
-                        } catch (StorageException e) {
+                        } catch (StorageException |IOException e) {
                             getLogger().error("Failure completing upload flowfile={} bucket={} key={} reason={}",
                                     new Object[]{ffFilename, bucket, key, e.getMessage()}, e);
                             throw (e);
                         }
-
-
                     }
-                }
-            });
 
             if (!attributes.isEmpty()) {
                 flowFile = session.putAllAttributes(flowFile, attributes);
@@ -546,7 +546,7 @@ public class PutGCSObject extends AbstractGCSProcessor {
             getLogger().info("Successfully put {} to Google Cloud Storage in {} milliseconds",
                     new Object[]{ff, millis});
 
-        } catch (final ProcessException | StorageException e) {
+        } catch (final ProcessException | StorageException |IOException e) {
             getLogger().error("Failed to put {} to Google Cloud Storage due to {}", new Object[]{flowFile, e.getMessage()}, e);
             flowFile = session.penalize(flowFile);
             session.transfer(flowFile, REL_FAILURE);
