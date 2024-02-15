@@ -32,6 +32,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static org.apache.nifi.processors.aws.util.RegionUtilV1.REGION;
+
 /**
  * Base class for AWS processors that uses AWSCredentialsProvider interface for creating AWS clients.
  *
