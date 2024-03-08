@@ -45,11 +45,11 @@ class CompressFlowFile(Processor) :
             session.transfer(flowfile, self.__rel_success)
             session.commitAsync()
         except :
-            print sys.exc_info()[0]
-            print "Exception in TestReader:"
-            print '-' * 60
+            print(sys.exc_info()[0])
+            print("Exception in TestReader:")
+            print('-' * 60)
             traceback.print_exc(file=sys.stdout)
-            print '-' * 60
+            print('-' * 60)
 
             session.rollback(true)
             raise

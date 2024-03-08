@@ -41,8 +41,8 @@ class Decompress(StreamCallback) :
                     break
                 output.write(comp.decompress(StringUtil.fromBytes(buf, 0, bytes_read)))
         except :
-            print "Exception in Decompress:"
-            print '-' * 60
+            print("Exception in Decompress:")
+            print('-' * 60)
             traceback.print_exc(file=sys.stdout)
-            print '-' * 60
+            print('-' * 60)
             raise

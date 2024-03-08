@@ -42,8 +42,8 @@ class Compress(StreamCallback) :
                 output.write(comp.compress(StringUtil.fromBytes(buf, 0, bytes_read)))
             output.write(comp.flush())
         except :
-            print "Exception in Compress:"
-            print '-' * 60
+            print("Exception in Compress:")
+            print('-' * 60)
             traceback.print_exc(file=sys.stdout)
-            print '-' * 60
+            print('-' * 60)
             raise
