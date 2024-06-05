@@ -44,7 +44,6 @@ import org.apache.nifi.processor.ProcessContext;
 import org.apache.nifi.processor.ProcessSession;
 import org.apache.nifi.processor.util.StandardValidators;
 import org.apache.nifi.processors.aws.AbstractAWSCredentialsProviderProcessor;
-import org.apache.nifi.processors.aws.AbstractAWSProcessor;
 import org.apache.nifi.processors.aws.AwsClientDetails;
 import org.apache.nifi.processors.aws.AwsPropertyDescriptors;
 import org.apache.nifi.processors.aws.signer.AwsCustomSignerUtil;
