@@ -113,8 +113,8 @@ class S3FileResourceServiceTest {
         String keyProperty = "key";
         setupService("${" + bucketProperty + "}", "${" + keyProperty + "}");
         setupS3Client();
-        FileResource fileResource = service.getFileResource(new HashMap<String, String>()
-        {{
+        FileResource fileResource = service.getFileResource(new HashMap<String, String>() {
+            {
             put(bucketProperty, BUCKET_NAME);
             put(keyProperty, KEY);
         }});
