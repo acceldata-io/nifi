@@ -22,7 +22,6 @@ import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.regions.Region;
-import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.S3ClientOptions;
 import com.amazonaws.services.s3.model.AccessControlList;
@@ -63,7 +62,7 @@ import static org.apache.nifi.processors.aws.signer.AwsSignerType.CUSTOM_SIGNER;
 import static org.apache.nifi.processors.aws.signer.AwsSignerType.DEFAULT_SIGNER;
 import static org.apache.nifi.processors.aws.util.RegionUtilV1.ATTRIBUTE_DEFINED_REGION;
 import static org.apache.nifi.processors.aws.util.RegionUtilV1.S3_REGION;
-import static org.apache.nifi.processors.aws.util.RegionUtilV1.resolveRegion;
+import static org.apache.nifi.processors.aws.util.RegionUtilV1.resolveS3Region;
 
 public abstract class AbstractS3Processor extends AbstractAWSCredentialsProviderProcessor<AmazonS3Client> {
 
@@ -449,7 +448,7 @@ public abstract class AbstractS3Processor extends AbstractAWSCredentialsProvider
     }
 
     private AwsClientDetails getAwsClientDetails(final ProcessContext context, final Map<String, String> attributes) {
-        final Region region = resolveRegion(context, attributes);
+        final Region region = resolveS3Region(context, attributes);
         return new AwsClientDetails(region);
     }
 }

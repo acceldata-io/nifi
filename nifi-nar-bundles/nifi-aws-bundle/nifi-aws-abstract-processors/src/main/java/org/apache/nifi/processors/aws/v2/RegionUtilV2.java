@@ -30,6 +30,9 @@ import java.util.List;
  */
 public abstract class RegionUtilV2 {
 
+    private RegionUtilV2() {
+    }
+
     /**
      * Creates an AllowableValue from a Region.
      * @param region An AWS region

@@ -40,12 +40,11 @@ import org.apache.nifi.processors.aws.credentials.provider.service.AWSCredential
 import org.apache.nifi.processors.aws.util.RegionUtilV1;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import static org.apache.nifi.processors.aws.AbstractAWSCredentialsProviderProcessor.AWS_CREDENTIALS_PROVIDER_SERVICE;
-import static org.apache.nifi.processors.aws.util.RegionUtilV1.resolveRegion;
+import static org.apache.nifi.processors.aws.util.RegionUtilV1.resolveS3Region;
 import static org.apache.nifi.util.StringUtils.isBlank;
 
 @Tags({"Amazon", "S3", "AWS", "file", "resource"})
@@ -132,7 +131,7 @@ public class S3FileResourceService extends AbstractControllerService implements 
     }
 
     protected AmazonS3 getS3Client(Map<String, String> attributes, AWSCredentialsProvider credentialsProvider) {
-        final Region region = resolveRegion(context, attributes);
+        final Region region = resolveS3Region(context, attributes);
         return clientCache.get(region, ignored -> AmazonS3Client.builder()
                 .withRegion(region.getName())
                 .withCredentials(credentialsProvider)
