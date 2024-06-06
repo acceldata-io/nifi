@@ -316,7 +316,7 @@ public class TestPutS3Object {
     public void testGetPropertyDescriptors() {
         PutS3Object processor = new PutS3Object();
         List<PropertyDescriptor> pd = processor.getSupportedPropertyDescriptors();
-        assertEquals(41, pd.size(), "size should be eq");
+        assertEquals(43, pd.size(), "size should be eq");
         assertTrue(pd.contains(PutS3Object.ACCESS_KEY));
         assertTrue(pd.contains(PutS3Object.AWS_CREDENTIALS_PROVIDER_SERVICE));
         assertTrue(pd.contains(PutS3Object.BUCKET));
