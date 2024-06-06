@@ -212,12 +212,4 @@ public class ITListS3 extends AbstractS3IT {
         flowFiles.assertAttributeEquals("s3.user.metadata.dummy.metadata.2", "dummyvalue2");
     }
 
-    private void waitForFilesAvailable() {
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
 }

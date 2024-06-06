@@ -16,7 +16,6 @@
  */
 package org.apache.nifi.processors.aws.s3;
 
-import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -34,6 +33,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
 import java.util.TreeSet;
@@ -59,14 +59,15 @@ import org.apache.nifi.annotation.lifecycle.OnScheduled;
 import org.apache.nifi.components.AllowableValue;
 import org.apache.nifi.components.PropertyDescriptor;
 import org.apache.nifi.expression.ExpressionLanguageScope;
+import org.apache.nifi.fileresource.service.api.FileResource;
 import org.apache.nifi.flowfile.FlowFile;
 import org.apache.nifi.flowfile.attributes.CoreAttributes;
 import org.apache.nifi.processor.DataUnit;
 import org.apache.nifi.processor.ProcessContext;
 import org.apache.nifi.processor.ProcessSession;
 import org.apache.nifi.processor.exception.ProcessException;
-import org.apache.nifi.processor.io.InputStreamCallback;
 import org.apache.nifi.processor.util.StandardValidators;
+import org.apache.nifi.processors.transfer.ResourceTransferSource;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.services.s3.AmazonS3Client;
@@ -88,6 +89,11 @@ import com.amazonaws.services.s3.model.PutObjectResult;
 import com.amazonaws.services.s3.model.StorageClass;
 import com.amazonaws.services.s3.model.UploadPartRequest;
 import com.amazonaws.services.s3.model.UploadPartResult;
+
+import static org.apache.nifi.processors.aws.util.RegionUtilV1.S3_REGION;
+import static org.apache.nifi.processors.transfer.ResourceTransferProperties.FILE_RESOURCE_SERVICE;
+import static org.apache.nifi.processors.transfer.ResourceTransferProperties.RESOURCE_TRANSFER_SOURCE;
+import static org.apache.nifi.processors.transfer.ResourceTransferUtils.getFileResource;
 
 @SupportsBatching
 @SeeAlso({FetchS3Object.class, DeleteS3Object.class, ListS3.class})
@@ -286,6 +292,8 @@ public class PutS3Object extends AbstractS3Processor {
             SECRET_KEY,
             CREDENTIALS_FILE,
             AWS_CREDENTIALS_PROVIDER_SERVICE,
+            RESOURCE_TRANSFER_SOURCE,
+            FILE_RESOURCE_SERVICE,
             OBJECT_TAGS_PREFIX,
             REMOVE_TAG_PREFIX,
             STORAGE_CLASS,
@@ -529,6 +537,8 @@ public class PutS3Object extends AbstractS3Processor {
         final FlowFile ff = flowFile;
         final Map<String, String> attributes = new HashMap<>();
         final String ffFilename = ff.getAttributes().get(CoreAttributes.FILENAME.key());
+        final ResourceTransferSource resourceTransferSource = ResourceTransferSource.valueOf(context.getProperty(RESOURCE_TRANSFER_SOURCE).getValue());
+
         attributes.put(S3_BUCKET_KEY, bucket);
         attributes.put(S3_OBJECT_KEY, key);
 
@@ -547,12 +557,12 @@ public class PutS3Object extends AbstractS3Processor {
          */
         try {
             final FlowFile flowFileCopy = flowFile;
-            session.read(flowFile, new InputStreamCallback() {
-                @Override
-                public void process(final InputStream rawIn) throws IOException {
-                    try (final InputStream in = new BufferedInputStream(rawIn)) {
-                        final ObjectMetadata objectMetadata = new ObjectMetadata();
-                        objectMetadata.setContentLength(ff.getSize());
+            Optional<FileResource> optFileResource = getFileResource(resourceTransferSource, context, flowFile.getAttributes());
+            try (InputStream in = optFileResource
+                    .map(FileResource::getInputStream)
+                    .orElseGet(() -> session.read(flowFileCopy))) {
+                final ObjectMetadata objectMetadata = new ObjectMetadata();
+                objectMetadata.setContentLength(optFileResource.map(FileResource::getSize).orElseGet(ff::getSize));
 
                         final String contentType = context.getProperty(CONTENT_TYPE)
                                 .evaluateAttributeExpressions(ff).getValue();
@@ -869,9 +879,10 @@ public class PutS3Object extends AbstractS3Processor {
                                 throw (e);
                             }
                         }
-                    }
-                }
-            });
+            } catch (IOException e) {
+                getLogger().error("Error during upload of flow files: " + e.getMessage());
+                throw e;
+            }
 
             if (!attributes.isEmpty()) {
                 flowFile = session.putAllAttributes(flowFile, attributes);
@@ -882,25 +893,25 @@ public class PutS3Object extends AbstractS3Processor {
             final long millis = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startNanos);
             session.getProvenanceReporter().send(flowFile, url, millis);
 
-            getLogger().info("Successfully put {} to Amazon S3 in {} milliseconds", new Object[] {ff, millis});
+            getLogger().info("Successfully put {} to Amazon S3 in {} milliseconds", new Object[]{ff, millis});
             try {
                 removeLocalState(cacheKey);
             } catch (IOException e) {
                 getLogger().info("Error trying to delete key {} from cache: {}",
                         new Object[]{cacheKey, e.getMessage()});
             }
-        } catch (final ProcessException | AmazonClientException pe) {
-            extractExceptionDetails(pe, session, flowFile);
-            if (pe.getMessage().contains(S3_PROCESS_UNSCHEDULED_MESSAGE)) {
-                getLogger().info(pe.getMessage());
+
+        } catch (final ProcessException | AmazonClientException | IOException e) {
+            extractExceptionDetails(e, session, flowFile);
+            if (e.getMessage().contains(S3_PROCESS_UNSCHEDULED_MESSAGE)) {
+                getLogger().info(e.getMessage());
                 session.rollback();
             } else {
-                getLogger().error("Failed to put {} to Amazon S3 due to {}", new Object[]{flowFile, pe});
+                getLogger().error("Failed to put {} to Amazon S3 due to {}", flowFile, e);
                 flowFile = session.penalize(flowFile);
                 session.transfer(flowFile, REL_FAILURE);
             }
         }
-
     }
 
     private final Lock s3BucketLock = new ReentrantLock();
