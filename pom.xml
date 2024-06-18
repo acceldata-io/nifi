@@ -162,19 +162,6 @@
      <url>https://repo1.acceldata.dev/repository/odp-snapshot/</url>
    </snapshotRepository>
   </distributionManagement>
-  <repositories>
-    <repository>
-            <id>acceldata repo</id>
-            <name>acceldata repo</name>
-            <url>https://repo1.acceldata.dev/repository/odp-central/</url>
-            <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-  </repositories>
     <dependencyManagement>
         <dependencies>
             <!-- The following dependency management entries exist because these are jars
