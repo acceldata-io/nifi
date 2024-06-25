@@ -22,7 +22,6 @@ import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.regions.Region;
-import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.S3ClientOptions;
 import com.amazonaws.services.s3.model.AccessControlList;
@@ -33,10 +32,8 @@ import com.amazonaws.services.s3.model.EmailAddressGrantee;
 import com.amazonaws.services.s3.model.Grantee;
 import com.amazonaws.services.s3.model.Owner;
 import com.amazonaws.services.s3.model.Permission;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.nifi.annotation.lifecycle.OnScheduled;
-import org.apache.nifi.components.AllowableValue;
 import org.apache.nifi.components.ConfigVerificationResult;
 import org.apache.nifi.components.ConfigVerificationResult.Outcome;
 import org.apache.nifi.components.PropertyDescriptor;
@@ -45,10 +42,8 @@ import org.apache.nifi.flowfile.FlowFile;
 import org.apache.nifi.logging.ComponentLog;
 import org.apache.nifi.processor.ProcessContext;
 import org.apache.nifi.processor.ProcessSession;
-import org.apache.nifi.processor.exception.ProcessException;
 import org.apache.nifi.processor.util.StandardValidators;
 import org.apache.nifi.processors.aws.AbstractAWSCredentialsProviderProcessor;
-import org.apache.nifi.processors.aws.AbstractAWSProcessor;
 import org.apache.nifi.processors.aws.AwsClientDetails;
 import org.apache.nifi.processors.aws.AwsPropertyDescriptors;
 import org.apache.nifi.processors.aws.signer.AwsCustomSignerUtil;
@@ -60,11 +55,13 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 
-import static java.lang.String.format;
 import static org.apache.nifi.processors.aws.signer.AwsSignerType.AWS_S3_V2_SIGNER;
 import static org.apache.nifi.processors.aws.signer.AwsSignerType.AWS_S3_V4_SIGNER;
 import static org.apache.nifi.processors.aws.signer.AwsSignerType.CUSTOM_SIGNER;
 import static org.apache.nifi.processors.aws.signer.AwsSignerType.DEFAULT_SIGNER;
+import static org.apache.nifi.processors.aws.util.RegionUtilV1.ATTRIBUTE_DEFINED_REGION;
+import static org.apache.nifi.processors.aws.util.RegionUtilV1.S3_REGION;
+import static org.apache.nifi.processors.aws.util.RegionUtilV1.resolveS3Region;
 
 public abstract class AbstractS3Processor extends AbstractAWSCredentialsProviderProcessor<AmazonS3Client> {
 
@@ -162,16 +159,6 @@ public abstract class AbstractS3Processor extends AbstractAWSCredentialsProvider
     public static final PropertyDescriptor S3_CUSTOM_SIGNER_MODULE_LOCATION = new PropertyDescriptor.Builder()
             .fromPropertyDescriptor(AwsPropertyDescriptors.CUSTOM_SIGNER_MODULE_LOCATION)
             .dependsOn(SIGNER_OVERRIDE, CUSTOM_SIGNER)
-            .build();
-
-    public static final String S3_REGION_ATTRIBUTE = "s3.region" ;
-    static final AllowableValue ATTRIBUTE_DEFINED_REGION = new AllowableValue("attribute-defined-region",
-            "Use '" + S3_REGION_ATTRIBUTE + "' Attribute",
-            "Uses '" + S3_REGION_ATTRIBUTE + "' FlowFile attribute as region.");
-
-    public static final PropertyDescriptor S3_REGION = new PropertyDescriptor.Builder()
-            .fromPropertyDescriptor(AbstractAWSProcessor.REGION)
-            .allowableValues(getAvailableS3Regions())
             .build();
 
     public static final PropertyDescriptor ENCRYPTION_SERVICE = new PropertyDescriptor.Builder()
@@ -454,40 +441,13 @@ public abstract class AbstractS3Processor extends AbstractAWSCredentialsProvider
         return cannedAcl;
     }
 
-    private Region parseRegionValue(String regionValue) {
-        if (regionValue == null) {
-            throw new ProcessException(format("[%s] was selected as region source but [%s] attribute does not exist", ATTRIBUTE_DEFINED_REGION, S3_REGION_ATTRIBUTE));
-        }
-
-        try {
-            return Region.getRegion(Regions.fromName(regionValue));
-        } catch (Exception e) {
-            throw new ProcessException(format("The [%s] attribute contains an invalid region value [%s]", S3_REGION_ATTRIBUTE, regionValue), e);
-        }
-    }
-
-    private Region resolveRegion(final ProcessContext context, final Map<String, String> attributes) {
-        String regionValue = context.getProperty(S3_REGION).getValue();
-
-        if (ATTRIBUTE_DEFINED_REGION.getValue().equals(regionValue)) {
-            regionValue = attributes.get(S3_REGION_ATTRIBUTE);
-        }
-
-        return parseRegionValue(regionValue);
-    }
-
     private boolean isAttributeDefinedRegion(final ProcessContext context) {
         String regionValue = context.getProperty(S3_REGION).getValue();
         return ATTRIBUTE_DEFINED_REGION.getValue().equals(regionValue);
     }
 
-    private static AllowableValue[] getAvailableS3Regions() {
-        final AllowableValue[] availableRegions = getAvailableRegions();
-        return ArrayUtils.addAll(availableRegions, ATTRIBUTE_DEFINED_REGION);
-    }
-
     private AwsClientDetails getAwsClientDetails(final ProcessContext context, final Map<String, String> attributes) {
-        final Region region = resolveRegion(context, attributes);
+        final Region region = resolveS3Region(context, attributes);
         return new AwsClientDetails(region);
     }
 }
