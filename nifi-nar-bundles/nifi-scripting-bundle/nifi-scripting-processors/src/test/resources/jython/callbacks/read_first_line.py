@@ -38,10 +38,10 @@ class ReadFirstLine(InputStreamCallback) :
             bufferedReader = BufferedReader(reader)
             self.__line = bufferedReader.readLine()
         except :
-            print "Exception in Reader:"
-            print '-' * 60
+            print("Exception in Reader:")
+            print('-' * 60)
             traceback.print_exc(file=sys.stdout)
-            print '-' * 60
+            print('-' * 60)
             raise
         finally :
             if bufferedReader is not None :
