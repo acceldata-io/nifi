@@ -48,6 +48,7 @@ import org.apache.nifi.annotation.lifecycle.OnScheduled;
 import org.apache.nifi.annotation.lifecycle.OnStopped;
 import org.apache.nifi.components.AllowableValue;
 import org.apache.nifi.components.PropertyDescriptor;
+import org.apache.nifi.fileresource.service.api.FileResource;
 import org.apache.nifi.components.PropertyValue;
 import org.apache.nifi.components.RequiredPermission;
 import org.apache.nifi.components.ValidationContext;
@@ -62,6 +63,7 @@ import org.apache.nifi.processor.Relationship;
 import org.apache.nifi.processor.exception.ProcessException;
 import org.apache.nifi.processor.util.StandardValidators;
 import org.apache.nifi.processors.hadoop.util.GSSExceptionRollbackYieldSessionHandler;
+import org.apache.nifi.processors.transfer.ResourceTransferSource;
 import org.apache.nifi.stream.io.StreamUtils;
 import org.apache.nifi.util.StopWatch;
 
@@ -80,6 +82,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.io.InputStream;
+import static org.apache.nifi.processors.transfer.ResourceTransferProperties.FILE_RESOURCE_SERVICE;
+import static org.apache.nifi.processors.transfer.ResourceTransferProperties.RESOURCE_TRANSFER_SOURCE;
+import static org.apache.nifi.processors.transfer.ResourceTransferUtils.getFileResource;
 
 /**
  * This processor copies FlowFiles to HDFS.
@@ -260,6 +266,8 @@ public class PutHDFS extends AbstractHadoopProcessor {
         props.add(REMOTE_GROUP);
         props.add(COMPRESSION_CODEC);
         props.add(IGNORE_LOCALITY);
+        props.add(RESOURCE_TRANSFER_SOURCE);
+        props.add(FILE_RESOURCE_SERVICE);
         return props;
     }
 
@@ -402,7 +410,10 @@ public class PutHDFS extends AbstractHadoopProcessor {
 
                     // Write FlowFile to temp file on HDFS
                     final StopWatch stopWatch = new StopWatch(true);
-                    session.read(putFlowFile, in -> {
+                    final ResourceTransferSource resourceTransferSource = ResourceTransferSource.valueOf(
+                            context.getProperty(RESOURCE_TRANSFER_SOURCE).getValue());
+                    try (final InputStream in = getFileResource(resourceTransferSource, context, flowFile.getAttributes())
+                            .map(FileResource::getInputStream).orElseGet(() -> session.read(flowFile))) {
                         OutputStream fos = null;
                         Path createdFile = null;
                         try {
@@ -420,32 +431,32 @@ public class PutHDFS extends AbstractHadoopProcessor {
                                         null, null);
                             }
 
-                                if (codec != null) {
-                                    fos = codec.createOutputStream(fos);
-                                }
-                                createdFile = actualCopyFile;
+                            if (codec != null) {
+                                fos = codec.createOutputStream(fos);
+                            }
+                            createdFile = actualCopyFile;
 
-                                final String appendMode = context.getProperty(APPEND_MODE).getValue();
-                                if (APPEND_RESOLUTION.equals(conflictResponse)
-                                        && AVRO_APPEND_MODE.equals(appendMode)
-                                        && destinationExists) {
-                                    getLogger().info("Appending avro record to existing avro file");
-                                    try (final DataFileStream<Object> reader = new DataFileStream<>(in, new GenericDatumReader<>());
-                                         final DataFileWriter<Object> writer = new DataFileWriter<>(new GenericDatumWriter<>())) {
-                                        writer.appendTo(new FsInput(copyFile, configuration), fos); // open writer to existing file
-                                        writer.appendAllFrom(reader, false); // append flowfile content
-                                        writer.flush();
-                                        getLogger().info("Successfully appended avro record");
-                                    } catch (Exception e) {
-                                        getLogger().error("Error occurred during appending to existing avro file", e);
-                                        throw new ProcessException(e);
-                                    }
-                                } else {
-                                    BufferedInputStream bis = new BufferedInputStream(in);
-                                    StreamUtils.copy(bis, fos);
-                                    bis = null;
-                                    fos.flush();
+                            final String appendMode = context.getProperty(APPEND_MODE).getValue();
+                            if (APPEND_RESOLUTION.equals(conflictResponse)
+                                    && AVRO_APPEND_MODE.equals(appendMode)
+                                    && destinationExists) {
+                                getLogger().info("Appending avro record to existing avro file");
+                                try (final DataFileStream<Object> reader = new DataFileStream<>(in, new GenericDatumReader<>());
+                                     final DataFileWriter<Object> writer = new DataFileWriter<>(new GenericDatumWriter<>())) {
+                                    writer.appendTo(new FsInput(copyFile, configuration), fos); // open writer to existing file
+                                    writer.appendAllFrom(reader, false); // append flowfile content
+                                    writer.flush();
+                                    getLogger().info("Successfully appended avro record");
+                                } catch (Exception e) {
+                                    getLogger().error("Error occurred during appending to existing avro file", e);
+                                    throw new ProcessException(e);
                                 }
+                            } else {
+                                BufferedInputStream bis = new BufferedInputStream(in);
+                                StreamUtils.copy(bis, fos);
+                                bis = null;
+                                fos.flush();
+                            }
                         } finally {
                             try {
                                 if (fos != null) {
@@ -463,7 +474,7 @@ public class PutHDFS extends AbstractHadoopProcessor {
                             }
                             fos = null;
                         }
-                    });
+                    }
                     stopWatch.stop();
                     final String dataRate = stopWatch.calculateDataRate(putFlowFile.getSize());
                     final long millis = stopWatch.getDuration(TimeUnit.MILLISECONDS);
