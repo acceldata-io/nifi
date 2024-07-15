@@ -25,7 +25,11 @@ import org.apache.hadoop.fs.permission.FsPermission;
 import org.apache.hadoop.io.compress.CompressionCodec;
 import org.apache.nifi.components.ValidationResult;
 import org.apache.nifi.flowfile.FlowFile;
+import org.apache.nifi.fileresource.service.StandardFileResourceService;
+import org.apache.nifi.fileresource.service.api.FileResourceService;
 import org.apache.nifi.flowfile.attributes.CoreAttributes;
+import org.apache.nifi.processors.transfer.ResourceTransferProperties;
+import org.apache.nifi.processors.transfer.ResourceTransferSource;
 import org.apache.nifi.hadoop.KerberosProperties;
 import org.apache.nifi.processor.ProcessContext;
 import org.apache.nifi.processor.Relationship;
@@ -40,6 +44,8 @@ import org.apache.nifi.util.TestRunners;
 import org.ietf.jgss.GSSException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import org.mockito.Mockito;
 
 import javax.security.sasl.SaslException;
@@ -53,6 +59,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.Set;
+import java.util.Collections;
 
 import static org.apache.nifi.processors.hadoop.CompressionType.GZIP;
 import static org.apache.nifi.processors.hadoop.CompressionType.NONE;
@@ -753,6 +762,66 @@ public class PutHDFSTest {
         assertTrue(sendEvent.getTransitUri().endsWith(AVRO_TARGET_DIRECTORY + "/" + AVRO_FILE_NAME));
         assertTrue(flowFile.getAttribute(PutHDFS.HADOOP_FILE_URL_ATTRIBUTE).endsWith(AVRO_TARGET_DIRECTORY + "/" + AVRO_FILE_NAME));
     }
+
+    @Test
+    public void testPutFileFromLocalFile() throws Exception {
+        final FileSystem spyFileSystem = Mockito.spy(mockFileSystem);
+        final PutHDFS proc = new TestablePutHDFS(kerberosProperties, spyFileSystem);
+        final TestRunner runner = TestRunners.newTestRunner(proc);
+        runner.setProperty(PutHDFS.DIRECTORY, TARGET_DIRECTORY);
+        runner.setProperty(PutHDFS.CONFLICT_RESOLUTION, PutHDFS.REPLACE_RESOLUTION);
+        runner.setProperty(PutHDFS.WRITING_STRATEGY, PutHDFS.SIMPLE_WRITE);
+
+        //Adding StandardFileResourceService controller service
+        String attributeName = "file.path";
+
+        String serviceId = FileResourceService.class.getSimpleName();
+        FileResourceService service = new StandardFileResourceService();
+        byte[] FILE_DATA = "0123456789".getBytes(StandardCharsets.UTF_8);
+        byte[] EMPTY_CONTENT = new byte[0];
+        runner.addControllerService(serviceId, service);
+        runner.setProperty(service, StandardFileResourceService.FILE_PATH, String.format("${%s}", attributeName));
+        runner.enableControllerService(service);
+
+        runner.setProperty(ResourceTransferProperties.RESOURCE_TRANSFER_SOURCE, ResourceTransferSource.FILE_RESOURCE_SERVICE.getValue());
+        runner.setProperty(ResourceTransferProperties.FILE_RESOURCE_SERVICE, serviceId);
+        java.nio.file.Path tempFilePath = Files.createTempFile("PutHDFS_testPutFileFromLocalFile_", "");
+        Files.write(tempFilePath, FILE_DATA);
+
+        Map<String, String> attributes = new HashMap<>();
+
+        attributes.put(CoreAttributes.FILENAME.key(), FILE_NAME);
+        attributes.put(attributeName, tempFilePath.toString());
+        runner.enqueue(EMPTY_CONTENT, attributes);
+        runner.run();
+
+/*      MockFlowFile flowFile = assertFlowFile(EMPTY_CONTENT);
+        assertFlowFileAttributes(flowFile, DIRECTORY, FILE_NAME, FILE_DATA.length);
+        assertAzureFile(DIRECTORY, FILE_NAME, FILE_DATA);*/
+
+        runner.assertAllFlowFilesTransferred(PutHDFS.REL_SUCCESS, 1);
+        MockFlowFile flowFile = runner.getFlowFilesForRelationship(PutHDFS.REL_SUCCESS).get(0);
+        flowFile.assertContentEquals(EMPTY_CONTENT);
+
+        //assert HDFS File and Directory structures
+        assertTrue(spyFileSystem.exists(new Path(TARGET_DIRECTORY + "/" + FILE_NAME)));
+        assertEquals(FILE_NAME, flowFile.getAttribute(CoreAttributes.FILENAME.key()));
+        assertEquals(TARGET_DIRECTORY, flowFile.getAttribute(PutHDFS.ABSOLUTE_HDFS_PATH_ATTRIBUTE));
+        assertEquals("true", flowFile.getAttribute(PutHDFS.TARGET_HDFS_DIR_CREATED_ATTRIBUTE));
+        // If it runs with a real HDFS, the protocol will be "hdfs://", but with a local filesystem, just assert the filename.
+        assertTrue(flowFile.getAttribute(PutHDFS.HADOOP_FILE_URL_ATTRIBUTE).endsWith(TARGET_DIRECTORY + "/" + FILE_NAME));
+
+        verify(spyFileSystem, Mockito.never()).rename(any(Path.class), any(Path.class));
+
+        //assert Provenance events
+        Set<ProvenanceEventType> expectedEventTypes = Collections.singleton(ProvenanceEventType.SEND);
+        Set<ProvenanceEventType> actualEventTypes = runner.getProvenanceEvents().stream()
+                .map(ProvenanceEventRecord::getEventType)
+                .collect(Collectors.toSet());
+        assertEquals(expectedEventTypes, actualEventTypes);
+
+    }
+
 
     private static class TestablePutHDFS extends PutHDFS {
 
