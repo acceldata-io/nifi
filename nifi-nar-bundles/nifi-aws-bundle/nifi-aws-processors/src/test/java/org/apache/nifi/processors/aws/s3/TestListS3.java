@@ -37,6 +37,7 @@ import org.apache.nifi.components.state.Scope;
 import org.apache.nifi.distributed.cache.client.DistributedMapCacheClient;
 import org.apache.nifi.processor.ProcessContext;
 import org.apache.nifi.processor.VerifiableProcessor;
+import org.apache.nifi.processors.aws.util.RegionUtilV1;
 import org.apache.nifi.reporting.InitializationException;
 import org.apache.nifi.serialization.record.MockRecordWriter;
 import org.apache.nifi.state.MockStateManager;
@@ -97,7 +98,7 @@ public class TestListS3 {
 
     @Test
     public void testList() {
-        runner.setProperty(ListS3.REGION, "eu-west-1");
+        runner.setProperty(RegionUtilV1.S3_REGION, "eu-west-1");
         runner.setProperty(ListS3.BUCKET, "test-bucket");
 
         Date lastModified = new Date();
@@ -149,7 +150,7 @@ public class TestListS3 {
 
     @Test
     public void testListWithRecords() throws InitializationException {
-        runner.setProperty(ListS3.REGION, "eu-west-1");
+        runner.setProperty(RegionUtilV1.S3_REGION, "eu-west-1");
         runner.setProperty(ListS3.BUCKET, "test-bucket");
 
         final MockRecordWriter recordWriter = new MockRecordWriter(null, false);
@@ -200,7 +201,7 @@ public class TestListS3 {
 
     @Test
     public void testListWithRequesterPays() {
-        runner.setProperty(ListS3.REGION, "eu-west-1");
+        runner.setProperty(RegionUtilV1.S3_REGION, "eu-west-1");
         runner.setProperty(ListS3.BUCKET, "test-bucket");
         runner.setProperty(ListS3.REQUESTER_PAYS, "true");
 
@@ -246,7 +247,7 @@ public class TestListS3 {
 
     @Test
     public void testListWithRequesterPays_invalid() {
-        runner.setProperty(ListS3.REGION, "eu-west-1");
+        runner.setProperty(RegionUtilV1.S3_REGION, "eu-west-1");
         runner.setProperty(ListS3.BUCKET, "test-bucket");
         runner.setProperty(ListS3.USE_VERSIONS, "true"); // requester pays cannot be used with versions
         runner.setProperty(ListS3.REQUESTER_PAYS, "true");
@@ -256,7 +257,7 @@ public class TestListS3 {
 
     @Test
     public void testListVersion2() {
-        runner.setProperty(ListS3.REGION, "eu-west-1");
+        runner.setProperty(RegionUtilV1.S3_REGION, "eu-west-1");
         runner.setProperty(ListS3.BUCKET, "test-bucket");
         runner.setProperty(ListS3.LIST_TYPE, "2");
 
@@ -302,7 +303,7 @@ public class TestListS3 {
 
     @Test
     public void testListVersion2WithRequesterPays() {
-        runner.setProperty(ListS3.REGION, "eu-west-1");
+        runner.setProperty(RegionUtilV1.S3_REGION, "eu-west-1");
         runner.setProperty(ListS3.BUCKET, "test-bucket");
         runner.setProperty(ListS3.REQUESTER_PAYS, "true");
         runner.setProperty(ListS3.LIST_TYPE, "2");
@@ -349,7 +350,7 @@ public class TestListS3 {
 
     @Test
     public void testListVersions() {
-        runner.setProperty(ListS3.REGION, "eu-west-1");
+        runner.setProperty(RegionUtilV1.S3_REGION, "eu-west-1");
         runner.setProperty(ListS3.BUCKET, "test-bucket");
         runner.setProperty(ListS3.USE_VERSIONS, "true");
 
@@ -393,7 +394,7 @@ public class TestListS3 {
 
     @Test
     public void testListObjectsNothingNew() throws IOException {
-        runner.setProperty(ListS3.REGION, "eu-west-1");
+        runner.setProperty(RegionUtilV1.S3_REGION, "eu-west-1");
         runner.setProperty(ListS3.BUCKET, "test-bucket");
 
         Calendar calendar = Calendar.getInstance();
@@ -429,7 +430,7 @@ public class TestListS3 {
 
     @Test
     public void testListIgnoreByMinAge() throws IOException {
-        runner.setProperty(ListS3.REGION, "eu-west-1");
+        runner.setProperty(RegionUtilV1.S3_REGION, "eu-west-1");
         runner.setProperty(ListS3.BUCKET, "test-bucket");
         runner.setProperty(ListS3.MIN_AGE, "30 sec");
 
@@ -480,7 +481,7 @@ public class TestListS3 {
 
     @Test
     public void testListIgnoreByMaxAge() throws IOException {
-        runner.setProperty(ListS3.REGION, "eu-west-1");
+        runner.setProperty(RegionUtilV1.S3_REGION, "eu-west-1");
         runner.setProperty(ListS3.BUCKET, "test-bucket");
         runner.setProperty(ListS3.MAX_AGE, "30 sec");
         Date lastModifiedNow = new Date();
@@ -528,7 +529,7 @@ public class TestListS3 {
 
     @Test
     public void testWriteObjectTags() {
-        runner.setProperty(ListS3.REGION, "eu-west-1");
+        runner.setProperty(RegionUtilV1.S3_REGION, "eu-west-1");
         runner.setProperty(ListS3.BUCKET, "test-bucket");
         runner.setProperty(ListS3.WRITE_OBJECT_TAGS, "true");
 
@@ -555,7 +556,7 @@ public class TestListS3 {
 
     @Test
     public void testWriteUserMetadata() {
-        runner.setProperty(ListS3.REGION, "eu-west-1");
+        runner.setProperty(RegionUtilV1.S3_REGION, "eu-west-1");
         runner.setProperty(ListS3.BUCKET, "test-bucket");
         runner.setProperty(ListS3.WRITE_USER_METADATA, "true");
 

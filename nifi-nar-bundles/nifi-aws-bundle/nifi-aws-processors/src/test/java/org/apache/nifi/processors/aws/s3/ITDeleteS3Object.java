@@ -26,6 +26,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.nifi.processors.aws.util.RegionUtilV1;
+
 
 /**
  * Provides integration level testing with actual AWS S3 resources for {@link DeleteS3Object} and requires additional configuration and resources to work.
@@ -40,7 +42,7 @@ public class ITDeleteS3Object extends AbstractS3IT {
         final TestRunner runner = TestRunners.newTestRunner(new DeleteS3Object());
 
         runner.setProperty(DeleteS3Object.CREDENTIALS_FILE, CREDENTIALS_FILE);
-        runner.setProperty(DeleteS3Object.S3_REGION, REGION);
+        runner.setProperty(RegionUtilV1.S3_REGION, REGION);
         runner.setProperty(DeleteS3Object.BUCKET, BUCKET_NAME);
 
         final Map<String, String> attrs = new HashMap<>();
@@ -60,7 +62,7 @@ public class ITDeleteS3Object extends AbstractS3IT {
         final TestRunner runner = TestRunners.newTestRunner(new DeleteS3Object());
 
         runner.setProperty(DeleteS3Object.CREDENTIALS_FILE, CREDENTIALS_FILE);
-        runner.setProperty(DeleteS3Object.S3_REGION, REGION);
+        runner.setProperty(RegionUtilV1.S3_REGION, REGION);
         runner.setProperty(DeleteS3Object.BUCKET, BUCKET_NAME);
 
         final Map<String, String> attrs = new HashMap<>();
@@ -88,7 +90,7 @@ public class ITDeleteS3Object extends AbstractS3IT {
         runner.assertValid(serviceImpl);
 
         runner.setProperty(DeleteS3Object.AWS_CREDENTIALS_PROVIDER_SERVICE, "awsCredentialsProvider");
-        runner.setProperty(DeleteS3Object.S3_REGION, REGION);
+        runner.setProperty(RegionUtilV1.S3_REGION, REGION);
         runner.setProperty(DeleteS3Object.BUCKET, BUCKET_NAME);
 
         final Map<String, String> attrs = new HashMap<>();
@@ -108,7 +110,7 @@ public class ITDeleteS3Object extends AbstractS3IT {
         final TestRunner runner = TestRunners.newTestRunner(new DeleteS3Object());
 
         runner.setProperty(DeleteS3Object.CREDENTIALS_FILE, CREDENTIALS_FILE);
-        runner.setProperty(DeleteS3Object.S3_REGION, REGION);
+        runner.setProperty(RegionUtilV1.S3_REGION, REGION);
         runner.setProperty(DeleteS3Object.BUCKET, BUCKET_NAME);
         runner.setProperty(DeleteS3Object.KEY, "folder/delete-me");
 
@@ -126,7 +128,7 @@ public class ITDeleteS3Object extends AbstractS3IT {
         final TestRunner runner = TestRunners.newTestRunner(new DeleteS3Object());
 
         runner.setProperty(DeleteS3Object.CREDENTIALS_FILE, CREDENTIALS_FILE);
-        runner.setProperty(DeleteS3Object.S3_REGION, REGION);
+        runner.setProperty(RegionUtilV1.S3_REGION, REGION);
         runner.setProperty(DeleteS3Object.BUCKET, BUCKET_NAME);
 
         final Map<String, String> attrs = new HashMap<>();

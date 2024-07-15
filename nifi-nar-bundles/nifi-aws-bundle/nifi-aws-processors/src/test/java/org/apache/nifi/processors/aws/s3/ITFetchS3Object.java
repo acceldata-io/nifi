@@ -17,6 +17,7 @@
 package org.apache.nifi.processors.aws.s3;
 
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import org.apache.nifi.processors.aws.util.RegionUtilV1;
 import org.apache.nifi.processors.aws.AbstractAWSProcessor;
 import org.apache.nifi.processors.aws.credentials.provider.service.AWSCredentialsProviderControllerService;
 import org.apache.nifi.util.MockFlowFile;
@@ -42,7 +43,7 @@ public class ITFetchS3Object extends AbstractS3IT {
         final TestRunner runner = TestRunners.newTestRunner(new FetchS3Object());
 
         runner.setProperty(FetchS3Object.CREDENTIALS_FILE, CREDENTIALS_FILE);
-        runner.setProperty(FetchS3Object.S3_REGION, REGION);
+        runner.setProperty(RegionUtilV1.S3_REGION, REGION);
         runner.setProperty(FetchS3Object.BUCKET, BUCKET_NAME);
 
         final Map<String, String> attrs = new HashMap<>();
@@ -65,7 +66,7 @@ public class ITFetchS3Object extends AbstractS3IT {
         final TestRunner runner = TestRunners.newTestRunner(new FetchS3Object());
 
         runner.setProperty(FetchS3Object.CREDENTIALS_FILE, CREDENTIALS_FILE);
-        runner.setProperty(FetchS3Object.S3_REGION, REGION);
+        runner.setProperty(RegionUtilV1.S3_REGION, REGION);
         runner.setProperty(FetchS3Object.BUCKET, BUCKET_NAME);
 
         final Map<String, String> attrs = new HashMap<>();
@@ -96,7 +97,7 @@ public class ITFetchS3Object extends AbstractS3IT {
         runner.assertValid(serviceImpl);
 
         runner.setProperty(FetchS3Object.AWS_CREDENTIALS_PROVIDER_SERVICE, "awsCredentialsProvider");
-        runner.setProperty(FetchS3Object.S3_REGION, REGION);
+        runner.setProperty(RegionUtilV1.S3_REGION, REGION);
         runner.setProperty(FetchS3Object.BUCKET, BUCKET_NAME);
 
         final Map<String, String> attrs = new HashMap<>();
@@ -114,7 +115,7 @@ public class ITFetchS3Object extends AbstractS3IT {
         final TestRunner runner = TestRunners.newTestRunner(new FetchS3Object());
 
         runner.setProperty(FetchS3Object.CREDENTIALS_FILE, CREDENTIALS_FILE);
-        runner.setProperty(FetchS3Object.S3_REGION, REGION);
+        runner.setProperty(RegionUtilV1.S3_REGION, REGION);
         runner.setProperty(FetchS3Object.BUCKET, BUCKET_NAME);
 
         final Map<String, String> attrs = new HashMap<>();
@@ -134,7 +135,7 @@ public class ITFetchS3Object extends AbstractS3IT {
         final TestRunner runner = TestRunners.newTestRunner(new FetchS3Object());
 
         runner.setProperty(FetchS3Object.CREDENTIALS_FILE, CREDENTIALS_FILE);
-        runner.setProperty(FetchS3Object.S3_REGION, REGION);
+        runner.setProperty(RegionUtilV1.S3_REGION, REGION);
         runner.setProperty(FetchS3Object.BUCKET, BUCKET_NAME);
 
         final Map<String, String> attrs = new HashMap<>();

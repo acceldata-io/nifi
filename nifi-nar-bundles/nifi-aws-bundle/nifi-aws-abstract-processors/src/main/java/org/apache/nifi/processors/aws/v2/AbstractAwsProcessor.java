@@ -138,8 +138,8 @@ public abstract class AbstractAwsProcessor<T extends SdkClient, U extends AwsSyn
     public static final PropertyDescriptor REGION = new PropertyDescriptor.Builder()
             .name("Region")
             .required(true)
-            .allowableValues(RegionUtil.getAvailableRegions())
-            .defaultValue(RegionUtil.createAllowableValue(Region.US_WEST_2).getValue())
+            .allowableValues(RegionUtilV2.getAvailableRegions())
+            .defaultValue(RegionUtilV2.createAllowableValue(Region.US_WEST_2).getValue())
             .build();
 
     public static final PropertyDescriptor TIMEOUT = new PropertyDescriptor.Builder()
