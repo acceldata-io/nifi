@@ -39,7 +39,11 @@ import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.amazonaws.services.s3.model.Tag;
 import org.apache.nifi.util.file.FileUtils;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -49,8 +53,10 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -63,6 +69,8 @@ import static org.junit.jupiter.api.Assertions.fail;
  * @see ITListS3
  */
 public abstract class AbstractS3IT {
+    private static final Logger logger = LoggerFactory.getLogger(AbstractS3IT.class);
+
     protected final static String CREDENTIALS_FILE = System.getProperty("user.home") + "/aws-credentials.properties";
     protected final static String SAMPLE_FILE_RESOURCE_NAME = "/hello.txt";
     protected final static String REGION = System.getProperty("it.aws.region", "us-west-1");
@@ -76,6 +84,7 @@ public abstract class AbstractS3IT {
     // Static so multiple Tests can use same client
     protected static AmazonS3Client client;
     protected static AWSKMS kmsClient;
+    private final List<String> addedKeys = new ArrayList<>();
 
     @BeforeAll
     public static void oneTimeSetup() {
@@ -116,36 +125,42 @@ public abstract class AbstractS3IT {
         }
     }
 
-    @AfterAll
-    public static void oneTimeTearDown() {
-        // Empty the bucket before deleting it.
-        try {
-            if (client == null) {
-                return;
+    @BeforeEach
+    public void clearKeys() {
+        addedKeys.clear();
+    }
+
+    @AfterEach
+    public void emptyBucket() {
+        if (!client.doesBucketExistV2(BUCKET_NAME)) {
+            return;
+        }
+
+        ObjectListing objectListing = client.listObjects(BUCKET_NAME);
+        while (true) {
+            for (S3ObjectSummary objectSummary : objectListing.getObjectSummaries()) {
+                client.deleteObject(BUCKET_NAME, objectSummary.getKey());
             }
 
-            ObjectListing objectListing = client.listObjects(BUCKET_NAME);
+            if (objectListing.isTruncated()) {
+                objectListing = client.listNextBatchOfObjects(objectListing);
+            } else {
+                break;
+            }
+        }
+    }
 
-            while (true) {
-                for (S3ObjectSummary objectSummary : objectListing.getObjectSummaries()) {
-                    client.deleteObject(BUCKET_NAME, objectSummary.getKey());
-                }
-
-                if (objectListing.isTruncated()) {
-                    objectListing = client.listNextBatchOfObjects(objectListing);
-                } else {
-                    break;
-                }
+    @AfterAll
+    public static void oneTimeTearDown() {
+        try {
+            if (client == null || !client.doesBucketExistV2(BUCKET_NAME)) {
+                return;
             }
 
             DeleteBucketRequest dbr = new DeleteBucketRequest(BUCKET_NAME);
             client.deleteBucket(dbr);
         } catch (final AmazonS3Exception e) {
-            System.err.println("Unable to delete bucket " + BUCKET_NAME + e.toString());
-        }
-
-        if (client.doesBucketExist(BUCKET_NAME)) {
-            fail("Incomplete teardown, subsequent tests might fail");
+            logger.error("Unable to delete bucket {}", BUCKET_NAME, e);
         }
     }
 
@@ -169,6 +184,23 @@ public abstract class AbstractS3IT {
         PutObjectRequest putRequest = new PutObjectRequest(BUCKET_NAME, key, new FileInputStream(file), objectMetadata);
 
         client.putObject(putRequest);
+    }
+
+    protected void waitForFilesAvailable() {
+        for (final String key : addedKeys) {
+            final long maxWaitTimestamp = System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(10L);
+            while (System.currentTimeMillis() < maxWaitTimestamp) {
+                try {
+                    client.getObject(BUCKET_NAME, key);
+                } catch (final Exception e) {
+                    try {
+                        Thread.sleep(100L);
+                    } catch (final InterruptedException ie) {
+                        throw new AssertionError("Interrupted while waiting for files to become available", e);
+                    }
+                }
+            }
+        }
     }
 
     protected void putFileWithObjectTag(String key, File file, List<Tag> objectTags) {

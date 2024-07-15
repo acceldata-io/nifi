@@ -19,6 +19,7 @@ package org.apache.nifi.processors.aws.s3;
 import com.amazonaws.services.s3.model.GetObjectTaggingRequest;
 import com.amazonaws.services.s3.model.GetObjectTaggingResult;
 import com.amazonaws.services.s3.model.Tag;
+import org.apache.nifi.processors.aws.util.RegionUtilV1;
 import org.apache.nifi.util.MockFlowFile;
 import org.apache.nifi.util.TestRunner;
 import org.apache.nifi.util.TestRunners;
@@ -50,7 +51,7 @@ public class ITTagS3Object extends AbstractS3IT {
         // Set up processor
         final TestRunner runner = TestRunners.newTestRunner(new TagS3Object());
         runner.setProperty(TagS3Object.CREDENTIALS_FILE, CREDENTIALS_FILE);
-        runner.setProperty(TagS3Object.S3_REGION, REGION);
+        runner.setProperty(RegionUtilV1.S3_REGION, REGION);
         runner.setProperty(TagS3Object.BUCKET, BUCKET_NAME);
         runner.setProperty(TagS3Object.TAG_KEY, tagKey);
         runner.setProperty(TagS3Object.TAG_VALUE, tagValue);
@@ -84,7 +85,7 @@ public class ITTagS3Object extends AbstractS3IT {
         // Set up processor
         final TestRunner runner = TestRunners.newTestRunner(new TagS3Object());
         runner.setProperty(TagS3Object.CREDENTIALS_FILE, CREDENTIALS_FILE);
-        runner.setProperty(TagS3Object.S3_REGION, REGION);
+        runner.setProperty(RegionUtilV1.S3_REGION, REGION);
         runner.setProperty(TagS3Object.BUCKET, BUCKET_NAME);
         runner.setProperty(TagS3Object.TAG_KEY, tagKey);
         runner.setProperty(TagS3Object.TAG_VALUE, tagValue);
@@ -119,7 +120,7 @@ public class ITTagS3Object extends AbstractS3IT {
         // Set up processor
         final TestRunner runner = TestRunners.newTestRunner(new TagS3Object());
         runner.setProperty(TagS3Object.CREDENTIALS_FILE, CREDENTIALS_FILE);
-        runner.setProperty(TagS3Object.S3_REGION, REGION);
+        runner.setProperty(RegionUtilV1.S3_REGION, REGION);
         runner.setProperty(TagS3Object.BUCKET, BUCKET_NAME);
         runner.setProperty(TagS3Object.TAG_KEY, tagKey);
         runner.setProperty(TagS3Object.TAG_VALUE, tagValue);
