@@ -48,7 +48,8 @@
     <organization>
         <name>Apache NiFi Project</name>
         <url>https://nifi.apache.org/</url>
-    </organization>
+</organization>
+
     <licenses>
         <license>
             <name>Apache License, Version 2.0</name>
