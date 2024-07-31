@@ -56,6 +56,7 @@ public class TestHortonworksSchemaRegistry {
     public void setup() throws SchemaNotFoundException {
         schemaVersionInfoMap.clear();
         schemaMetadataInfoMap.clear();
+        String entity = "this is empty";;
 
         client = mock(SchemaRegistryClient.class);
         doAnswer((Answer<SchemaVersionInfo>) invocation -> {
@@ -63,7 +64,7 @@ public class TestHortonworksSchemaRegistry {
             final SchemaVersionInfo info = schemaVersionInfoMap.get(schemaName);
 
             if (info == null) {
-                throw new SchemaNotFoundException();
+                throw new SchemaNotFoundException(entity);
             }
 
             return info;
@@ -74,7 +75,7 @@ public class TestHortonworksSchemaRegistry {
             final SchemaMetadataInfo info = schemaMetadataInfoMap.get(schemaName);
 
             if (info == null) {
-                throw new SchemaNotFoundException();
+                throw new SchemaNotFoundException(entity);
             }
 
             return info;
