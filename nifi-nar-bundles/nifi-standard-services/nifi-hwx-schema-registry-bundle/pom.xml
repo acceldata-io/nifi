@@ -24,7 +24,7 @@
     <packaging>pom</packaging>
 
     <properties>
-        <hwx.registry.version>0.9.1</hwx.registry.version>
+        <hwx.registry.version>1.0.1</hwx.registry.version>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -42,6 +42,19 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+    <repositories>
+        <repository>
+            <id>acceldata repo</id>
+            <name>acceldata repo</name>
+            <url>https://repo1.acceldata.dev/repository/odp-central/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
 
     <modules>
         <module>nifi-hwx-schema-registry-service</module>
