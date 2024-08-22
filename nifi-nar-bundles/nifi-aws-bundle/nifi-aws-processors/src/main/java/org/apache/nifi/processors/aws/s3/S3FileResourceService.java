@@ -22,6 +22,7 @@ import com.amazonaws.regions.Region;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.S3Object;
+import com.amazonaws.client.builder.AwsClientBuilder;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import org.apache.nifi.annotation.documentation.CapabilityDescription;
@@ -33,15 +34,18 @@ import org.apache.nifi.components.PropertyDescriptor;
 import org.apache.nifi.context.PropertyContext;
 import org.apache.nifi.controller.AbstractControllerService;
 import org.apache.nifi.controller.ConfigurationContext;
+import org.apache.nifi.expression.*;
 import org.apache.nifi.fileresource.service.api.FileResource;
 import org.apache.nifi.fileresource.service.api.FileResourceService;
 import org.apache.nifi.processor.exception.ProcessException;
+import org.apache.nifi.processor.util.*;
 import org.apache.nifi.processors.aws.credentials.provider.service.AWSCredentialsProviderService;
 import org.apache.nifi.processors.aws.util.RegionUtilV1;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import org.apache.commons.lang3.StringUtils;
 
 import static org.apache.nifi.processors.aws.AbstractAWSCredentialsProviderProcessor.AWS_CREDENTIALS_PROVIDER_SERVICE;
 import static org.apache.nifi.processors.aws.util.RegionUtilV1.resolveS3Region;
@@ -62,6 +66,16 @@ public class S3FileResourceService extends AbstractControllerService implements 
 
     public static final PropertyDescriptor S3_REGION = new PropertyDescriptor.Builder()
             .fromPropertyDescriptor(RegionUtilV1.S3_REGION)
+            .build();
+
+    public static final PropertyDescriptor ENDPOINT_OVERRIDE = new PropertyDescriptor.Builder()
+            .name("Endpoint Override URL")
+            .description("Endpoint URL to use instead of the AWS default including scheme, host, port, and path. " +
+                         "The AWS libraries select an endpoint URL based on the AWS region, but this property overrides " +
+                         "the selected endpoint URL, allowing use with other S3-compatible endpoints.")
+            .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
+            .required(false)
+            .addValidator(StandardValidators.URL_VALIDATOR)
             .build();
 
     private static final List<PropertyDescriptor> PROPERTIES = Arrays.asList(
@@ -132,9 +146,12 @@ public class S3FileResourceService extends AbstractControllerService implements 
 
     protected AmazonS3 getS3Client(Map<String, String> attributes, AWSCredentialsProvider credentialsProvider) {
         final Region region = resolveS3Region(context, attributes);
+        String urlStr = StringUtils.trimToEmpty(context.getProperty(ENDPOINT_OVERRIDE).evaluateAttributeExpressions().getValue());
         return clientCache.get(region, ignored -> AmazonS3Client.builder()
                 .withRegion(region.getName())
                 .withCredentials(credentialsProvider)
+                .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(urlStr,
+                        context.getProperty(S3_REGION).getValue()))
                 .build());
     }
 }
