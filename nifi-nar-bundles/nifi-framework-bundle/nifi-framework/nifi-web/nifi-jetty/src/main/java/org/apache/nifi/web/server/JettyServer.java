@@ -1062,7 +1062,7 @@ public class JettyServer implements NiFiServer, ExtensionUiLoader {
     private void startUpFailure(Throwable t) {
         System.err.println("Failed to start web server: " + t.getMessage());
         System.err.println("Shutting down...");
-        logger.warn("Failed to start web server... shutting down.", t);
+        logger.error("Failed to start web server... shutting down.", t);
         System.exit(1);
     }
 
