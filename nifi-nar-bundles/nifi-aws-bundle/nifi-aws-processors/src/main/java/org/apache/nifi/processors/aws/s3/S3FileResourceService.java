@@ -79,12 +79,22 @@ public class S3FileResourceService extends AbstractControllerService implements 
             .addValidator(StandardValidators.URL_VALIDATOR)
             .build();
 
+    public static final PropertyDescriptor USE_PATH_STYLE_ACCESS = new PropertyDescriptor.Builder()
+            .name("use-path-style-access")
+            .displayName("Use Path Style Access")
+            .description("Path-style access can be enforced by setting this property to true. Set it to true if your endpoint does not support " +
+                         "virtual-hosted-style requests, only path-style requests.")
+            .allowableValues("true", "false")
+            .defaultValue("true")
+            .build();
+
     private static final List<PropertyDescriptor> PROPERTIES = Arrays.asList(
             BUCKET,
             KEY,
             S3_REGION,
             ENDPOINT_OVERRIDE,
-            AWS_CREDENTIALS_PROVIDER_SERVICE);
+            AWS_CREDENTIALS_PROVIDER_SERVICE,
+            USE_PATH_STYLE_ACCESS);
 
     private final Cache<String, AmazonS3> clientCache = Caffeine.newBuilder().build();
 
@@ -158,7 +168,9 @@ public class S3FileResourceService extends AbstractControllerService implements 
                     .withCredentials(credentialsProvider);
 
             if (!urlStr.isEmpty()) {
-                builder.withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(urlStr, null));
+                builder.withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(urlStr,
+                        region.getName()));
+                builder.setPathStyleAccessEnabled(context.getProperty(USE_PATH_STYLE_ACCESS).asBoolean());
             } else {
                 builder.withRegion(region.getName());
             }
