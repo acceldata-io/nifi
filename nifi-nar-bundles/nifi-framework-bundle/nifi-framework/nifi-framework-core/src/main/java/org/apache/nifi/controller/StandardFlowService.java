@@ -638,6 +638,7 @@ public class StandardFlowService implements FlowService, ProtocolHandler {
     private void handleReconnectionRequest(final ReconnectionRequestMessage request) {
         try {
             logger.info("Processing reconnection request from cluster coordinator.");
+            logger.info("Acceldata ----- Processing reconnection request from cluster coordinator -----");
 
             // We are no longer connected to the cluster. But the intent is to reconnect to the cluster.
             // So we don't want to call FlowController.setClustered(false, null).
@@ -649,6 +650,10 @@ public class StandardFlowService implements FlowService, ProtocolHandler {
             // reconnect
             ConnectionResponse connectionResponse = new ConnectionResponse(getNodeId(), request.getDataFlow(),
                     request.getInstanceId(), request.getNodeConnectionStatuses(), request.getComponentRevisions());
+
+            logger.info("Acceldata {}, {}, {}, {}", getNodeId().toString(),
+                    request.getInstanceId(), request.getNodeConnectionStatuses().toString(),
+                    request.getComponentRevisions().getRevisionUpdateCount().toString());
 
             if (connectionResponse.getDataFlow() == null) {
                 logger.info("Received a Reconnection Request that contained no DataFlow. Will attempt to connect to cluster using local flow.");
@@ -664,8 +669,11 @@ public class StandardFlowService implements FlowService, ProtocolHandler {
                 return;
             }
 
+            logger.info("Acceldata ----- LoadFromConnectionResponse started -----");
+
             loadFromConnectionResponse(connectionResponse);
 
+            logger.info("Acceldata ----- LoadFromConnectionResponse completed -----");
             clusterCoordinator.resetNodeStatuses(connectionResponse.getNodeConnectionStatuses().stream()
                     .collect(Collectors.toMap(NodeConnectionStatus::getNodeIdentifier, status -> status)));
             // reconnected, this node needs to explicitly write the inherited flow to disk, and resume heartbeats
@@ -789,6 +797,7 @@ public class StandardFlowService implements FlowService, ProtocolHandler {
     private void loadFromBytes(final DataFlow proposedFlow, final boolean allowEmptyFlow, final BundleUpdateStrategy bundleUpdateStrategy)
             throws IOException, FlowSerializationException, FlowSynchronizationException, UninheritableFlowException, MissingBundleException {
         logger.trace("Loading flow from bytes");
+        logger.info("Acceldata ----- Loading flow from bytes -----");
 
         // resolve the given flow (null means load flow from disk)
         final DataFlow actualProposedFlow;
@@ -802,19 +811,20 @@ public class StandardFlowService implements FlowService, ProtocolHandler {
             flowBytes = flowOnDisk.toByteArray();
             authorizerFingerprint = getAuthorizerFingerprint();
             missingComponents = new HashSet<>();
-            logger.debug("Loaded Flow from bytes");
+            logger.info("Acceldata ----- Loaded Flow from bytes proposed flow is null therefore missing component is empty");
         } else {
             flowBytes = proposedFlow.getFlow();
             authorizerFingerprint = proposedFlow.getAuthorizerFingerprint();
             missingComponents = proposedFlow.getMissingComponents();
-            logger.debug("Loaded flow from proposed flow");
+            logger.info("Acceldata ----- Loaded flow from proposed flow, if any missing components {}, ", missingComponents.toString());
         }
 
         actualProposedFlow = new StandardDataFlow(flowBytes, null, authorizerFingerprint, missingComponents);
 
         // load the flow
-        logger.debug("Loading proposed flow into FlowController");
+        logger.info("Acceldata ----- Loading flow configuration dao started -----");
         dao.load(controller, actualProposedFlow, this, bundleUpdateStrategy);
+        logger.info("Acceldata ----- Loading flow configuration dao completed -----");
 
         final ProcessGroup rootGroup = controller.getFlowManager().getRootGroup();
         if (rootGroup.isEmpty() && !allowEmptyFlow) {
@@ -1007,11 +1017,16 @@ public class StandardFlowService implements FlowService, ProtocolHandler {
     }
 
     private void loadFromConnectionResponse(final ConnectionResponse response) throws ConnectionException {
+        logger.info("Acceldata ----- LoadFromConnectionResponse function started -----");
+        logger.info("Acceldata ----- Applying write lock started -----");
         writeLock.lock();
+        logger.info("Acceldata ----- Applying write lock completed -----");
         try {
             if (response.getNodeConnectionStatuses() != null) {
+                logger.info("Acceldata ----- in loadFromConnectionResponse Resetting node status started -----");
                 clusterCoordinator.resetNodeStatuses(response.getNodeConnectionStatuses().stream()
                     .collect(Collectors.toMap(NodeConnectionStatus::getNodeIdentifier, status -> status)));
+                logger.info("Acceldata ----- in loadFromConnectionResponse Resetting node status completed -----");
             }
 
             // get the dataflow from the response

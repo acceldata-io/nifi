@@ -164,6 +164,8 @@ public class ClusterProtocolHeartbeatMonitor extends AbstractHeartbeatMonitor im
                 connectionStatus, flowFileCount, flowFileBytes, activeThreadCount, systemStartTime, revisionUpdateCount);
         heartbeatMessages.put(heartbeat.getNodeIdentifier(), nodeHeartbeat);
         logger.debug("Received new heartbeat from {}", nodeId);
+        logger.info("Acceldata ----- Received new heartbeat from {}, revisionId {}, activethreadCount {} , " +
+                    "connectionStatus {} -----",nodeId, revisionUpdateCount, activeThreadCount, connectionStatus.getState());
 
         // Formulate a List of differences between our view of the cluster topology and the node's view
         // and send that back to the node so that it is in-sync with us
@@ -227,7 +229,7 @@ public class ClusterProtocolHeartbeatMonitor extends AbstractHeartbeatMonitor im
             }
         }
 
-        logger.debug("\n\nCalculated diff between current cluster status and node cluster status as follows:\nNode: {}\nSelf: {}\nDifference: {}\n\n",
+        logger.info("\n\n Acceldata ---- Calculated diff between current cluster status and node cluster status as follows:\nNode: {}\nSelf: {}\nDifference: {}\n\n",
                 nodeStatusList, currentStatuses, updatedStatuses);
 
         return updatedStatuses;

@@ -654,6 +654,7 @@ public class ControllerServiceResource extends ApplicationResource {
         }
 
         if (isReplicateRequest()) {
+            logger.info("Acceldata ---- Inside isReplicateRequest---- ");
             return replicate(HttpMethod.PUT, requestControllerServiceEntity);
         }  else if (isDisconnectedFromCluster()) {
             verifyDisconnectedNodeModification(requestControllerServiceEntity.isDisconnectedNodeAcknowledged());
@@ -661,6 +662,8 @@ public class ControllerServiceResource extends ApplicationResource {
 
         // handle expects request (usually from the cluster manager)
         final Revision requestRevision = getRevision(requestControllerServiceEntity, id);
+        logger.info("Acceldata ---- Starting Controller Service Update Request for componentId {} with name {}----- ",
+                requestRevision.getComponentId(), requestControllerServiceEntity.getComponent().getName());
         return withWriteLock(
                 serviceFacade,
                 requestControllerServiceEntity,
@@ -682,7 +685,8 @@ public class ControllerServiceResource extends ApplicationResource {
                     // update the controller service
                     final ControllerServiceEntity entity = serviceFacade.updateControllerService(revision, controllerService);
                     populateRemainingControllerServiceEntityContent(entity);
-
+                    logger.info("Acceldata ---- Completed Controller Service Update Request for componentId {} with name {}----- ",
+                            requestRevision.getComponentId(), requestControllerServiceEntity.getComponent().getName());
                     return generateOkResponse(entity).build();
                 }
         );

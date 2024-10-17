@@ -1049,10 +1049,12 @@ public abstract class ApplicationResource {
         String action = null;
         try {
             if (getReplicationTarget() == ReplicationTarget.CLUSTER_NODES) {
+                logger.info("-----Acceldata replicateNodeResponse processing replication of request under cluster_nodes -----");
                 action = "Replicate Request " + method + " " + path;
                 return requestReplicator.replicate(method, path, entity, headers).awaitMergedResponse();
             } else {
                 action = "Forward Request " + method + " " + path + " to Coordinator";
+                logger.info("-----Acceldata replicateNodeResponse processing replication of request under coordinator node -----");
                 return requestReplicator.forwardToCoordinator(getClusterCoordinatorNode(), method, path, entity, headers).awaitMergedResponse();
             }
         } finally {

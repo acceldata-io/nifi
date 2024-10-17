@@ -177,6 +177,8 @@ public class StandardVersionedComponentSynchronizer implements VersionedComponen
 
     @Override
     public void synchronize(final ProcessGroup group, final VersionedExternalFlow versionedExternalFlow, final FlowSynchronizationOptions options) {
+
+        LOG.info("Acceldata ----- StandardVersionedComponentSycnhronizer synchronize started -----");
         final NiFiRegistryFlowMapper mapper = new NiFiRegistryFlowMapper(context.getExtensionManager(), context.getFlowMappingOptions());
         final VersionedProcessGroup versionedGroup = mapper.mapProcessGroup(group, context.getControllerServiceProvider(), context.getFlowManager(), true);
 
@@ -186,10 +188,19 @@ public class StandardVersionedComponentSynchronizer implements VersionedComponen
         final PropertyDecryptor decryptor = options.getPropertyDecryptor();
         final FlowComparator flowComparator = new StandardFlowComparator(proposedFlow, localFlow, group.getAncestorServiceIds(),
             new StaticDifferenceDescriptor(), decryptor::decrypt, options.getComponentComparisonIdLookup(), FlowComparatorVersionedStrategy.DEEP);
+        LOG.info("Acceldata ----- StandardVersionedComponentSycnhronizer synchronize comparing currenly local loaded data flow to proposed data flow started -----");
         final FlowComparison flowComparison = flowComparator.compare();
-
+        LOG.info("Acceldata ----- StandardVersionedComponentSycnhronizer synchronize comparing currenly local loaded data flow to proposed data flow completed -----");
         updatedVersionedComponentIds.clear();
         setSynchronizationOptions(options);
+
+        final Set<FlowDifference> flowDifferences = flowComparison.getDifferences();
+        if (!flowDifferences.isEmpty()) {
+            final String differencesToString = flowDifferences.stream()
+                    .map(FlowDifference::toString)
+                    .collect(Collectors.joining("\n"));
+            LOG.info("Acceldata ----- StandardVersionedComponentSycnhronizer Flow Differences:\n{} -----", differencesToString);
+        }
 
         for (final FlowDifference diff : flowComparison.getDifferences()) {
             if (FlowDifferenceFilters.isPropertyMissingFromGhostComponent(diff, context.getFlowManager())) {
@@ -241,7 +252,7 @@ public class StandardVersionedComponentSynchronizer implements VersionedComponen
                     .map(FlowDifference::toString)
                     .collect(Collectors.joining("\n"));
 
-                LOG.info("Updating {} to {}; there are {} differences to take into account:\n{}", group, versionedExternalFlow,
+                LOG.info("Acceldata ----- Updating {} to {}; there are {} differences to take into account:\n{}  -----", group, versionedExternalFlow,
                     differences.size(), differencesByLine);
             }
         }
@@ -263,25 +274,29 @@ public class StandardVersionedComponentSynchronizer implements VersionedComponen
                 final Map<String, ParameterProviderReference> parameterProviderReferences = versionedExternalFlow.getParameterProviders() == null
                         ? new HashMap<>() : versionedExternalFlow.getParameterProviders();
                 final ProcessGroup topLevelGroup = syncOptions.getTopLevelGroupId() == null ? group : context.getFlowManager().getGroup(syncOptions.getTopLevelGroupId());
+                LOG.info("Acceldata ----- StandardVersionedComponentSycnhronizer withParameterContextResolution synchronize started -----");
                 synchronize(group, versionedExternalFlow.getFlowContents(), versionedExternalFlow.getParameterContexts(), parameterProviderReferences, topLevelGroup);
+                LOG.info("Acceldata ----- StandardVersionedComponentSycnhronizer withParameterContextResolution synchronize completed -----");
             } catch (final ProcessorInstantiationException pie) {
                 throw new RuntimeException(pie);
             }
         });
 
         group.onComponentModified();
+        LOG.info("Acceldata ----- StandardVersionedComponentSycnhronizer synchronize completed -----");
     }
 
     private void synchronize(final ProcessGroup group, final VersionedProcessGroup proposed, final Map<String, VersionedParameterContext> versionedParameterContexts,
                              final Map<String, ParameterProviderReference> parameterProviderReferences, final ProcessGroup topLevelGroup)
         throws ProcessorInstantiationException {
-
+        LOG.info("Acceldata ----- StandardVersionedComponentSycnhronizer final synchronize started ----- ");
         // Some components, such as Processors, may have a Scheduled State of RUNNING in the proposed flow. However, if we
         // transition the service into the RUNNING state, and then we need to update a Connection that is connected to it,
         // updating the Connection will fail because the Connection's source & destination must both be stopped in order to
         // update it. To avoid that, we simply pause the scheduler. Once all updates have been made, we will resume the scheduler.
+        LOG.info("Acceldata ----- StandardVersionedComponentSycnhronizer final synchronize with pausing component scheduler -----");
         context.getComponentScheduler().pause();
-
+        LOG.info("Acceldata ----- StandardVersionedComponentSycnhronizer final synchronize with pausing component scheduler completed-----");
         group.setComments(proposed.getComments());
 
         if (syncOptions.isUpdateSettings()) {
@@ -356,7 +371,7 @@ public class StandardVersionedComponentSynchronizer implements VersionedComponen
 
             group.setVersionControlInformation(vci, Collections.emptyMap());
         }
-
+        LOG.info("Acceldata ----- StandardVersionedComponentSycnhronizer final synchronize in order started ----- ");
         // In order to properly update all of the components, we have to follow a specific order of operations, in order to ensure that
         // we don't try to perform illegal operations like removing a Processor that has an incoming connection (which would throw an
         // IllegalStateException and fail).
@@ -414,27 +429,38 @@ public class StandardVersionedComponentSynchronizer implements VersionedComponen
                 final Map<String, RemoteProcessGroup> rpgsByVersionedId = componentsById(group, ProcessGroup::getRemoteProcessGroups,
                     RemoteProcessGroup::getIdentifier, RemoteProcessGroup::getVersionedComponentId);
                 final Map<String, ProcessGroup> childGroupsByVersionedId = componentsById(group, ProcessGroup::getProcessGroups, ProcessGroup::getIdentifier, ProcessGroup::getVersionedComponentId);
-
+                LOG.info("Acceldata ----- StandardVersionedComponentSycnhronizer final synchronize removing missing processors ----- {} ", processorsByVersionedId.toString());
                 removeMissingProcessors(group, proposed, processorsByVersionedId);
+                LOG.info("Acceldata ----- StandardVersionedComponentSycnhronizer final synchronize removing missing funnels ----- {} ", funnelsByVersionedId.toString());
                 removeMissingFunnels(group, proposed, funnelsByVersionedId);
+                LOG.info("Acceldata ----- StandardVersionedComponentSycnhronizer final synchronize removing missing funnels ----- {}", inputPortsByVersionedId.toString());
                 removeMissingInputPorts(group, proposed, inputPortsByVersionedId);
                 removeMissingOutputPorts(group, proposed, outputPortsByVersionedId);
                 removeMissingLabels(group, proposed, labelsByVersionedId);
                 removeMissingRpg(group, proposed, rpgsByVersionedId);
+                LOG.info("Acceldata ----- StandardVersionedComponentSycnhronizer final synchronize removing missing childgroups ----- {}", childGroupsByVersionedId.toString());
                 removeMissingChildGroups(group, proposed, childGroupsByVersionedId);
 
                 // Synchronize Child Process Groups
                 synchronizeChildGroups(group, proposed, versionedParameterContexts, childGroupsByVersionedId, parameterProviderReferences, topLevelGroup);
 
+                LOG.info("Acceldata ----- StandardVersionedComponentSycnhronizer final synchronize child groups completed -----");
                 synchronizeFunnels(group, proposed, funnelsByVersionedId);
+                LOG.info("Acceldata ----- StandardVersionedComponentSycnhronizer final synchronize funnels completed -----{}", funnelsByVersionedId);
                 synchronizeInputPorts(group, proposed, proposedPortFinalNames, inputPortsByVersionedId);
+                LOG.info("Acceldata ----- StandardVersionedComponentSycnhronizer final synchronizeInputPorts completed -----{}", inputPortsByVersionedId);
                 synchronizeOutputPorts(group, proposed, proposedPortFinalNames, outputPortsByVersionedId);
+                LOG.info("Acceldata ----- StandardVersionedComponentSycnhronizer final synchronizeOutputPorts completed -----{}", outputPortsByVersionedId);
                 synchronizeLabels(group, proposed, labelsByVersionedId);
+                LOG.info("Acceldata ----- StandardVersionedComponentSycnhronizer final synchronizeLabels completed -----{}", labelsByVersionedId);
                 synchronizeProcessors(group, proposed, processorsByVersionedId, topLevelGroup);
+                LOG.info("Acceldata ----- StandardVersionedComponentSycnhronizer final synchronizeProcessors completed -----{}", processorsByVersionedId);
                 synchronizeRemoteGroups(group, proposed, rpgsByVersionedId);
+                LOG.info("Acceldata ----- StandardVersionedComponentSycnhronizer final synchronizeRemoteGroups completed -----{}", rpgsByVersionedId);
             } finally {
                 // Make sure that we reset the connections
                 restoreConnectionDestinations(group, proposed, connectionsByVersionedId, connectionsWithTempDestination);
+                LOG.info("Acceldata ----- StandardVersionedComponentSycnhronizer final connection restoration completed -----");
             }
 
             Map<String, Parameter> newParameters = new HashMap<>();
@@ -466,18 +492,25 @@ public class StandardVersionedComponentSynchronizer implements VersionedComponen
                     parameterContext.setParameters(newParameters);
                 }
             }
+            LOG.info("Acceldata ----- StandardVersionedComponentSycnhronizer final synchronize in order completed ----- ");
 
+            LOG.info("Acceldata ----- StandardVersionedComponentSycnhronizer final synchronize connections started ----- ");
             // We can now add in any necessary connections, since all connectable components have now been created.
             synchronizeConnections(group, proposed, connectionsByVersionedId);
+            LOG.info("Acceldata ----- StandardVersionedComponentSycnhronizer final synchronize connections completed ----- ");
 
+            LOG.info("Acceldata ----- StandardVersionedComponentSycnhronizer updatePortsToFinalNames started ----- ");
             // All ports have now been added/removed as necessary. We can now resolve the port names.
             updatePortsToFinalNames(proposedPortFinalNames);
+            LOG.info("Acceldata ----- StandardVersionedComponentSycnhronizer updatePortsToFinalNames completed ----- ");
 
             // Start all components that are queued up to be started now
             context.getComponentScheduler().resume();
+            LOG.info("Acceldata ----- StandardVersionedComponentSycnhronizer final synchronize resumed ----- ");
         } finally {
             // If we created a temporary funnel, remove it if there's no longer anything pointing to it.
             removeTemporaryFunnel(group);
+            LOG.info("Acceldata ----- StandardVersionedComponentSycnhronizer final synchronize completed ----- ");
         }
     }
 
@@ -530,7 +563,7 @@ public class StandardVersionedComponentSynchronizer implements VersionedComponen
                         versionedParameterContexts, parameterProviderReferences, topLevelGroup);
                 context.getFlowManager().onProcessGroupAdded(added);
                 added.findAllRemoteProcessGroups().forEach(RemoteProcessGroup::initialize);
-                LOG.info("Added {} to {}", added, group);
+                LOG.info("Acceldata ----  Added {} to {} ----", added, group);
             } else if (childCoordinates == null || syncOptions.isUpdateDescendantVersionedFlows()) {
                 final StandardVersionedComponentSynchronizer sync = new StandardVersionedComponentSynchronizer(context);
                 sync.setPreExistingVariables(preExistingVariables);
@@ -542,7 +575,7 @@ public class StandardVersionedComponentSynchronizer implements VersionedComponen
                 sync.setSynchronizationOptions(options);
                 sync.synchronize(childGroup, proposedChildGroup, versionedParameterContexts, parameterProviderReferences, topLevelGroup);
 
-                LOG.info("Updated {}", childGroup);
+                LOG.info("Acceldata ---- Updated {} -----", childGroup);
             }
         }
     }
@@ -1028,19 +1061,27 @@ public class StandardVersionedComponentSynchronizer implements VersionedComponen
     private void synchronizeProcessors(final ProcessGroup group, final VersionedProcessGroup proposed, final Map<String, ProcessorNode> processorsByVersionedId,
                                        final ProcessGroup topLevelGroup)
                 throws ProcessorInstantiationException {
-
+        LOG.info("Acceldata ----- StandardVersionedComponentSycnhronizer final synchronizeProcessors started for -----{}", group);
         for (final VersionedProcessor proposedProcessor : proposed.getProcessors()) {
             final ProcessorNode processor = processorsByVersionedId.get(proposedProcessor.getIdentifier());
             if (processor == null) {
                 final ProcessorNode added = addProcessor(group, proposedProcessor, context.getComponentIdGenerator(), topLevelGroup);
-                LOG.info("Added {} to {}", added, group);
+                LOG.info("Acceldata ----- Added {} to {} -----", added, group);
             } else if (updatedVersionedComponentIds.contains(proposedProcessor.getIdentifier())) {
+                LOG.info("Acceldata ----- StandardVersionedComponentSycnhronizer final synchronizeProcessors started for " +
+                         "processor, processor {}, processorState {}, proposed processor {}, proposed processor State {}" +
+                         "processor threadCount {}, processor validationStatus {}, processor connectionSize{}, " +
+                         "processor SchedulingPeriod {} -----", processor, processor.getScheduledState(), proposedProcessor,
+                        proposedProcessor.getScheduledState(), processor.getActiveThreadCount(), processor.getValidationStatus(),
+                        processor.getConnections().size(), processor.getSchedulingPeriod());
                 updateProcessor(processor, proposedProcessor, topLevelGroup);
-                LOG.info("Updated {}", processor);
+                LOG.info("Acceldata ----- Updated {} ----", processor);
             } else {
                 processor.setPosition(new Position(proposedProcessor.getPosition().getX(), proposedProcessor.getPosition().getY()));
+                LOG.info("Acceldata ----- Setting position {} ----", processor);
             }
         }
+        LOG.info("Acceldata ----- StandardVersionedComponentSycnhronizer final synchronizeProcessors completed for -----{}", group);
     }
 
     private void synchronizeRemoteGroups(final ProcessGroup group, final VersionedProcessGroup proposed, final Map<String, RemoteProcessGroup> rpgsByVersionedId) {
@@ -2837,7 +2878,7 @@ public class StandardVersionedComponentSynchronizer implements VersionedComponen
 
 
     private void updateProcessor(final ProcessorNode processor, final VersionedProcessor proposed, final ProcessGroup topLevelGroup) throws ProcessorInstantiationException {
-        LOG.debug("Updating Processor {}", processor);
+        LOG.info("Acceldata ---- Updating Processor {} started -----", processor);
 
         processor.pauseValidationTrigger();
         try {
@@ -2894,6 +2935,7 @@ public class StandardVersionedComponentSynchronizer implements VersionedComponen
             notifyScheduledStateChange((ComponentNode) processor, syncOptions, proposed.getScheduledState());
         } finally {
             processor.resumeValidationTrigger();
+            LOG.info("Acceldata ---- Updating Processor {} completed -----", processor);
         }
     }
 

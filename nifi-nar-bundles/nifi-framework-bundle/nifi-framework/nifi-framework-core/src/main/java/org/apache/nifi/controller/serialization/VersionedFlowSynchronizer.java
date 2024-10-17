@@ -145,14 +145,16 @@ public class VersionedFlowSynchronizer implements FlowSynchronizer {
     public synchronized void sync(final FlowController controller, final DataFlow proposedFlow, final FlowService flowService,
                                   final BundleUpdateStrategy bundleUpdateStrategy)
                     throws FlowSerializationException, UninheritableFlowException, FlowSynchronizationException, MissingBundleException {
-
+        logger.info("Acceldata ----- VersionedFlowSynchronizer call started -----");
         final long start = System.currentTimeMillis();
         final FlowManager flowManager = controller.getFlowManager();
         final ProcessGroup root = flowManager.getRootGroup();
 
         // handle corner cases involving no proposed flow
         if (proposedFlow == null) {
+            logger.info("Acceldata ----- VersionedFlowSynchronizer ----- proposal flow is null");
             if (root.isEmpty()) {
+                logger.info("Acceldata ----- VersionedFlowSynchronizer ----- root is empty no sync to perform");
                 return;  // no sync to perform
             } else {
                 throw new UninheritableFlowException("Proposed configuration is empty, but the controller contains a data flow.");
@@ -161,7 +163,7 @@ public class VersionedFlowSynchronizer implements FlowSynchronizer {
 
         // determine if the controller already had flow sync'd to it
         final boolean flowAlreadySynchronized = controller.isFlowSynchronized();
-        logger.info("Synchronizing FlowController with proposed flow: Controller Already Synchronized = {}", flowAlreadySynchronized);
+        logger.info("Acceldata ----- Synchronizing FlowController with proposed flow: Controller Already Synchronized = {} -----", flowAlreadySynchronized);
 
         // If bundle update strategy is configured to allow for compatible bundles, update any components to use compatible bundles if
         // the exact bundle does not exist.
@@ -170,38 +172,50 @@ public class VersionedFlowSynchronizer implements FlowSynchronizer {
         }
 
         // serialize controller state to bytes
+        logger.info("Acceldata ----- VersionedFlowSynchronizer ----- synchronize controller state to bytes by fetching existing data flow is started");
         final DataFlow existingDataFlow = getExistingDataFlow(controller);
+        logger.info("Acceldata ----- VersionedFlowSynchronizer ----- synchronize controller state to bytes by fetching existing data flow is completed");
         checkFlowInheritability(existingDataFlow, proposedFlow, controller, bundleUpdateStrategy);
 
         final FlowComparison flowComparison = compareFlows(existingDataFlow, proposedFlow, controller.getEncryptor());
         final Set<FlowDifference> flowDifferences = flowComparison.getDifferences();
         if (flowDifferences.isEmpty()) {
-            logger.debug("No differences between current flow and proposed flow. Will not create backup of existing flow.");
+            logger.info("Acceldata ----- VersionedFlowSynchronizer No differences between current flow and proposed flow. Will not create backup of existing flow. -----");
         } else if (isExistingFlowEmpty(controller)) {
-            logger.debug("Currently loaded dataflow is empty. Will not create backup of existing flow.");
+            logger.info("Acceldata ----- VersionedFlowSynchronizer Existing dataflow is empty. Will not create backup of existing flow. -----");
         } else {
+            logger.info("Acceldata ----- VersionedFlowSynchronizer Backup existing dataflow started -----");
             backupExistingFlow();
+            logger.info("Acceldata ----- VersionedFlowSynchronizer Backup existing dataflow completed -----");
         }
 
+        logger.info("Acceldata ----- VersionedFlowSynchronizer Determining affected components started-----");
         final AffectedComponentSet affectedComponents = determineAffectedComponents(flowComparison, controller);
+        logger.info("Acceldata ----- VersionedFlowSynchronizer Determining affected components completed, " +
+                    "preparing active set that will be stopped is started-----");
         final AffectedComponentSet activeSet = affectedComponents.toActiveSet();
+        logger.info("Acceldata ----- VersionedFlowSynchronizer Determining affected components completed, " +
+                    "preparing active set that will be stopped is completed -----");
 
         // Stop the active components, and then wait for all components to be stopped.
         logger.info("In order to inherit proposed dataflow, will stop any components that will be affected by the update");
-        if (logger.isDebugEnabled()) {
-            logger.debug("Will stop the following components:");
-            logger.debug(activeSet.toString());
+        if (logger.isInfoEnabled()) {
+            logger.info("Acceldata ----- Will stop the following components: -----");
+            logger.info(activeSet.toString());
             final String differencesToString = flowDifferences.stream()
                 .map(FlowDifference::toString)
                 .collect(Collectors.joining("\n"));
-            logger.debug("This Active Set was determined from the following Flow Differences:\n{}", differencesToString);
+            logger.info("Acceldata ----- This Active Set was determined from the following Flow Differences:\n{} -----", differencesToString);
         }
 
         activeSet.stop();
+        logger.info("Acceldata ----- VersionedFlowSynchronizer Stopped all Active set components -----");
 
         try {
             // Ensure that the proposed flow doesn't remove any Connections for which there is currently data queued
+            logger.info("Acceldata ----- VersionedFlowSynchronizer verifyNoConnectionsWithDataRemoved started -----");
             verifyNoConnectionsWithDataRemoved(existingDataFlow, proposedFlow, controller, flowComparison);
+            logger.info("Acceldata ----- VersionedFlowSynchronizer verifyNoConnectionsWithDataRemoved stopped -----");
 
             synchronizeFlow(controller, existingDataFlow, proposedFlow, affectedComponents);
         } finally {
@@ -225,7 +239,7 @@ public class VersionedFlowSynchronizer implements FlowSynchronizer {
         final FlowInheritability inheritability = processGroupInheritableCheck.checkInheritability(existingFlow, proposedFlow, controller);
 
         if (inheritability.isInheritable()) {
-            logger.debug("Proposed flow contains all connections that currently have data queued. Will backup existing flow and replace, provided all other checks pass");
+            logger.info("Acceldata ---- Proposed flow contains all connections that currently have data queued. Will backup existing flow and replace, provided all other checks pass ----");
         } else {
             throw new UninheritableFlowException("Proposed flow is not inheritable by the flow controller and cannot completely replace the current flow due to: "
                 + inheritability.getExplanation());
@@ -370,6 +384,7 @@ public class VersionedFlowSynchronizer implements FlowSynchronizer {
             final PropertyEncryptor encryptor = controller.getEncryptor();
 
             if (versionedFlow != null) {
+                logger.info("Acceldata ----- VersionedFlowSynchronizer synchronizeFlow started -----");
                 controller.setMaxTimerDrivenThreadCount(versionedFlow.getMaxTimerDrivenThreadCount());
                 controller.setMaxEventDrivenThreadCount(versionedFlow.getMaxEventDrivenThreadCount());
                 ProcessGroup rootGroup = controller.getFlowManager().getRootGroup();
@@ -380,13 +395,14 @@ public class VersionedFlowSynchronizer implements FlowSynchronizer {
                 final VersionedExternalFlow versionedExternalFlow = new VersionedExternalFlow();
                 versionedExternalFlow.setParameterContexts(versionedParameterContextMap);
                 versionedExternalFlow.setFlowContents(versionedFlow.getRootGroup());
-
+                logger.info("Acceldata ----- VersionedFlowSynchronizer Inherit controller-level components started -----");
                 // Inherit controller-level components.
                 inheritControllerServices(controller, versionedFlow, affectedComponentSet);
                 inheritParameterProviders(controller, versionedFlow, affectedComponentSet);
                 inheritParameterContexts(controller, versionedFlow);
                 inheritReportingTasks(controller, versionedFlow, affectedComponentSet);
                 inheritRegistries(controller, versionedFlow, affectedComponentSet);
+                logger.info("Acceldata ----- VersionedFlowSynchronizer Inherit controller-level components completed -----");
 
                 final ComponentIdGenerator componentIdGenerator = (proposedId, instanceId, destinationGroupId) -> instanceId;
 
@@ -436,7 +452,11 @@ public class VersionedFlowSynchronizer implements FlowSynchronizer {
                     .mapFlowRegistryClientId(true)
                     .build();
 
+                logger.info("Acceldata ----- VersionedFlowSynchronizer Synchronize the root group started -----" +
+                            "sync options {}, flowmappingoptions {}", syncOptions.toString(),
+                        flowMappingOptions.toString());
                 rootGroup.synchronizeFlow(versionedExternalFlow, syncOptions, flowMappingOptions);
+                logger.info("Acceldata ----- VersionedFlowSynchronizer Synchronize the root group completed -----");
 
                 // Inherit templates, now that all necessary Process Groups have been created
                 inheritTemplates(controller, versionedFlow);
@@ -444,12 +464,14 @@ public class VersionedFlowSynchronizer implements FlowSynchronizer {
 
             inheritSnippets(controller, proposedFlow);
             inheritAuthorizations(existingFlow, proposedFlow, controller);
+            logger.info("Acceldata ----- VersionedFlowSynchronizer synchronizeFlow completed -----");
         } catch (final Exception ex) {
             throw new FlowSynchronizationException(ex);
         }
     }
 
     private FlowComparison compareFlows(final DataFlow existingFlow, final DataFlow proposedFlow, final PropertyEncryptor encryptor) {
+        logger.info("Acceldata ----- VersionedFlowSynchronizer compareFlows started ----- ");
         final DifferenceDescriptor differenceDescriptor = new StaticDifferenceDescriptor();
 
         final VersionedDataflow existingVersionedFlow = existingFlow.getVersionedDataflow() == null ? createEmptyVersionedDataflow() : existingFlow.getVersionedDataflow();
@@ -464,6 +486,8 @@ public class VersionedFlowSynchronizer implements FlowSynchronizer {
 
         final FlowComparator flowComparator = new StandardFlowComparator(localDataFlow, clusterDataFlow, Collections.emptySet(),
             differenceDescriptor, encryptor::decrypt, VersionedComponent::getInstanceIdentifier, FlowComparatorVersionedStrategy.DEEP);
+
+        logger.info("Acceldata ----- VersionedFlowSynchronizer compareFlows completed ----- ");
         return flowComparator.compare();
     }
 
@@ -492,14 +516,15 @@ public class VersionedFlowSynchronizer implements FlowSynchronizer {
             .filter(FlowDifferenceFilters.FILTER_ADDED_REMOVED_REMOTE_PORTS)
             .collect(Collectors.toList());
 
-        logger.debug("The differences between Local Flow and Cluster Flow that are relevant for finding affected components are: {}", relevantDifferences);
+        logger.info("Acceldata ----- determineAffectedComponents The differences between Local Flow and Cluster Flow that are relevant for finding affected components are: {} -----", relevantDifferences);
 
         final AffectedComponentSet affectedComponentSet = new AffectedComponentSet(controller);
         for (final FlowDifference difference : relevantDifferences) {
+
             affectedComponentSet.addAffectedComponents(difference);
         }
 
-        logger.debug("Components affected by inheriting the flow are: {}", affectedComponentSet);
+        logger.info("Acceldata ----- determineAffectedComponents Components affected by inheriting the flow are: {} -----", affectedComponentSet);
         return affectedComponentSet;
     }
 
@@ -1016,7 +1041,7 @@ public class VersionedFlowSynchronizer implements FlowSynchronizer {
     }
 
     private void checkFlowInheritability(final DataFlow existingFlow, final DataFlow proposedFlow, final FlowController controller, final BundleUpdateStrategy bundleUpdateStrategy) {
-        logger.debug("Checking if proposed dataflow is inheritable: {}", proposedFlow);
+        logger.info("Acceldata ----- Checking if proposed dataflow is inheritable: {} -----", proposedFlow);
         final boolean existingFlowEmpty = isExistingFlowEmpty(controller);
 
         // If the Bundle Update Strategy indicates that we cannot inherit the flow if we are missing a bundle, then we must
@@ -1029,26 +1054,26 @@ public class VersionedFlowSynchronizer implements FlowSynchronizer {
                     + bundleInheritability.getExplanation());
             }
 
-            logger.debug("Bundle Compatibility check passed");
+            logger.info("Acceldata -----  Bundle Compatibility check passed -----");
         }
 
-        logger.debug("Checking authorizer inheritability");
+        logger.info("Acceldata ----- Checking authorizer inheritability -----");
         final FlowInheritabilityCheck authorizerCheck = new AuthorizerCheck();
         final FlowInheritability authorizerInheritability = authorizerCheck.checkInheritability(existingFlow, proposedFlow, controller);
         final Authorizer authorizer = controller.getAuthorizer();
 
         if (existingFlowEmpty) {
-            logger.debug("Existing flow is empty so will not check Authorizer inheritability. Authorizers will be forcibly inherited if necessary.");
+            logger.info("Acceldata ----- Existing flow is empty so will not check Authorizer inheritability. Authorizers will be forcibly inherited if necessary. ----");
         } else {
             if (!controller.isInitialized() && authorizer instanceof ManagedAuthorizer) {
-                logger.debug("Authorizations are not inheritable, but Authorizer is a Managed Authorizer and the Controller has not yet been initialized, so it can be forcibly inherited.");
+                logger.info("Acceldata ----- Authorizations are not inheritable, but Authorizer is a Managed Authorizer and the Controller has not yet been initialized, so it can be forcibly inherited. -----");
             } else {
                 if (!authorizerInheritability.isInheritable() && authorizerInheritability.getExplanation() != null) {
                     throw new UninheritableFlowException("Proposed Authorizer is not inheritable by the Flow Controller because NiFi has already started the dataflow " +
                         "and Authorizer has differences: " + authorizerInheritability.getExplanation());
                 }
 
-                logger.debug("Authorizer inheritability check passed");
+                logger.info("Acceldata ----- Authorizer inheritability check passed -----");
             }
         }
     }
@@ -1157,7 +1182,7 @@ public class VersionedFlowSynchronizer implements FlowSynchronizer {
         flowManager.getAllParameterProviders().stream().filter(ComponentNode::isExtensionMissing).forEach(r -> missingComponents.add(r.getIdentifier()));
         flowManager.findAllProcessors(AbstractComponentNode::isExtensionMissing).forEach(p -> missingComponents.add(p.getIdentifier()));
 
-        logger.trace("Exporting snippets from controller");
+        logger.info("Acceldata ----- getExistingDataFlow Exporting snippets from controller -----");
         final byte[] existingSnippets = controller.getSnippetManager().export();
 
         final byte[] existingAuthFingerprint;
@@ -1172,7 +1197,11 @@ public class VersionedFlowSynchronizer implements FlowSynchronizer {
         // serialize controller state to bytes
         final byte[] existingFlow;
         try {
+            logger.info("Acceldata ----- getExistingDataFlow serialize controller state to bytes using, check if " +
+                        "synchronized {} -----, if true serialize to bytes directly else readFlowFrom Disk",
+                    controller.isFlowSynchronized());
             existingFlow = controller.isFlowSynchronized() ? toBytes(controller) : readFlowFromDisk();
+            logger.info("Acceldata ----- getExistingDataFlow completed -----");
             return new StandardDataFlow(existingFlow, existingSnippets, existingAuthFingerprint, missingComponents);
         } catch (final IOException e) {
             throw new FlowSerializationException(e);

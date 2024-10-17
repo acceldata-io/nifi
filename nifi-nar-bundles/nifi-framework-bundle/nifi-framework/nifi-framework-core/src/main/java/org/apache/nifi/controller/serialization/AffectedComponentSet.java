@@ -494,17 +494,31 @@ public class AffectedComponentSet {
      * will always be a subset or equal to the set of components contained by this.
      */
     public AffectedComponentSet toActiveSet() {
+
+        logger.info("Acceldata ----- AffectedComponentSet Preparing ActiveSet -----");
+
         final AffectedComponentSet active = new AffectedComponentSet(flowController);
         inputPorts.stream().filter(port -> port.getScheduledState() == ScheduledState.RUNNING).forEach(active::addInputPort);
         outputPorts.stream().filter(port -> port.getScheduledState() == ScheduledState.RUNNING).forEach(active::addOutputPort);
         remoteInputPorts.stream().filter(port -> port.getScheduledState() == ScheduledState.RUNNING).forEach(active::addRemoteInputPort);
         remoteOutputPorts.stream().filter(port -> port.getScheduledState() == ScheduledState.RUNNING).forEach(active::addRemoteOutputPort);
 
+        logger.info("Acceldata ----- AffectedComponentSet Updating ActiveSet with ports list {} -----", active);
+
         processors.stream().filter(this::isActive).forEach(active::addProcessor);
+
+        logger.info("Acceldata ----- AffectedComponentSet Updating ActiveSet with processors only with schedule state " +
+                    "as starting,running, or flowcontroller is at state of startAfterInitializing {} -----", active);
+
         reportingTasks.stream().filter(task -> task.getScheduledState() == ScheduledState.STARTING || task.getScheduledState() == ScheduledState.RUNNING || task.isRunning())
             .forEach(active::addReportingTask);
+
+        logger.info("Acceldata ----- AffectedComponentSet Updating ActiveSet list with reporting tasks {} -----", active);
         controllerServices.stream().filter(service -> ACTIVE_CONTROLLER_SERVICE_STATES.contains(service.getState()))
             .forEach(active::addControllerServiceWithoutReferences);
+
+        logger.info("Acceldata ----- AffectedComponentSet Updating ActiveSet list with controller services {} -----", active);
+        logger.info("Acceldata ----- AffectedComponentSet Preparing ActiveSet Completed -----");
 
         return active;
     }
@@ -623,25 +637,29 @@ public class AffectedComponentSet {
         remoteOutputPorts.forEach(port -> port.getRemoteProcessGroup().stopTransmitting(port));
         processors.forEach(processor -> processor.getProcessGroup().stopProcessor(processor));
         reportingTasks.forEach(flowController::stopReportingTask);
-
+        logger.info("Acceldata ----- AffectedComponentSet Stopping Active set components is called and now waiting for " +
+                    "connectables to get stopped -----");
         waitForConnectablesStopped();
-
+        logger.info("Acceldata ----- AffectedComponentSet Stopping Active set components is called and now  " +
+                    "connectables are completely stopped -----");
         if (!controllerServices.isEmpty()) {
             final Future<Void> disableFuture = flowController.getControllerServiceProvider().disableControllerServicesAsync(controllerServices);
             waitForControllerServicesStopped(disableFuture);
+            logger.info("Acceldata ----- AffectedComponentSet waitForControllerServicesStopped called -----");
         }
 
         final long millis = System.currentTimeMillis() - start;
-        logger.info("Successfully stopped all components in {} milliseconds", millis);
+        logger.info("Acceldata -----  Successfully stopped all components in {} milliseconds ----", millis);
     }
 
     private void waitForControllerServicesStopped(final Future<Void> future) {
         try {
+            logger.info("Acceldata ----- AffectedComponentSet waitForControllerServicesStopped started -----");
             while (true) {
                 logger.info("Waiting for all Controller Services to become disabled...");
                 if (logger.isDebugEnabled()) {
                     final Set<ControllerServiceNode> activeServices = controllerServices.stream().filter(ControllerServiceNode::isActive).collect(Collectors.toSet());
-                    logger.debug("There are currently {} active Controller Services: {}", activeServices.size(), activeServices);
+                    logger.info("Acceldata ----- There are currently {} active Controller Services: {} -----", activeServices.size(), activeServices);
                 }
 
                 try {
@@ -661,20 +679,18 @@ public class AffectedComponentSet {
             while (!componentsStopped()) {
                 if (count++ % 1000 == 0) {
                     // The 0th time and every 1000th time (10 seconds), log an update
-                    logger.info("Waiting for all required Processors and Reporting Tasks to stop...");
+                    logger.info("Acceldata ----- Waiting for all required Processors and Reporting Tasks to stop... -----");
                     if (reportingTasks.isEmpty() && processors.isEmpty()) {
                         return;
                     }
 
-                    if (logger.isDebugEnabled()) {
                         final Set<ReportingTaskNode> activeReportingTasks = reportingTasks.stream().filter(ReportingTaskNode::isRunning).collect(Collectors.toSet());
-                        logger.debug("There are currently {} active Reporting Tasks: {}", activeReportingTasks.size(), activeReportingTasks);
+                        logger.info("Acceldata ----- There are currently {} active Reporting Tasks: {} -----", activeReportingTasks.size(), activeReportingTasks);
 
                         final Set<ProcessorNode> activeProcessors = processors.stream()
                             .filter(processor -> !isStopped(processor))
                             .collect(Collectors.toSet());
-                        logger.debug("There are currently {} active Processors: {}", activeProcessors.size(), activeProcessors);
-                    }
+                        logger.info("Acceldata ----- There are currently {} active Processors: {} -----", activeProcessors.size(), activeProcessors);
                 }
 
                 Thread.sleep(10L);

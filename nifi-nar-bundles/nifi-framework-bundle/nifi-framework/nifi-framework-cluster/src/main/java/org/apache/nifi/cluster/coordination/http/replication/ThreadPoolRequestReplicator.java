@@ -288,9 +288,11 @@ public class ThreadPoolRequestReplicator implements RequestReplicator {
             // time, so we use a write lock if the request is mutable and a read lock otherwise.
             final Lock lock = isMutableRequest(method) ? writeLock : readLock;
             logger.debug("Obtaining lock {} in order to replicate request {} {}", lock, method, uri);
+            logger.info("----Acceldata Obtaining lock {} in order to replicate request {} {}-----", lock, method, uri);
             lock.lock();
             try {
                 logger.debug("Lock {} obtained in order to replicate request {} {}", lock, method, uri);
+                logger.info("-----Acceldata Lock {} obtained in order to replicate request {} {}---", lock, method, uri);
 
                 // Unlocking of the lock is performed within the replicate method, as we need to ensure that it is unlocked only after
                 // the entire request has completed.
@@ -309,6 +311,7 @@ public class ThreadPoolRequestReplicator implements RequestReplicator {
             } finally {
                 lock.unlock();
                 logger.debug("Unlocked {} after replication completed for {} {}", lock, method, uri);
+                logger.info("----Acceldata Unlocked {} after replication completed for {} {}----", lock, method, uri);
             }
         } else {
             return replicate(nodeIds, method, uri, entity, updatedHeaders, performVerification, null, !performVerification, true, null);
@@ -349,6 +352,7 @@ public class ThreadPoolRequestReplicator implements RequestReplicator {
     AsyncClusterResponse replicate(final Set<NodeIdentifier> nodeIds, final String method, final URI uri, final Object entity, final Map<String, String> headers,
         final boolean performVerification, StandardAsyncClusterResponse response, final boolean executionPhase, final boolean merge, final Object monitor) {
         try {
+            logger.info("-----Acceldata Threadpool Started request replicator replicate processing replication of request -----");
             // state validation
             Objects.requireNonNull(nodeIds);
             Objects.requireNonNull(method);
@@ -373,6 +377,7 @@ public class ThreadPoolRequestReplicator implements RequestReplicator {
             }
 
             logger.debug("Replicating request {} {} with entity {} to {}; response is {}", method, uri, entity, nodeIds, response);
+            logger.info("-----Acceldata Replicating request {} {} with entity {} to {}; response is {}-----", method, uri, entity, nodeIds, response);
 
             // Update headers to indicate the current revision so that we can
             // prevent multiple users changing the flow at the same time
@@ -415,6 +420,7 @@ public class ThreadPoolRequestReplicator implements RequestReplicator {
                             }
 
                             logger.debug("Notified monitor {} because request {} {} has completed", monitor, method, uri);
+                            logger.info("-----Acceldata Notified monitor {} because request {} {} has completed", monitor, method, uri);
                         }
                     }
                 };
@@ -431,6 +437,7 @@ public class ThreadPoolRequestReplicator implements RequestReplicator {
             }
 
             logger.debug("For Request ID {}, response object is {}", requestId, response);
+            logger.info("-----Acceldata For Request ID {}, response object is {}", requestId, response);
 
             // if mutable request, we have to do a two-phase commit where we ask each node to verify
             // that the request can take place and then, if all nodes agree that it can, we can actually
@@ -440,6 +447,7 @@ public class ThreadPoolRequestReplicator implements RequestReplicator {
             final boolean mutableRequest = isMutableRequest(method);
             if (mutableRequest && performVerification) {
                 logger.debug("Performing verification (first phase of two-phase commit) for Request ID {}", requestId);
+                logger.info("-----Acceldata Performing verification (first phase of two-phase commit) for Request ID {}", requestId);
                 performVerification(nodeIds, method, uri, entity, updatedHeaders, response, merge, monitor);
                 return response;
             } else if (mutableRequest) {
@@ -450,6 +458,7 @@ public class ThreadPoolRequestReplicator implements RequestReplicator {
             final StandardAsyncClusterResponse finalResponse = response;
             NodeRequestCompletionCallback nodeCompletionCallback = nodeResponse -> {
                 logger.debug("Received response from {} for {} {}", nodeResponse.getNodeId(), method, uri.getPath());
+                logger.info("-----Acceldata Received response from {} for {} {}", nodeResponse.getNodeId(), method, uri.getPath());
                 finalResponse.add(nodeResponse);
             };
 
@@ -472,6 +481,7 @@ public class ThreadPoolRequestReplicator implements RequestReplicator {
                     monitor.notify();
                 }
                 logger.debug("Notified monitor {} because request {} {} has failed with Throwable {}", monitor, method, uri, t);
+                logger.info("-----Acceldata Notified monitor {} because request {} {} has failed with Throwable {}", monitor, method, uri, t);
             }
 
             if (response != null) {
@@ -487,6 +497,7 @@ public class ThreadPoolRequestReplicator implements RequestReplicator {
     private void performVerification(final Set<NodeIdentifier> nodeIds, final String method, final URI uri, final Object entity, final Map<String, String> headers,
         final StandardAsyncClusterResponse clusterResponse, final boolean merge, final Object monitor) {
         logger.debug("Verifying that mutable request {} {} can be made", method, uri.getPath());
+        logger.info("-----Acceldata Verifying that mutable request {} {} can be made", method, uri.getPath());
 
         final Map<String, String> validationHeaders = new HashMap<>(headers);
         validationHeaders.put(REQUEST_VALIDATION_HTTP_HEADER, NODE_CONTINUE);
@@ -526,6 +537,7 @@ public class ThreadPoolRequestReplicator implements RequestReplicator {
                         // to all nodes and we are finished.
                         if (dissentingCount == 0) {
                             logger.debug("Received verification from all {} nodes that mutable request {} {} can be made", numNodes, method, uri.getPath());
+                            logger.info("-----Acceldata Received verification from all {} nodes that mutable request {} {} can be made", numNodes, method, uri.getPath());
                             replicate(nodeIds, method, uri, entity, headers, false, clusterResponse, true, merge, monitor);
                             return;
                         }
@@ -537,7 +549,7 @@ public class ThreadPoolRequestReplicator implements RequestReplicator {
                                 @Override
                                 public void run() {
                                     logger.debug("Found {} dissenting nodes for {} {}; canceling claim request", dissentingCount, method, uri.getPath());
-
+                                    logger.info("-----Acceldata Found {} dissenting nodes for {} {}; canceling claim request", dissentingCount, method, uri.getPath());
                                     final PreparedRequest request = httpClient.prepareRequest(method, cancelLockHeaders, entity);
                                     final Function<NodeIdentifier, NodeHttpRequest> requestFactory =
                                         nodeId -> new NodeHttpRequest(request, nodeId, createURI(uri, nodeId), null, clusterResponse);
@@ -594,6 +606,7 @@ public class ThreadPoolRequestReplicator implements RequestReplicator {
                                 }
 
                                 logger.debug("Notified monitor {} because request {} {} has failed due to at least 1 dissenting node", monitor, method, uri);
+                                logger.info("-----Acceldata Notified monitor {} because request {} {} has failed due to at least 1 dissenting node", monitor, method, uri);
                             }
                         }
                     }
@@ -806,6 +819,7 @@ public class ThreadPoolRequestReplicator implements RequestReplicator {
     private void submitAsyncRequest(final Set<NodeIdentifier> nodeIds, final String scheme, final String path,
                                   final Function<NodeIdentifier, NodeHttpRequest> callableFactory, final Map<String, String> headers) {
 
+        logger.info("-----Acceldata Started submitAsyncRequest -----");
         if (nodeIds.isEmpty()) {
             return; // return quickly for trivial case
         }
@@ -815,6 +829,7 @@ public class ThreadPoolRequestReplicator implements RequestReplicator {
             final NodeHttpRequest callable = callableFactory.apply(nodeId);
             executorService.submit(callable);
         }
+        logger.info("-----Acceldata Completed submitAsyncRequest -----");
     }
 
 

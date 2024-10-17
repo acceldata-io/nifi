@@ -1522,12 +1522,14 @@ public class FlowController implements ReportingTaskProvider, Authorizable, Node
      */
     public void synchronize(final FlowSynchronizer synchronizer, final DataFlow dataFlow, final FlowService flowService, final BundleUpdateStrategy bundleUpdateStrategy)
             throws FlowSerializationException, FlowSynchronizationException, UninheritableFlowException, MissingBundleException {
+        LOG.info("Acceldata ----- FlowController synchronize started -----");
         writeLock.lock();
         try {
-            LOG.debug("Synchronizing controller with proposed flow");
+            LOG.info("Acceldata ----- Synchronizing controller with proposed flow started----- with bundleUpdateStrategy as {}", bundleUpdateStrategy.toString());
 
             try {
                 synchronizer.sync(this, dataFlow, flowService, bundleUpdateStrategy);
+                LOG.info("Acceldata ----- Synchronizing controller with proposed flow completed-----");
             } catch (final UninheritableFlowException ufe) {
                 final NodeIdentifier localNodeId = getNodeId();
                 if (localNodeId != null) {
@@ -1542,6 +1544,7 @@ public class FlowController implements ReportingTaskProvider, Authorizable, Node
                 throw ufe;
             }
 
+            LOG.info("Acceldata ----- FlowController synchronize completed -----");
             flowSynchronized.set(true);
             LOG.info("Successfully synchronized controller with proposed flow. Flow contains the following number of components: {}", flowManager.getComponentCounts());
         } finally {
@@ -3035,8 +3038,17 @@ public class FlowController implements ReportingTaskProvider, Authorizable, Node
             hbPayload.setSystemStartTime(systemStartTime);
             hbPayload.setActiveThreadCount(getActiveThreadCount());
             hbPayload.setRevisionUpdateCount(revisionManager.getRevisionUpdateCount());
+            LOG.info("Acceldata ----- createHeartbeatMessage setting revisionUpdateCount of {} for node {} ----",
+                    hbPayload.getRevisionUpdateCount(), getCurrentNode());
 
             final QueueSize queueSize = bean.getRootGroup().getQueueSize();
+            LOG.info("Acceldata ----- createHeartbeatMessage connectionSize {}," +
+                     "processorsSize {}, controllerServicesSize {}, processGroupsSize{}",
+                    bean.getRootGroup().getConnections().size(),
+            bean.getRootGroup().getProcessors().size(),
+            bean.getRootGroup().getControllerServices(true).size(),
+            bean.getRootGroup().getProcessGroups().size());
+
             hbPayload.setTotalFlowFileCount(queueSize.getObjectCount());
             hbPayload.setTotalFlowFileBytes(queueSize.getByteCount());
             hbPayload.setClusterStatus(clusterCoordinator.getConnectionStatuses());

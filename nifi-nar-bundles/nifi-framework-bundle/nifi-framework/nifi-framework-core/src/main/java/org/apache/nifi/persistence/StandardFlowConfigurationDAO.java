@@ -101,9 +101,11 @@ public final class StandardFlowConfigurationDAO implements FlowConfigurationDAO 
         final XmlFlowSynchronizer xmlFlowSynchronizer = new XmlFlowSynchronizer(nifiProperties, extensionManager);
         final FlowSynchronizer standardFlowSynchronizer = new StandardFlowSynchronizer(xmlFlowSynchronizer, versionedFlowSynchronizer);
 
+        LOG.info("Acceldata ----- StandardFlowConfigurationDAO started -----");
         controller.synchronize(standardFlowSynchronizer, dataFlow, flowService, bundleUpdateStrategy);
 
         if (StandardFlowSynchronizer.isFlowEmpty(dataFlow)) {
+            LOG.info("Acceldata ----- Inside if cond if flow empty StandardFlowConfigurationDAO -----");
             // If the dataflow is empty, we want to save it. We do this because when we start up a brand new cluster with no
             // dataflow, we need to ensure that the flow is consistent across all nodes in the cluster and that upon restart
             // of NiFi, the root group ID does not change. However, we don't always want to save it, because if the flow is
@@ -113,6 +115,7 @@ public final class StandardFlowConfigurationDAO implements FlowConfigurationDAO 
             // We save based on the controller, not the provided data flow because Process Groups may contain 'local' templates.
             save(controller, true);
         }
+        LOG.info("Acceldata ----- StandardFlowConfigurationDAO completed -----");
     }
 
     private File getReadableFile() {

@@ -950,7 +950,8 @@ public class StandardNiFiServiceFacade implements NiFiServiceFacade {
     private <D, C> RevisionUpdate<D> updateComponent(final Revision revision, final Authorizable authorizable, final Supplier<C> daoUpdate, final Function<C, D> dtoCreation) {
         try {
             final NiFiUser user = NiFiUserUtils.getNiFiUser();
-
+            logger.info("Acceldata ----- Starting to updateComponent with ID {} " +
+                        "----- ", revision.getComponentId());
             final RevisionUpdate<D> updatedComponent = revisionManager.updateRevision(new StandardRevisionClaim(revision), user, () -> {
                 // get the updated component
                 final C component = daoUpdate.get();
@@ -964,7 +965,8 @@ public class StandardNiFiServiceFacade implements NiFiServiceFacade {
                 final FlowModification lastModification = new FlowModification(updatedRevision, user.getIdentity());
                 return new StandardRevisionUpdate<>(dto, lastModification);
             });
-
+            logger.info("Acceldata ----- Completed updateComponent with ID {} " +
+                        "----- ", revision.getComponentId());
             return updatedComponent;
         } catch (final ExpiredRevisionClaimException erce) {
             throw new InvalidRevisionException("Failed to update component " + authorizable, erce);
@@ -2909,6 +2911,8 @@ public class StandardNiFiServiceFacade implements NiFiServiceFacade {
     public ControllerServiceEntity updateControllerService(final Revision revision, final ControllerServiceDTO controllerServiceDTO) {
         // get the component, ensure we have access to it, and perform the update request
         final ControllerServiceNode controllerService = controllerServiceDAO.getControllerService(controllerServiceDTO.getId());
+        logger.info("Acceldata ----- Called updateControllerService to update ControllerService for name {}, with ID {} " +
+                    "----- ", controllerService.getName(), controllerService.getIdentifier());
         final RevisionUpdate<ControllerServiceDTO> snapshot = updateComponent(revision,
                 controllerService,
                 () -> controllerServiceDAO.updateControllerService(controllerServiceDTO),
@@ -2925,6 +2929,8 @@ public class StandardNiFiServiceFacade implements NiFiServiceFacade {
         final PermissionsDTO operatePermissions = dtoFactory.createPermissionsDto(new OperationAuthorizable(controllerService));
         final List<BulletinDTO> bulletins = dtoFactory.createBulletinDtos(bulletinRepository.findBulletinsForSource(controllerServiceDTO.getId()));
         final List<BulletinEntity> bulletinEntities = bulletins.stream().map(bulletin -> entityFactory.createBulletinEntity(bulletin, permissions.getCanRead())).collect(Collectors.toList());
+        logger.info("Acceldata ----- Reached end of updateControllerService to update ControllerService for name {}, with ID {} " +
+                    "----- ", controllerService.getName(), controllerService.getIdentifier());
         return entityFactory.createControllerServiceEntity(snapshot.getComponent(), dtoFactory.createRevisionDTO(snapshot.getLastModification()), permissions, operatePermissions, bulletinEntities);
     }
 

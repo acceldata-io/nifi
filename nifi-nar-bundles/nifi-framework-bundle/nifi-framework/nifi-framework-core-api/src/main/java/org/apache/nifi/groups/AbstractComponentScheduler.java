@@ -53,7 +53,7 @@ public abstract class AbstractComponentScheduler implements ComponentScheduler {
     @Override
     public void pause() {
         final long count = pauseCount.incrementAndGet();
-        logger.debug("{} paused; count = {}", this, count);
+        logger.info("Acceldata ---- Pausing {} paused; count = {} ----", this, count);
     }
 
     @Override

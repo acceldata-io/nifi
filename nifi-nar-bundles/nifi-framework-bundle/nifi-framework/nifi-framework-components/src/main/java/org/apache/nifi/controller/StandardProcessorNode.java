@@ -1970,7 +1970,7 @@ public class StandardProcessorNode extends ProcessorNode implements Connectable 
             // part will handle the stop processor routine.
             final boolean updated = this.scheduledState.compareAndSet(ScheduledState.STARTING, ScheduledState.STOPPING);
             if (updated) {
-                LOG.debug("Transitioned state of {} from STARTING to STOPPING", this);
+                LOG.info("Transitioned state of {} from STARTING to STOPPING", this);
             }
         }
 

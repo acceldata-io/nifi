@@ -68,7 +68,7 @@ public class NaiveRevisionManager implements RevisionManager {
     }
 
     @Override
-    public long getRevisionUpdateCount() {
+    public synchronized long getRevisionUpdateCount() {
         return revisionUpdateCounter.get();
     }
 
@@ -112,7 +112,8 @@ public class NaiveRevisionManager implements RevisionManager {
 
         final List<Revision> revisionList = new ArrayList<>(originalClaim.getRevisions());
         revisionList.sort(new RevisionComparator());
-
+        logger.info("Acceldata ---- Inside updateRevision using {}, revisionList " +
+                    "{}, revisionUpdateCounter {}", originalClaim, revisionList, revisionUpdateCounter.get());
         for (final Revision revision : revisionList) {
             final Revision currentRevision = getRevision(revision.getComponentId());
             final boolean verified = revision.equals(currentRevision);
@@ -136,9 +137,11 @@ public class NaiveRevisionManager implements RevisionManager {
             for (final Revision updatedRevision : updatedRevisions) {
                 revisionMap.put(updatedRevision.getComponentId(), updatedRevision);
             }
-
+            logger.info("Acceldata ---- Starting to update revision using {}, revisionList {}, revisionUpdateCounter {}", originalClaim, revisionList, revisionUpdateCounter.get());
             revisionUpdateCounter.addAndGet(updatedRevisions.size());
+            logger.info("Acceldata ---- Completed update revision using {}, revisionList {}, revisionUpdateCounter {}", originalClaim, revisionList, revisionUpdateCounter.get());
         }
+
 
         return updatedComponent;
     }

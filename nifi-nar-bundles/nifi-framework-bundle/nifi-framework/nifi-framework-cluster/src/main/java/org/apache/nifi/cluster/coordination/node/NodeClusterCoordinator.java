@@ -86,11 +86,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
@@ -1039,8 +1035,8 @@ public class NodeClusterCoordinator implements ClusterCoordinator, ProtocolHandl
             // This case is very rare but can occur on occasion. As a result, we check for that here and if it occurs, request that the node disconnect so that
             // it can reconnect.
             final String message = String.format("Node has a Revision Update Count of %s but local value is only %s. Node appears not to have the appropriate set of Component Revisions",
-                heartbeat.getRevisionUpdateCount(), localUpdateCount);
-            logger.warn("Requesting that {} reconnect to the cluster due to: {}", heartbeat.getNodeIdentifier(), message);
+                    heartbeat.getRevisionUpdateCount(), localUpdateCount);
+            logger.warn("Acceldata ----- Requesting that {} reconnect to the cluster due to: {} -----", heartbeat.getNodeIdentifier(), message);
             requestNodeConnect(heartbeat.getNodeIdentifier(), null);
         }
     }

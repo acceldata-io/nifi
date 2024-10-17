@@ -3966,6 +3966,7 @@ public final class StandardProcessGroup implements ProcessGroup {
 
     @Override
     public void synchronizeFlow(final VersionedExternalFlow proposedSnapshot, final FlowSynchronizationOptions synchronizationOptions, final FlowMappingOptions flowMappingOptions) {
+        LOG.info("Acceldata ----- StandardProcessGroup synchronizeFlow started -----");
         writeLock.lock();
         try {
             verifyCanUpdate(proposedSnapshot, true, !synchronizationOptions.isIgnoreLocalModifications());
@@ -3992,6 +3993,7 @@ public final class StandardProcessGroup implements ProcessGroup {
             }
         } finally {
             writeLock.unlock();
+            LOG.info("Acceldata ----- StandardProcessGroup synchronizeFlow completed -----");
         }
     }
 
