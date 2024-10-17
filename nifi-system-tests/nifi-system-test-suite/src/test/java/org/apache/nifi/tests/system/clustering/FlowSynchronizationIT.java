@@ -937,8 +937,8 @@ public class FlowSynchronizationIT extends NiFiSystemIT {
         final ProcessorEntity generateFlowFile = getClientUtil().createProcessor("GenerateFlowFile", group.getId());
         final ProcessorEntity reverseContents = getClientUtil().createProcessor("ReverseContents", group.getId());
         final ProcessorEntity terminateFlowFile = getClientUtil().createProcessor("TerminateFlowFile", group.getId());
-        getClientUtil().createConnection(generateFlowFile, reverseContents, "success", group.getId());
-        getClientUtil().createConnection(reverseContents, terminateFlowFile, "success", group.getId());
+        getClientUtil().createConnection(generateFlowFile, reverseContents, "success");
+        getClientUtil().createConnection(reverseContents, terminateFlowFile, "success");
 
         getClientUtil().waitForValidProcessor(generateFlowFile.getId());
         getClientUtil().waitForValidProcessor(reverseContents.getId());
