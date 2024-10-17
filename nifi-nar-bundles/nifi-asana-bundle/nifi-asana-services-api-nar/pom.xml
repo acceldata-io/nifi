@@ -40,6 +40,12 @@
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-asana-services-api</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.google.http-client</groupId>
+            <artifactId>google-http-client</artifactId>
+            <version>1.36.0</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
 </project>
