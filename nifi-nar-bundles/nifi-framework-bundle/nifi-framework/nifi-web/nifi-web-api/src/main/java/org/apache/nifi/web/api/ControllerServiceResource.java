@@ -654,7 +654,7 @@ public class ControllerServiceResource extends ApplicationResource {
         }
 
         if (isReplicateRequest()) {
-            logger.info("Acceldata ---- Inside isReplicateRequest---- ");
+            logger.info("Acceldata ---- Inside isReplicateRequest with name {}----- ", requestControllerServiceEntity.getComponent().getName());
             return replicate(HttpMethod.PUT, requestControllerServiceEntity);
         }  else if (isDisconnectedFromCluster()) {
             verifyDisconnectedNodeModification(requestControllerServiceEntity.isDisconnectedNodeAcknowledged());

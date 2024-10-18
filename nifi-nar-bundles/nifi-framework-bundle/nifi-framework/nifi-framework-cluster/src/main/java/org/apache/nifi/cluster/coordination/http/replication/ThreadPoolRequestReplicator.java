@@ -770,7 +770,7 @@ public class ThreadPoolRequestReplicator implements RequestReplicator {
             }
         }
 
-        if (response != null && logger.isDebugEnabled()) {
+        if (response != null) {
             logTimingInfo(response);
         }
 
@@ -812,24 +812,28 @@ public class ThreadPoolRequestReplicator implements RequestReplicator {
 
         logger.debug("For {} {} (Request ID {}), minimum response time = {}, max = {}, average = {} ms",
                 response.getMethod(), response.getURIPath(), response.getRequestIdentifier(), stats.getMin(), stats.getMax(), stats.getAverage());
+        logger.info("------Acceldata For {} {} (Request ID {}), minimum response time = {}, max = {}, average = {} ms -----",
+                response.getMethod(), response.getURIPath(), response.getRequestIdentifier(), stats.getMin(), stats.getMax(), stats.getAverage());
         logger.debug(sb.toString());
+        logger.info("------Acceldata {}----", sb.toString());
     }
 
 
     private void submitAsyncRequest(final Set<NodeIdentifier> nodeIds, final String scheme, final String path,
                                   final Function<NodeIdentifier, NodeHttpRequest> callableFactory, final Map<String, String> headers) {
 
-        logger.info("-----Acceldata Started submitAsyncRequest -----");
+
         if (nodeIds.isEmpty()) {
             return; // return quickly for trivial case
         }
+        logger.info("-----Acceldata Started submitAsyncRequest on given nodes {}-----", nodeIds.toString());
 
         // submit the requests to the nodes
         for (final NodeIdentifier nodeId : nodeIds) {
             final NodeHttpRequest callable = callableFactory.apply(nodeId);
             executorService.submit(callable);
         }
-        logger.info("-----Acceldata Completed submitAsyncRequest -----");
+        logger.info("-----Acceldata Completed submitAsyncRequest on given nodes {}-----", nodeIds.toString());
     }
 
 
