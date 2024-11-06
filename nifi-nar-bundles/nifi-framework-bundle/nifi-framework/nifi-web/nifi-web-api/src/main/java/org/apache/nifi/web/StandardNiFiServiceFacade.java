@@ -950,8 +950,6 @@ public class StandardNiFiServiceFacade implements NiFiServiceFacade {
     private <D, C> RevisionUpdate<D> updateComponent(final Revision revision, final Authorizable authorizable, final Supplier<C> daoUpdate, final Function<C, D> dtoCreation) {
         try {
             final NiFiUser user = NiFiUserUtils.getNiFiUser();
-            logger.info("Acceldata ----- Starting to updateComponent with ID {} " +
-                        "----- ", revision.getComponentId());
             final RevisionUpdate<D> updatedComponent = revisionManager.updateRevision(new StandardRevisionClaim(revision), user, () -> {
                 // get the updated component
                 final C component = daoUpdate.get();
@@ -965,8 +963,6 @@ public class StandardNiFiServiceFacade implements NiFiServiceFacade {
                 final FlowModification lastModification = new FlowModification(updatedRevision, user.getIdentity());
                 return new StandardRevisionUpdate<>(dto, lastModification);
             });
-            logger.info("Acceldata ----- Completed updateComponent with ID {} " +
-                        "----- ", revision.getComponentId());
             return updatedComponent;
         } catch (final ExpiredRevisionClaimException erce) {
             throw new InvalidRevisionException("Failed to update component " + authorizable, erce);

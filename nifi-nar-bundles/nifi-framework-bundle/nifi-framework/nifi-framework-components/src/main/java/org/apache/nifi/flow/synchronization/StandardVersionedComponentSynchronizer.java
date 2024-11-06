@@ -188,9 +188,7 @@ public class StandardVersionedComponentSynchronizer implements VersionedComponen
         final PropertyDecryptor decryptor = options.getPropertyDecryptor();
         final FlowComparator flowComparator = new StandardFlowComparator(proposedFlow, localFlow, group.getAncestorServiceIds(),
             new StaticDifferenceDescriptor(), decryptor::decrypt, options.getComponentComparisonIdLookup(), FlowComparatorVersionedStrategy.DEEP);
-        LOG.info("Acceldata ----- StandardVersionedComponentSycnhronizer synchronize comparing currenly local loaded data flow to proposed data flow started -----");
         final FlowComparison flowComparison = flowComparator.compare();
-        LOG.info("Acceldata ----- StandardVersionedComponentSycnhronizer synchronize comparing currenly local loaded data flow to proposed data flow completed -----");
         updatedVersionedComponentIds.clear();
         setSynchronizationOptions(options);
 

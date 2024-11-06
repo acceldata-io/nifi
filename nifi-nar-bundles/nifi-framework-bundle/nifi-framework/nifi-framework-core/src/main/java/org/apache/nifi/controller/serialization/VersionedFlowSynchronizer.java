@@ -213,9 +213,7 @@ public class VersionedFlowSynchronizer implements FlowSynchronizer {
 
         try {
             // Ensure that the proposed flow doesn't remove any Connections for which there is currently data queued
-            logger.info("Acceldata ----- VersionedFlowSynchronizer verifyNoConnectionsWithDataRemoved started -----");
             verifyNoConnectionsWithDataRemoved(existingDataFlow, proposedFlow, controller, flowComparison);
-            logger.info("Acceldata ----- VersionedFlowSynchronizer verifyNoConnectionsWithDataRemoved stopped -----");
 
             synchronizeFlow(controller, existingDataFlow, proposedFlow, affectedComponents);
         } finally {
