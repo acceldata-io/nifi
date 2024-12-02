@@ -32,6 +32,7 @@
 
     <properties>
         <iotdb.sdk.version>1.1.2</iotdb.sdk.version>
+        <guava.version>33.3.1-jre</guava.version>
     </properties>
 
     <dependencyManagement>
@@ -40,6 +41,11 @@
                 <groupId>org.apache.nifi</groupId>
                 <artifactId>nifi-iotdb-processors</artifactId>
                 <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${guava.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
