@@ -747,26 +747,6 @@
             <artifactId>slf4j-simple</artifactId>
             <scope>test</scope>
     </dependency>
-	    <dependency>
-    <groupId>com.google.code.gson</groupId>
-    <artifactId>gson</artifactId>
-    <version>2.11.0</version> <!-- Use the latest version available -->
-</dependency>
-<dependency>
-    <groupId>org.apache.httpcomponents</groupId>
-    <artifactId>httpclient</artifactId>
-    <version>4.5.13</version> <!-- Use the latest version available -->
-</dependency>
-<dependency>
-    <groupId>org.apache.httpcomponents</groupId>
-    <artifactId>httpcore</artifactId>
-    <version>4.4.13</version> <!-- Use the latest version available -->
-</dependency>
-<dependency>
-    <groupId>com.google.api-client</groupId>
-    <artifactId>google-api-client</artifactId>
-    <version>2.6.0</version> <!-- Use the latest version available -->
-    </dependency>
     </dependencies>
 
     <build>
