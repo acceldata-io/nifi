@@ -45,6 +45,13 @@
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-deprecation-log</artifactId>
         </dependency>
+        <!--  hadoop-shaded-protobuf_3_25 upgrade to resolve CVE-2024-7254 -->
+        <dependency>
+            <groupId>org.apache.hadoop.thirdparty</groupId>
+            <artifactId>hadoop-shaded-protobuf_3_25</artifactId>
+            <version>1.3.0</version>
+        </dependency>
+
         <dependency>
             <groupId>org.apache.ranger</groupId>
             <artifactId>ranger-plugins-common</artifactId>
