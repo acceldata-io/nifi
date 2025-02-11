@@ -215,6 +215,10 @@
             <version>${ranger.hadoop.version}</version>
             <exclusions>
                 <exclusion>
+                    <groupId>org.apache.hadoop.thirdparty</groupId>
+                    <artifactId>hadoop-shaded-protobuf_3_7</artifactId>
+                </exclusion>
+                <exclusion>
                     <groupId>com.google.code.findbugs</groupId>
                     <artifactId>jsr305</artifactId>
                 </exclusion>
