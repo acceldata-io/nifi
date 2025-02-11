@@ -152,6 +152,10 @@
             <version>${ranger.hadoop.version}</version>
             <exclusions>
                 <exclusion>
+                    <groupId>org.apache.hadoop.thirdparty</groupId>
+                    <artifactId>hadoop-shaded-protobuf_3_7</artifactId>
+                </exclusion>
+                <exclusion>
                     <groupId>com.fasterxml.jackson.core</groupId>
                     <artifactId>jackson-databind</artifactId>
                 </exclusion>
@@ -272,10 +276,10 @@
                     <artifactId>hadoop-cloud-storage</artifactId>
                     <version>${ranger.hadoop.version}</version>
                     <exclusions>
-                      <exclusion>
-                          <groupId>commons-logging</groupId>
-                          <artifactId>commons-logging</artifactId>
-                      </exclusion>
+                        <exclusion>
+                            <groupId>commons-logging</groupId>
+                            <artifactId>commons-logging</artifactId>
+                        </exclusion>
                     </exclusions>
                 </dependency>
             </dependencies>
