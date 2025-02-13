@@ -20,7 +20,7 @@ import org.apache.nifi.util.security.MessageDigestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.xml.bind.DatatypeConverter;
+import jakarta.xml.bind.DatatypeConverter;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.net.MalformedURLException;
