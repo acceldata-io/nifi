@@ -27,7 +27,7 @@ import org.apache.nifi.registry.bucket.Bucket;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import java.util.Map;
 import java.util.Objects;

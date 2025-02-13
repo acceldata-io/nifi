@@ -24,7 +24,7 @@ import org.apache.nifi.registry.bucket.BucketItemType;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 /**
  * Represents an extension bundle identified by a group and artifact id with in a bucket.

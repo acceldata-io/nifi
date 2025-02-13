@@ -25,7 +25,7 @@ import org.apache.nifi.registry.revision.entity.RevisionInfo;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.util.Objects;
 
 @XmlRootElement

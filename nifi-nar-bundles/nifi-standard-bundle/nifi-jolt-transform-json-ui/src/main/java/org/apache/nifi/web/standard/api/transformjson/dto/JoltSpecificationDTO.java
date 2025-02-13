@@ -20,7 +20,7 @@ package org.apache.nifi.web.standard.api.transformjson.dto;
 import java.io.Serializable;
 import java.util.Map;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class JoltSpecificationDTO implements Serializable{

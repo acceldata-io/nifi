@@ -22,7 +22,7 @@ import org.apache.nifi.registry.link.LinkAdapter;
 
 import javax.ws.rs.core.Link;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 @ApiModel
