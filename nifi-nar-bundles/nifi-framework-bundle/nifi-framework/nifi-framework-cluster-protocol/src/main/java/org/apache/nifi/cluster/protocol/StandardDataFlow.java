@@ -31,7 +31,7 @@ import org.w3c.dom.Document;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.ByteArrayInputStream;
 import java.io.Serializable;
 import java.util.Arrays;

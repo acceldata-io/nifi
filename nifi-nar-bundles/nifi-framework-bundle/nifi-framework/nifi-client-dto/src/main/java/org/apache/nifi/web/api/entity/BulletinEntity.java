@@ -22,7 +22,7 @@ import org.apache.nifi.web.api.dto.ReadablePermission;
 import org.apache.nifi.web.api.dto.util.TimeAdapter;
 
 import jakarta.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.util.Date;
 
 /**

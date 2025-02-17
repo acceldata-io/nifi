@@ -22,7 +22,7 @@ import org.apache.nifi.web.api.entity.FlowBreadcrumbEntity;
 import org.apache.nifi.web.api.entity.ParameterContextReferenceEntity;
 
 import jakarta.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.util.Date;
 
 /**

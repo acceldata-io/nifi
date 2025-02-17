@@ -20,7 +20,7 @@ import io.swagger.annotations.ApiModelProperty;
 import org.apache.nifi.web.api.dto.util.InstantAdapter;
 
 import jakarta.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.time.Instant;
 
 @XmlRootElement(name = "accessTokenExpiration")
