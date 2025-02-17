@@ -19,7 +19,7 @@ package org.apache.nifi.web.api.dto;
 import io.swagger.annotations.ApiModelProperty;
 import org.apache.nifi.web.api.dto.util.DateTimeAdapter;
 
-import javax.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlAttribute;
 import jakarta.xml.bind.annotation.XmlRootElement;
 import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.util.Date;
