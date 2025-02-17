@@ -107,17 +107,6 @@
                 <version>${jetty.version}</version>
                 <scope>compile</scope>
             </dependency>
-        <!-- lib/java11 -->
-            <dependency>
-                <groupId>jakarta.xml.bind</groupId>
-                <artifactId>jakarta.xml.bind-api</artifactId>
-                <version>${jaxb.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish.jaxb</groupId>
-                <artifactId>jaxb-runtime</artifactId>
-                <version>${jaxb.version}</version>
-            </dependency>
 	    <!-- NiFi Registry Modules -->
             <dependency>
                 <groupId>org.apache.nifi.registry</groupId>
