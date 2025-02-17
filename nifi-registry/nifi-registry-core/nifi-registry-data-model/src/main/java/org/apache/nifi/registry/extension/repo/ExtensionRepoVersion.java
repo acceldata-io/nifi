@@ -21,9 +21,9 @@ import io.swagger.annotations.ApiModelProperty;
 import org.apache.nifi.registry.link.LinkAdapter;
 
 import jakarta.ws.rs.core.Link;
-import javax.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 @ApiModel
 @XmlRootElement
