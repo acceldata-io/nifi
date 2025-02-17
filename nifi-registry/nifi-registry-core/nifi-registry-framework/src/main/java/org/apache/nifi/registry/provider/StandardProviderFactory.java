@@ -31,7 +31,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.xml.sax.SAXException;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import javax.sql.DataSource;
 import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;

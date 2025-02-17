@@ -23,7 +23,7 @@ import org.apache.nifi.registry.bucket.BucketItemType;
 import org.apache.nifi.registry.revision.entity.RevisableEntity;
 import org.apache.nifi.registry.revision.entity.RevisionInfo;
 
-import javax.validation.constraints.Min;
+import jakarta.validation.constraints.Min;
 import jakarta.xml.bind.annotation.XmlRootElement;
 import java.util.Objects;
 

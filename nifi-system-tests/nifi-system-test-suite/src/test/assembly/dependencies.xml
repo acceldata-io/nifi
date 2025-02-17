@@ -31,10 +31,13 @@
             <includes>
                 <include>*:nifi-bootstrap-utils</include>
                 <include>*:nifi-bootstrap</include>
-                <include>*:bcprov-jdk15on</include>
+                <include>*:bcutil-jdk18on</include>
+                <include>*:bcprov-jdk18on</include>
                 <include>*:commons-lang3</include>
                 <include>*:slf4j-api</include>
                 <include>*:nifi-api</include>
+                <include>*:nifi-property-encryptor</include>
+                <include>*:nifi-security-crypto-key</include>
             </includes>
         </dependencySet>
 
@@ -78,6 +81,11 @@
                 <exclude>*:nifi-security-utils-api</exclude>
                 <exclude>*:nifi-xml-processing</exclude>
                 <exclude>*:nifi-nar-provider-assembly</exclude>
+                <exclude>*:nifi-expression-language</exclude>
+                <exclude>*:nifi-security-crypto-key</exclude>
+                <exclude>*:nifi-parameter</exclude>
+                <exclude>*:nifi-property-encryptor</exclude>
+                <exclude>*:nifi-uuid5</exclude>
 
                 <!-- exclude jaxb/activation/annotation libs from lib, they'll be included in the java11 subdir -->
                 <!-- TODO: remove these once minimum Java version is 11 -->

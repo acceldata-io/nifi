@@ -81,11 +81,6 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>apache-jstl</artifactId>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-security-utils</artifactId>
             <version>1.27.0.3.3.6.1-1</version>

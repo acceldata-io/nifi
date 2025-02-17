@@ -21,8 +21,8 @@ import io.swagger.annotations.ApiModelProperty;
 import org.apache.nifi.registry.bucket.Bucket;
 import org.apache.nifi.registry.link.LinkableEntity;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import jakarta.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import java.util.Set;
