@@ -21,7 +21,7 @@ import java.util.Collection;
 import java.util.Date;
 
 import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlType;
 
 /**
  * A simple POJO for maintaining state about the last entities listed by an AbstractListProcessor that was performed so that

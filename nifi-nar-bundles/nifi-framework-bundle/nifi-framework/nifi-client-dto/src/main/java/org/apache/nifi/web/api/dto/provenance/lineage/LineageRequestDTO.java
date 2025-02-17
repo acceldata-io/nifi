@@ -19,7 +19,7 @@ package org.apache.nifi.web.api.dto.provenance.lineage;
 import io.swagger.annotations.ApiModelProperty;
 
 import javax.xml.bind.annotation.XmlEnum;
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlType;
 
 /**
  * Represents the request for lineage for a flowfile.

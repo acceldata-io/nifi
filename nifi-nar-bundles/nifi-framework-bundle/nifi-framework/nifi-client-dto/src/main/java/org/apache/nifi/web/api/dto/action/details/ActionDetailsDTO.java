@@ -17,7 +17,7 @@
 package org.apache.nifi.web.api.dto.action.details;
 
 import javax.xml.bind.annotation.XmlSeeAlso;
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlType;
 
 /**
  *
