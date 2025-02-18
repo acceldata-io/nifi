@@ -20,7 +20,7 @@ package org.apache.nifi.processor.util.list;
 import java.util.Collection;
 import java.util.Date;
 
-import javax.xml.bind.annotation.XmlTransient;
+import jakarta.xml.bind.annotation.XmlTransient;
 import jakarta.xml.bind.annotation.XmlType;
 
 /**
