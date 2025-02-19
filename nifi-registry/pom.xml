@@ -109,6 +109,11 @@
             </dependency>
 	    <!-- NiFi Registry Modules -->
             <dependency>
+                <groupId>org.apache.nifi</groupId>
+                <artifactId>nifi-security-utils-api</artifactId>
+                <version>1.27.0.3.3.6.1-1</version>
+            </dependency>
+            <dependency>
                 <groupId>org.apache.nifi.registry</groupId>
                 <artifactId>nifi-registry-utils</artifactId>
                 <version>1.27.0.3.3.6.1-1</version>
@@ -177,6 +182,21 @@
                 <classifier>resources</classifier>
                 <scope>runtime</scope>
                 <type>zip</type>
+            </dependency>
+            <dependency>
+            <groupId>org.apache.nifi</groupId>
+            <artifactId>nifi-framework-api</artifactId>
+            <version>1.27.0.3.3.6.1-1</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.nifi.registry</groupId>
+                <artifactId>nifi-registry-data-model</artifactId>
+                <version>1.27.0.3.3.6.1-1</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.nifi.registry</groupId>
+                <artifactId>nifi-registry-client</artifactId>
+                <version>1.27.0.3.3.6.1-1</version>
             </dependency>
             <dependency>
                 <groupId>org.testcontainers</groupId>
