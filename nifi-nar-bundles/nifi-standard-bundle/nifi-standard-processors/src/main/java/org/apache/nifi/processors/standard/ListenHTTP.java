@@ -60,7 +60,7 @@ import org.eclipse.jetty.util.thread.QueuedThreadPool;
 
 import javax.net.ssl.SSLContext;
 import javax.servlet.Servlet;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 import javax.ws.rs.Path;
 import java.io.IOException;
 import java.util.ArrayList;

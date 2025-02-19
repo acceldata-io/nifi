@@ -51,7 +51,7 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.server.resource.web.BearerTokenResolver;
 
-import javax.servlet.ServletException;
+import jakarta.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import java.io.IOException;
 import java.time.Duration;

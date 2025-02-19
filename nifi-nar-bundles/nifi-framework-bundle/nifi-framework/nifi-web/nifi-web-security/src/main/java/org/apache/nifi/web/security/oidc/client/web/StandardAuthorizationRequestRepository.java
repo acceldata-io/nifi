@@ -26,8 +26,8 @@ import org.springframework.cache.Cache;
 import org.springframework.security.oauth2.client.web.AuthorizationRequestRepository;
 import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.net.URI;
 import java.util.Objects;
 import java.util.Optional;
@@ -98,16 +98,6 @@ public class StandardAuthorizationRequestRepository implements AuthorizationRequ
         }
     }
 
-    /**
-     * Remove Authorization Request from cache without updating HTTP response cookies
-     *
-     * @param request HTTP Servlet Request
-     * @return OAuth2 Authorization Request removed or null when not found
-     */
-    @Override
-    public OAuth2AuthorizationRequest removeAuthorizationRequest(final HttpServletRequest request) {
-        return removeAuthorizationRequest(request, null);
-    }
 
     /**
      * Remove Authorization Request from cache and remove HTTP cookie with Request Identifier

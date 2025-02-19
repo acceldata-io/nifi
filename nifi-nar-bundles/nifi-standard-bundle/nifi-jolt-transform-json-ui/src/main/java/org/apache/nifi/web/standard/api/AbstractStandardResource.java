@@ -18,7 +18,7 @@
 package org.apache.nifi.web.standard.api;
 
 import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Context;
 
 import org.apache.nifi.web.NiFiWebConfigurationContext;

@@ -20,7 +20,7 @@ import org.apache.nifi.security.cert.CertificateAttributeReader;
 import org.apache.nifi.security.cert.StandardCertificateAttributeReader;
 import org.apache.nifi.security.cert.SubjectAlternativeName;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.security.cert.X509Certificate;
 import java.util.Collections;
 import java.util.LinkedHashMap;

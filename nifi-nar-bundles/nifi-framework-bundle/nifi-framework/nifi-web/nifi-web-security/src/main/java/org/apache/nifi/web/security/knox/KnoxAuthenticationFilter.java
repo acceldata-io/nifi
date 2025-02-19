@@ -21,7 +21,7 @@ import org.apache.nifi.web.security.NiFiAuthenticationFilter;
 import org.springframework.security.core.Authentication;
 
 import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  */

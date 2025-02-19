@@ -35,7 +35,7 @@ import org.mockito.AdditionalMatchers;
 import org.mockito.Mockito;
 
 import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Response;
