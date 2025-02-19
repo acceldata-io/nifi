@@ -18,13 +18,13 @@ package org.apache.nifi.web.filter;
 
 import org.apache.nifi.web.util.RequestUriBuilder;
 
-import javax.servlet.Filter;
+import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletContext;
+import jakarta.servlet.FilterConfig;
+import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -37,6 +37,8 @@ public class LoginFilter implements Filter {
     private static final String OAUTH2_AUTHORIZATION_PATH = "/nifi-api/oauth2/authorization/consumer";
 
     private static final String SAML2_AUTHENTICATE_FILTER_PATH = "/nifi-api/saml2/authenticate/consumer";
+
+    private static final String KNOX_REQUEST_PATH = "/nifi-api/access/knox/request";
 
     private ServletContext servletContext;
 
@@ -55,8 +57,8 @@ public class LoginFilter implements Filter {
         final RequestUriBuilder requestUriBuilder = RequestUriBuilder.fromHttpServletRequest(httpServletRequest);
 
         if  (supportsKnoxSso) {
-            final ServletContext apiContext = servletContext.getContext("/nifi-api");
-            apiContext.getRequestDispatcher("/access/knox/request").forward(request, response);
+            final URI redirectUri = requestUriBuilder.path(KNOX_REQUEST_PATH).build();
+            sendRedirect(response, redirectUri);
         } else if (supportsOidc) {
             final URI redirectUri = requestUriBuilder.path(OAUTH2_AUTHORIZATION_PATH).build();
             // Redirect to authorization URL defined in Spring Security OAuth2AuthorizationRequestRedirectFilter

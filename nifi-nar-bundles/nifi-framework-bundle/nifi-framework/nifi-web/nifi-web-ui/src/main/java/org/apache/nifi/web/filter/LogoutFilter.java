@@ -53,7 +53,7 @@ public class LogoutFilter implements Filter {
     }
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain) throws IOException, ServletException {
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain) throws IOException {
         final boolean supportsOidc = Boolean.parseBoolean(servletContext.getInitParameter("oidc-supported"));
         final boolean supportsKnoxSso = Boolean.parseBoolean(servletContext.getInitParameter("knox-supported"));
         final boolean supportsSaml = Boolean.parseBoolean(servletContext.getInitParameter("saml-supported"));

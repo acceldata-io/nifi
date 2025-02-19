@@ -18,7 +18,7 @@ package org.apache.nifi.processors.hadoop.util;
 
 import org.apache.hadoop.fs.Path;
 
-import javax.xml.bind.annotation.XmlTransient;
+import jakarta.xml.bind.annotation.XmlTransient;
 import jakarta.xml.bind.annotation.XmlType;
 import java.util.ArrayList;
 import java.util.Collection;
