@@ -19,10 +19,7 @@ package org.apache.nifi.web.standard.api.transformjson.dto;
 
 import java.io.Serializable;
 
-import jakarta.xml.bind.annotation.XmlRootElement;
 
-
-@XmlRootElement
 public class ValidationDTO implements Serializable {
 
     private Boolean valid;
