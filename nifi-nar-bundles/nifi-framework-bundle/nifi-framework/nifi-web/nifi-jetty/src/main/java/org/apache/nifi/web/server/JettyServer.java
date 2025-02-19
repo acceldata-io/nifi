@@ -96,7 +96,7 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import javax.servlet.DispatcherType;
-import javax.servlet.ServletContext;
+import jakarta.servlet.ServletContext;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;

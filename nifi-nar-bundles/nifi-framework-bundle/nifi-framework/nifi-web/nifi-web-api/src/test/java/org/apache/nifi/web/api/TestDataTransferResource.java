@@ -33,7 +33,7 @@ import org.apache.nifi.web.api.entity.TransactionResultEntity;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import javax.servlet.ServletContext;
+import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.Response;

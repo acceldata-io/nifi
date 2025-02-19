@@ -19,8 +19,8 @@ package org.apache.nifi.web.docs;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.nifi.nar.ExtensionMapping;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
+import jakarta.servlet.ServletConfig;
+import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
