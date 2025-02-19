@@ -43,6 +43,7 @@
         <servlet-api.version>5.0.0</servlet-api.version>
         <flyway.version>9.22.3</flyway.version>
         <flyway.tests.version>9.5.0</flyway.tests.version>
+        <jetty.version>11.0.18</jetty.version>
         <swagger.ui.version>3.12.0</swagger.ui.version>
         <groovy.eclipse.compiler.version>3.7.0</groovy.eclipse.compiler.version>
         <jgit.version>5.13.2.202306221912-r</jgit.version>
