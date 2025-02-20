@@ -32,7 +32,8 @@ import org.bouncycastle.asn1.x509.GeneralNames;
 import org.bouncycastle.pkcs.jcajce.JcaPKCS10CertificationRequest;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Response;
-import org.eclipse.jetty.server.handler.AbstractHandler;
+import org.eclipse.jetty.server.handler.ContextHandlerCollection;
+import org.eclipse.jetty.util.Callback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,7 +53,7 @@ import java.util.List;
 /**
  * Jetty service handler that validates the hmac of a CSR and issues a certificate if it checks out
  */
-public class TlsCertificateAuthorityServiceHandler extends AbstractHandler {
+public class TlsCertificateAuthorityServiceHandler extends Handler.Abstract {
     public static final String CSR_FIELD_MUST_BE_SET = "csr field must be set";
     public static final String HMAC_FIELD_MUST_BE_SET = "hmac field must be set";
     public static final String FORBIDDEN = "forbidden";
@@ -74,7 +75,7 @@ public class TlsCertificateAuthorityServiceHandler extends AbstractHandler {
     }
 
     @Override
-    public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws ServletException {
+    public boolean handle(Request request, Response response, Callback callback) {
         try {
             TlsCertificateAuthorityRequest tlsCertificateAuthorityRequest = objectMapper.readValue(new BoundedReader(request.getReader(), 1024 * 1024), TlsCertificateAuthorityRequest.class);
 
