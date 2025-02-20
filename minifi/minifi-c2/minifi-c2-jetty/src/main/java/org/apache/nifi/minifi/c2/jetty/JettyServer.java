@@ -145,10 +145,6 @@ public class JettyServer {
         webappContext.setDisplayName(contextPath);
         webappContext.setErrorHandler(getErrorHandler());
 
-        // remove slf4j server class to allow WAR files to have slf4j dependencies in WEB-INF/lib
-        List<String> serverClasses = new ArrayList<>(Arrays.asList(webappContext.getServerClasses()));
-        serverClasses.remove("org.slf4j.");
-        webappContext.setServerClasses(serverClasses.toArray(new String[0]));
 
         // get the temp directory for this webapp
         File tempDir = Paths.get(C2_SERVER_HOME, "tmp", warFile.getName()).toFile();
