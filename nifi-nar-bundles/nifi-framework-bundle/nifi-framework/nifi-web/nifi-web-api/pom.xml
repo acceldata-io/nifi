@@ -13,7 +13,8 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.nifi</groupId>
@@ -22,6 +23,13 @@
     </parent>
     <artifactId>nifi-web-api</artifactId>
     <packaging>war</packaging>
+
+    <properties>
+        <swaggerDirectory>${project.build.directory}/swagger</swaggerDirectory>
+        <swaggerDefinition>${swaggerDirectory}/swagger.yaml</swaggerDefinition>
+        <restApiDirectory>${project.build.directory}/${project.artifactId}-${project.version}/docs/rest-api/
+        </restApiDirectory>
+    </properties>
 
     <build>
         <resources>
@@ -53,57 +61,24 @@
                 </configuration>
             </plugin>
             <plugin>
-                <groupId>com.github.kongchen</groupId>
-                <artifactId>swagger-maven-plugin</artifactId>
-                <version>3.1.8</version>
-                <executions>
-                    <execution>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
-                        <configuration>
-                            <apiSources>
-                                <apiSource>
-                                    <locations>
-                                        <location>org.apache.nifi.web.api</location>
-                                    </locations>
-                                    <schemes>
-                                        <scheme>http</scheme>
-                                        <scheme>https</scheme>
-                                    </schemes>
-                                    <outputFormats>json</outputFormats>
-                                    <basePath>/nifi-api</basePath>
-                                    <info>
-                                        <title>NiFi Rest API</title>
-                                        <version>${project.version}</version>
-                                        <description>
-                                            The Rest API provides programmatic access to command and control a NiFi instance in real time. Start and
-                                            stop processors, monitor queues, query provenance data, and more. Each endpoint below includes a description,
-                                            definitions of the expected input and output, potential response codes, and the authorizations required
-                                            to invoke each service.
-                                        </description>
-                                        <contact>
-                                            <email>dev@nifi.apache.org</email>
-                                            <url>https://nifi.apache.org</url>
-                                        </contact>
-                                        <license>
-                                            <url>http://www.apache.org/licenses/LICENSE-2.0.html</url>
-                                            <name>Apache 2.0</name>
-                                        </license>
-                                    </info>
-                                    <templatePath>classpath:/templates/index.html.hbs</templatePath>
-                                    <outputPath>${project.build.directory}/${project.artifactId}-${project.version}/docs/rest-api/index.html</outputPath>
-                                    <swaggerDirectory>${project.build.directory}/swagger-ui</swaggerDirectory>
-                                </apiSource>
-                            </apiSources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
                 <executions>
+                    <execution>
+                        <id>openapi-filtering</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.outputDirectory}</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>src/main/resources/openapi</directory>
+                                    <filtering>true</filtering>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
                     <execution>
                         <id>copy-resources</id>
                         <phase>validate</phase>
@@ -111,13 +86,58 @@
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${project.build.directory}/${project.artifactId}-${project.version}/docs/rest-api/images</outputDirectory>
-                            <resources>          
+                            <outputDirectory>${restApiDirectory}/images</outputDirectory>
+                            <resources>
                                 <resource>
                                     <directory>src/main/resources/images</directory>
                                 </resource>
-                            </resources>              
-                        </configuration>            
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>io.swagger.core.v3</groupId>
+                <artifactId>swagger-maven-plugin-jakarta</artifactId>
+                <version>2.2.19</version>
+                <configuration>
+                    <resourcePackages>
+                        <package>org.apache.nifi.web.api</package>
+                    </resourcePackages>
+                    <outputPath>${swaggerDirectory}</outputPath>
+                    <outputFileName>swagger</outputFileName>
+                    <outputFormat>JSONANDYAML</outputFormat>
+                    <prettyPrint>true</prettyPrint>
+                    <defaultResponseCode>200</defaultResponseCode>
+                    <configurationFilePath>${project.build.outputDirectory}/openapi.yaml</configurationFilePath>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>resolve</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>io.swagger.codegen.v3</groupId>
+                <artifactId>swagger-codegen-maven-plugin</artifactId>
+                <version>3.0.50</version>
+                <executions>
+                    <execution>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>${swaggerDefinition}</inputSpec>
+                            <output>${restApiDirectory}</output>
+                            <templateDirectory>${project.basedir}/src/main/resources/templates</templateDirectory>
+                            <language>html</language>
+                            <generateApiTests>false</generateApiTests>
+                            <generateModelTests>false</generateModelTests>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
@@ -365,11 +385,6 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>cglib</groupId>
-            <artifactId>cglib-nodep</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
             <groupId>com.nimbusds</groupId>
             <artifactId>oauth2-oidc-sdk</artifactId>
             <scope>provided</scope>
@@ -393,13 +408,13 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-webapp</artifactId>
+            <groupId>org.eclipse.jetty.ee10</groupId>
+            <artifactId>jetty-ee10-webapp</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-servlets</artifactId>
+            <groupId>org.eclipse.jetty.ee10</groupId>
+            <artifactId>jetty-ee10-servlets</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
