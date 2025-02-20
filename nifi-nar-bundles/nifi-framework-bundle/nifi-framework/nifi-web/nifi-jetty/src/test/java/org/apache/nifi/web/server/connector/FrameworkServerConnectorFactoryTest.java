@@ -16,7 +16,6 @@
  */
 package org.apache.nifi.web.server.connector;
 
-import org.apache.nifi.jetty.configuration.connector.alpn.ALPNServerConnectionFactory;
 import org.apache.nifi.security.util.TemporaryKeyStoreBuilder;
 import org.apache.nifi.security.util.TlsConfiguration;
 import org.apache.nifi.util.NiFiProperties;
@@ -29,6 +28,7 @@ import org.eclipse.jetty.server.SslConnectionFactory;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.eclipse.jetty.alpn.server.ALPNServerConnectionFactory;
 
 import java.util.Collection;
 import java.util.Properties;

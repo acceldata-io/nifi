@@ -16,7 +16,7 @@
  */
 package org.apache.nifi.jetty.configuration.connector;
 
-import org.apache.nifi.jetty.configuration.connector.alpn.ALPNServerConnectionFactory;
+import org.eclipse.jetty.alpn.server.ALPNServerConnectionFactory;
 import org.eclipse.jetty.http.HttpScheme;
 import org.eclipse.jetty.http2.HTTP2Cipher;
 import org.eclipse.jetty.http2.server.HTTP2ServerConnectionFactory;
