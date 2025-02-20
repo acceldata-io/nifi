@@ -47,17 +47,16 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
-import org.eclipse.jetty.server.handler.HandlerCollection;
-import org.eclipse.jetty.servlet.ErrorPageErrorHandler;
-import org.eclipse.jetty.webapp.WebAppClassLoader;
-import org.eclipse.jetty.webapp.WebAppContext;
+import org.eclipse.jetty.server.handler.ContextHandlerCollection;
+import org.eclipse.jetty.ee10.servlet.ErrorPageErrorHandler;
+import org.eclipse.jetty.ee10.webapp.WebAppClassLoader;
+import org.eclipse.jetty.ee10.webapp.WebAppContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class JettyServer {
     private static final Logger logger = LoggerFactory.getLogger(JettyServer.class);
     private static final String C2_SERVER_HOME = System.getenv("C2_SERVER_HOME");
-    private static final String WEB_DEFAULTS_XML = "webdefault.xml";
 
     static {
         Security.addProvider(new BouncyCastleProvider());
@@ -66,7 +65,7 @@ public class JettyServer {
     public static void main(String[] args) throws Exception {
         C2Properties properties = C2Properties.getInstance();
 
-        final HandlerCollection handlers = new HandlerCollection();
+        final Handler.Collection handlers = new ContextHandlerCollection();
         try (Stream<Path> files = Files.list(Paths.get(C2_SERVER_HOME, "webapps"))) {
             files.forEach(path -> handlers.addHandler(loadWar(path.toFile(), "/c2", JettyServer.class.getClassLoader())));
         }
@@ -89,16 +88,9 @@ public class JettyServer {
         server.setHandler(handlers);
         server.start();
 
-        // ensure everything started successfully
-        for (Handler handler : server.getChildHandlers()) {
-            // see if the handler is a web app
-            if (handler instanceof WebAppContext) {
-                WebAppContext context = (WebAppContext) handler;
-
-                // see if this webapp had any exceptions that would
-                // cause it to be unavailable
+        for (Handler handler : server.getHandlers()) {
+            if (handler instanceof WebAppContext context) {
                 if (context.getUnavailableException() != null) {
-
                     System.err.println("Failed to start web server: " + context.getUnavailableException().getMessage());
                     System.err.println("Shutting down...");
                     logger.warn("Failed to start web server... shutting down.", context.getUnavailableException());
@@ -153,14 +145,10 @@ public class JettyServer {
         webappContext.setDisplayName(contextPath);
         webappContext.setErrorHandler(getErrorHandler());
 
-        // instruction jetty to examine these jars for tlds, web-fragments, etc
-        webappContext.setAttribute("org.eclipse.jetty.server.webapp.ContainerIncludeJarPattern", ".*/[^/]*servlet-api-[^/]*\\.jar$|.*/javax.servlet.jsp.jstl-.*\\\\.jar$|.*/[^/]*taglibs.*\\.jar$" );
-
         // remove slf4j server class to allow WAR files to have slf4j dependencies in WEB-INF/lib
         List<String> serverClasses = new ArrayList<>(Arrays.asList(webappContext.getServerClasses()));
         serverClasses.remove("org.slf4j.");
         webappContext.setServerClasses(serverClasses.toArray(new String[0]));
-        webappContext.setDefaultsDescriptor(WEB_DEFAULTS_XML);
 
         // get the temp directory for this webapp
         File tempDir = Paths.get(C2_SERVER_HOME, "tmp", warFile.getName()).toFile();
@@ -182,13 +170,7 @@ public class JettyServer {
         // configure the max form size (3x the default)
         webappContext.setMaxFormContentSize(600000);
 
-        try {
-            webappContext.setClassLoader(new WebAppClassLoader(parentClassLoader, webappContext));
-        } catch (IOException e) {
-            throw new UncheckedIOException("ClassLoader initialization failed", e);
-        }
-
-        logger.info("Loading WAR: " + warFile.getAbsolutePath() + " with context path set to " + contextPath);
+        webappContext.setClassLoader(new WebAppClassLoader(parentClassLoader, webappContext));
         return webappContext;
     }
 

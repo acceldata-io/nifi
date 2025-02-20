@@ -28,15 +28,12 @@ import java.net.URI;
 import java.nio.ByteBuffer;
 import java.security.KeyStore;
 import java.security.Security;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.function.Supplier;
 import javax.net.ssl.SSLContext;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
 import org.apache.nifi.jetty.configuration.connector.StandardServerConnectorFactory;
 import org.apache.nifi.minifi.bootstrap.ConfigurationFileHolder;
@@ -50,11 +47,14 @@ import org.apache.nifi.security.ssl.StandardKeyStoreBuilder;
 import org.apache.nifi.security.ssl.StandardSslContextBuilder;
 import org.apache.nifi.security.util.TlsPlatform;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.eclipse.jetty.http.HttpHeader;
+import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Request;
+import org.eclipse.jetty.server.Response;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
-import org.eclipse.jetty.server.handler.AbstractHandler;
-import org.eclipse.jetty.server.handler.HandlerCollection;
+import org.eclipse.jetty.server.handler.ContextHandlerCollection;
+import org.eclipse.jetty.util.Callback;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -133,7 +133,7 @@ public class RestChangeIngestor implements ChangeIngestor {
 
         this.configurationChangeNotifier = configurationChangeNotifier;
 
-        HandlerCollection handlerCollection = new HandlerCollection(true);
+        final ContextHandlerCollection handlerCollection = new ContextHandlerCollection();
         handlerCollection.addHandler(new JettyHandler());
         jetty.setHandler(handlerCollection);
     }
@@ -235,27 +235,23 @@ public class RestChangeIngestor implements ChangeIngestor {
         this.differentiator = differentiator;
     }
 
-    private class JettyHandler extends AbstractHandler {
+    private class JettyHandler extends Handler.Abstract {
 
         @Override
-        public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response)
-                throws IOException {
+        public boolean handle(Request request, Response response, Callback callback) {
 
             logRequest(request);
-
-            baseRequest.setHandled(true);
 
             if (POST.equals(request.getMethod())) {
                 int statusCode;
                 String responseText;
                 try {
-                    ByteBuffer readOnlyNewConfig =
-                        ConfigTransformer.overrideNonFlowSectionsFromOriginalSchema(
-                            IOUtils.toByteArray(request.getInputStream()), configurationFileHolder.getConfigFileReference().get().duplicate(), properties);
+
+                    ByteBuffer newFlowConfig = wrap(toByteArray(Request.asInputStream(request))).duplicate();
 
                     if (differentiator.isNew(readOnlyNewConfig)) {
 
-                        Collection<ListenerHandleResult> listenerHandleResults = configurationChangeNotifier.notifyListeners(readOnlyNewConfig);
+                        java.util.Collection<ListenerHandleResult> listenerHandleResults = configurationChangeNotifier.notifyListeners(newFlowConfig);
 
                         statusCode = 200;
                         for (ListenerHandleResult result : listenerHandleResults) {
@@ -275,15 +271,16 @@ public class RestChangeIngestor implements ChangeIngestor {
                     responseText = "Failed to override config file";
                 }
 
-                writeOutput(response, responseText, statusCode);
+                writeOutput(request, response, responseText, statusCode);
             } else if (GET.equals(request.getMethod())) {
-                writeOutput(response, GET_TEXT, 200);
+                writeOutput(request, response, GET_TEXT, 200);
             } else {
-                writeOutput(response, OTHER_TEXT, 404);
+                writeOutput(request, response, OTHER_TEXT, 404);
             }
+            return false;
         }
 
-        private String getPostText(Collection<ListenerHandleResult> listenerHandleResults) {
+        private String getPostText(java.util.Collection<ListenerHandleResult> listenerHandleResults) {
             StringBuilder postResult = new StringBuilder("The result of notifying listeners:\n");
 
             for (ListenerHandleResult result : listenerHandleResults) {
@@ -294,22 +291,24 @@ public class RestChangeIngestor implements ChangeIngestor {
             return postResult.toString();
         }
 
-        private void writeOutput(HttpServletResponse response, String responseText, int responseCode) throws IOException {
+        private void writeOutput(Request request, Response response, String responseText, int responseCode) {
             response.setStatus(responseCode);
-            response.setContentType("text/plain");
-            response.setContentLength(responseText.length());
-            try (PrintWriter writer = response.getWriter()) {
+            response.getHeaders().put(HttpHeader.CONTENT_TYPE, "text/plain");
+            response.getHeaders().put(HttpHeader.CONTENT_LENGTH, responseText.length());
+
+            try (PrintWriter writer = new PrintWriter(Response.asBufferedOutputStream(request, response))) {
                 writer.print(responseText);
                 writer.flush();
             }
         }
 
-        private void logRequest(HttpServletRequest request) {
+        private void logRequest(Request request) {
+
             logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
             logger.info("request method = " + request.getMethod());
-            logger.info("request url = " + request.getRequestURL());
-            logger.info("context path = " + request.getContextPath());
-            logger.info("request content type = " + request.getContentType());
+            logger.info("request url = " + request.getHttpURI());
+            logger.info("context path = " + request.getContext().getContextPath());
+            logger.info("request content type = " + request.getHeaders().get(HttpHeader.CONTENT_TYPE));
             logger.info("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
         }
 
