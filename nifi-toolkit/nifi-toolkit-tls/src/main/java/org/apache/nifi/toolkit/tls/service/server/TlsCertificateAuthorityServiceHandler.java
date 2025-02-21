@@ -32,14 +32,12 @@ import org.bouncycastle.asn1.x509.GeneralNames;
 import org.bouncycastle.pkcs.jcajce.JcaPKCS10CertificationRequest;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Response;
-import org.eclipse.jetty.server.handler.ContextHandlerCollection;
+import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.util.Callback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.security.auth.x500.X500Principal;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -75,18 +73,18 @@ public class TlsCertificateAuthorityServiceHandler extends Handler.Abstract {
     }
 
     @Override
-    public boolean handle(Request request, Response response, Callback callback) {
+    public boolean handle(Request request, Response response, Callback callback) throws ServletException {
         try {
             TlsCertificateAuthorityRequest tlsCertificateAuthorityRequest = objectMapper.readValue(new BoundedReader(request.getReader(), 1024 * 1024), TlsCertificateAuthorityRequest.class);
 
             if (!tlsCertificateAuthorityRequest.hasHmac()) {
                 writeResponse(objectMapper, request, response, new TlsCertificateAuthorityResponse(HMAC_FIELD_MUST_BE_SET), Response.SC_BAD_REQUEST);
-                return;
+                return false;
             }
 
             if (!tlsCertificateAuthorityRequest.hasCsr()) {
                 writeResponse(objectMapper, request, response, new TlsCertificateAuthorityResponse(CSR_FIELD_MUST_BE_SET), Response.SC_BAD_REQUEST);
-                return;
+                return false;
             }
 
             JcaPKCS10CertificationRequest jcaPKCS10CertificationRequest = TlsHelper.parseCsr(tlsCertificateAuthorityRequest.getCsr());
@@ -115,6 +113,7 @@ public class TlsCertificateAuthorityServiceHandler extends Handler.Abstract {
         } finally {
             baseRequest.setHandled(true);
         }
+        return false;
     }
 
     private void writeResponse(ObjectMapper objectMapper, HttpServletRequest request, HttpServletResponse response, TlsCertificateAuthorityResponse tlsCertificateAuthorityResponse,
