@@ -45,6 +45,7 @@ import org.apache.nifi.minifi.bootstrap.configuration.differentiators.Differenti
 import org.apache.nifi.minifi.bootstrap.configuration.differentiators.WholeConfigDifferentiator;
 import org.apache.nifi.minifi.bootstrap.configuration.ingestors.interfaces.ChangeIngestor;
 import org.apache.nifi.minifi.bootstrap.util.ConfigTransformer;
+import org.apache.nifi.minifi.properties.BootstrapProperties;
 import org.apache.nifi.security.ssl.StandardKeyStoreBuilder;
 import org.apache.nifi.security.ssl.StandardSslContextBuilder;
 import org.apache.nifi.security.util.TlsPlatform;
@@ -251,7 +252,7 @@ public class RestChangeIngestor implements ChangeIngestor {
 
                     ByteBuffer newFlowConfig = wrap(toByteArray(Request.asInputStream(request))).duplicate();
 
-                    if (differentiator.isNew(readOnlyNewConfig)) {
+                    if (differentiator.isNew(newFlowConfig)) {
 
                         java.util.Collection<ListenerHandleResult> listenerHandleResults = configurationChangeNotifier.notifyListeners(newFlowConfig);
 
