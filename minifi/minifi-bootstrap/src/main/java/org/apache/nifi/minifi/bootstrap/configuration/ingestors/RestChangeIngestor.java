@@ -20,6 +20,8 @@ package org.apache.nifi.minifi.bootstrap.configuration.ingestors;
 import static org.apache.nifi.minifi.bootstrap.configuration.ConfigurationChangeCoordinator.NOTIFIER_INGESTORS_KEY;
 import static org.apache.nifi.minifi.bootstrap.configuration.differentiators.WholeConfigDifferentiator.WHOLE_CONFIG_KEY;
 
+import static java.nio.ByteBuffer.wrap;
+import static org.apache.commons.io.IOUtils.toByteArray;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
