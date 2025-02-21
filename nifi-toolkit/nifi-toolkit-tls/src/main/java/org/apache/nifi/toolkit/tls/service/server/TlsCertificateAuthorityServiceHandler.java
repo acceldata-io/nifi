@@ -18,6 +18,7 @@
 package org.apache.nifi.toolkit.tls.service.server;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.io.input.BoundedReader;
 import org.apache.nifi.security.cert.builder.StandardCertificateBuilder;
 import org.apache.nifi.toolkit.tls.service.dto.TlsCertificateAuthorityRequest;
@@ -73,7 +74,7 @@ public class TlsCertificateAuthorityServiceHandler extends Handler.Abstract {
     }
 
     @Override
-    public boolean handle(Request request, Response response, Callback callback) throws ServletException {
+    public boolean handle(Request request, Response response, Callback callback){
         try {
             TlsCertificateAuthorityRequest tlsCertificateAuthorityRequest = objectMapper.readValue(new BoundedReader(request.getReader(), 1024 * 1024), TlsCertificateAuthorityRequest.class);
 
@@ -109,7 +110,7 @@ public class TlsCertificateAuthorityServiceHandler extends Handler.Abstract {
                 writeResponse(objectMapper, request, response, new TlsCertificateAuthorityResponse(FORBIDDEN), Response.SC_FORBIDDEN);
             }
         } catch (Exception e) {
-            throw new ServletException("Server error");
+            throw new RuntimeException ("Server error");
         } finally {
             baseRequest.setHandled(true);
         }
