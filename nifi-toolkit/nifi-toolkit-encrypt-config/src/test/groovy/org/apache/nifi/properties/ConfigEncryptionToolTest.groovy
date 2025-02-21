@@ -21,8 +21,6 @@ import org.apache.commons.cli.CommandLineParser
 import org.apache.commons.cli.DefaultParser
 import org.apache.commons.io.IOUtils
 import org.apache.commons.lang3.SystemUtils
-import org.apache.nifi.security.util.EncryptionMethod
-import org.apache.nifi.toolkit.tls.commandLine.CommandLineParseException
 import org.apache.nifi.util.NiFiProperties
 import org.apache.nifi.util.console.TextDevice
 import org.apache.nifi.util.console.TextDevices
@@ -69,7 +67,7 @@ class ConfigEncryptionToolTest {
     public static final String KEY_HEX = isUnlimitedStrengthCryptoAvailable() ? KEY_HEX_256 : KEY_HEX_128
     private static final String PASSWORD = "thisIsABadPassword"
     private static final String ANOTHER_PASSWORD = "thisIsAnotherBadPassword"
-    
+
     private static final SensitivePropertyProviderFactory DEFAULT_PROVIDER_FACTORY = StandardSensitivePropertyProviderFactory.withKey(KEY_HEX)
 
     // From ConfigEncryptionTool.deriveKeyFromPassword("thisIsABadPassword")

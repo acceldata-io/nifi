@@ -44,8 +44,6 @@ env:
     -pl -:nifi-kafka-connector-assembly
     -pl -:nifi-kafka-connector-tests
     -pl -:nifi-toolkit-encrypt-config
-    -pl -:nifi-toolkit-admin
-    -pl -:nifi-toolkit-tls
     -pl -:nifi-toolkit-assembly
     -pl -:nifi-registry-assembly
     -pl -:nifi-registry-toolkit-assembly
@@ -56,6 +54,7 @@ env:
     -pl -:nifi-stateless-system-test-suite
     -pl -:nifi-system-test-suite
     -pl -:nifi-nar-provider-assembly
+    -pl -:nifi-py4j-integration-tests
   MAVEN_VERIFY_COMMAND: >-
     verify
     --show-version
@@ -241,7 +240,7 @@ jobs:
   macos-build-jp:
     timeout-minutes: 150
     runs-on: macos-latest
-    name: MacOS Zulu JDK 8 JP
+    name: MacOS Zulu JDK 21 JP
     steps:
       - name: System Information
         run: |
@@ -300,6 +299,7 @@ jobs:
         if: failure()
       - name: Post Disk Usage
         run: df
+        if: ${{ always() }}
 
   windows-build:
     timeout-minutes: 150
