@@ -812,6 +812,13 @@
     <version>2.6.0</version> <!-- Use the latest version available -->
     </dependency>
     </dependencies>
+    <pluginRepositories>
+    <pluginRepository>
+        <id>groovy-plugins-release</id>
+        <url>https://groovy.jfrog.io/artifactory/plugins-release</url>
+    </pluginRepository>
+    </pluginRepositories>
+
 
     <build>
         <pluginManagement>
