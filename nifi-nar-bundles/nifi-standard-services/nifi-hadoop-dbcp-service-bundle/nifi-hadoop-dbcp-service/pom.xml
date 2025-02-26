@@ -69,6 +69,12 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-dbcp2</artifactId>
         </dependency>
+        <!-- dnsjava upgrade to resolve CVE-2024-25638. -->
+        <dependency>
+            <groupId>dnsjava</groupId>
+            <artifactId>dnsjava</artifactId>
+            <version>3.6.0</version>
+        </dependency>
         <!-- We are compiling against hadoop-common to make use of UserGroupInformation, but we don't want to bundle it
         into the NAR, users are expected to provided hadoop-common on the driver classpath, or a shaded JAR that includes it -->
         <dependency>
@@ -97,6 +103,10 @@
                 <exclusion>
                     <groupId>org.bouncycastle</groupId>
                     <artifactId>bcprov-jdk15on</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>dnsjava</groupId>
+                    <artifactId>dnsjava</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>

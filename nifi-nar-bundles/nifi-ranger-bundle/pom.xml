@@ -50,6 +50,12 @@
                 <artifactId>hadoop-shaded-protobuf_3_25</artifactId>
                 <version>1.3.0</version>
             </dependency>
+            <!-- dnsjava upgrade to resolve CVE-2024-25638. -->
+            <dependency>
+                <groupId>dnsjava</groupId>
+                <artifactId>dnsjava</artifactId>
+                <version>3.6.0</version>
+            </dependency>
             <!-- Override Hadoop -->
             <dependency>
                 <groupId>org.apache.hadoop</groupId>
@@ -59,6 +65,10 @@
                     <exclusion>
                         <groupId>org.apache.hadoop.thirdparty</groupId>
                         <artifactId>hadoop-shaded-protobuf_3_7</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>dnsjava</groupId>
+                        <artifactId>dnsjava</artifactId>
                     </exclusion>
                 </exclusions>
             </dependency>

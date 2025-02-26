@@ -116,7 +116,12 @@
             <artifactId>flume-hdfs-sink</artifactId>
             <version>${flume.version}</version>
         </dependency>
-
+        <!-- dnsjava upgrade to resolve CVE-2024-25638. -->
+        <dependency>
+            <groupId>dnsjava</groupId>
+            <artifactId>dnsjava</artifactId>
+            <version>3.6.0</version>
+        </dependency>
         <!-- HDFS sink dependencies -->
         <dependency>
             <groupId>org.apache.hadoop</groupId>
@@ -143,6 +148,10 @@
                 <exclusion>
                     <groupId>org.bouncycastle</groupId>
                     <artifactId>bcprov-jdk15on</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>dnsjava</groupId>
+                    <artifactId>dnsjava</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>

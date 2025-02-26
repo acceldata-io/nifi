@@ -56,6 +56,12 @@
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-kerberos-credentials-service-api</artifactId>
         </dependency>
+        <!-- dnsjava upgrade to resolve CVE-2024-25638. -->
+        <dependency>
+            <groupId>dnsjava</groupId>
+            <artifactId>dnsjava</artifactId>
+            <version>3.6.0</version>
+        </dependency>
         <dependency>
             <groupId>org.apache.atlas</groupId>
             <artifactId>atlas-client-v2</artifactId>
@@ -72,6 +78,10 @@
                 <exclusion>
                     <groupId>org.apache.logging.log4j</groupId>
                     <artifactId>log4j-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>dnsjava</groupId>
+                    <artifactId>dnsjava</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
