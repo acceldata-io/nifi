@@ -17,7 +17,7 @@
     <parent>
         <groupId>org.apache.nifi</groupId>
         <artifactId>nifi-standard-services</artifactId>
-        <version>1.27.0.3.3.6.1-SNAPSHOT</version>
+        <version>1.27.0.3.3.6.1-1</version>
     </parent>
 
     <artifactId>nifi-hwx-schema-registry-bundle</artifactId>
@@ -53,17 +53,6 @@
             <snapshots>
                 <enabled>true</enabled>
             </snapshots>
-        </repository>
-        <repository>
-                <id>acceldata staging repo</id>
-                <name>acceldata staging repo</name>
-                <url>https://repo1.acceldata.dev/repository/odp-staging-central/</url>
-                <releases>
-            <enabled>true</enabled>
-          </releases>
-          <snapshots>
-            <enabled>true</enabled>
-          </snapshots>
         </repository>
     </repositories>
 

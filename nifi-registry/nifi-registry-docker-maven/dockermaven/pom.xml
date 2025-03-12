@@ -15,7 +15,7 @@
     <parent>
         <artifactId>nifi-registry-docker-maven</artifactId>
         <groupId>org.apache.nifi.registry</groupId>
-        <version>1.27.0.3.3.6.1-SNAPSHOT</version>
+        <version>1.27.0.3.3.6.1-1</version>
     </parent>
 
     <artifactId>dockermaven</artifactId>
