@@ -135,7 +135,7 @@
         <org.bouncycastle.version>1.76</org.bouncycastle.version>
         <testcontainers.version>1.18.3</testcontainers.version>
         <org.slf4j.version>2.0.7</org.slf4j.version>
-        <ranger.version>2.4.0</ranger.version>
+        <ranger.version>2.3.0.3.2.3.4-1</ranger.version>
         <jetty.version>9.4.51.v20230217</jetty.version>
         <jackson.bom.version>2.15.2</jackson.bom.version>
         <avro.version>1.11.2</avro.version>
@@ -146,8 +146,8 @@
         <nifi.groovy.version>3.0.18</nifi.groovy.version>
         <groovy.eclipse.batch.version>3.0.8-01</groovy.eclipse.batch.version>
         <surefire.version>3.0.0</surefire.version>
-        <hadoop.version>3.3.6</hadoop.version>
-        <ozone.version>1.2.1</ozone.version>
+        <hadoop.version>3.2.3.3.2.3.4-1</hadoop.version>
+        <ozone.version>1.4.0.3.2.3.4-1</ozone.version>
         <gcs.version>2.1.5</gcs.version>
         <aspectj.version>1.9.6</aspectj.version>
         <jersey.bom.version>2.39.1</jersey.bom.version>
@@ -161,7 +161,7 @@
         <spring.security.version>5.8.5</spring.security.version>
         <swagger.annotations.version>1.6.11</swagger.annotations.version>
         <h2.version>2.2.220</h2.version>
-        <zookeeper.version>3.8.2</zookeeper.version>
+        <zookeeper.version>3.5.10.3.2.3.4-1</zookeeper.version>
         <caffeine.version>2.9.3</caffeine.version>
     </properties>
     <dependencyManagement>
