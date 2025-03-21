@@ -17,7 +17,7 @@
     <parent>
         <groupId>org.apache.nifi</groupId>
         <artifactId>nifi-nar-bundles</artifactId>
-        <version>1.27.0.3.3.6.0-1</version>
+        <version>1.27.0.3.3.6.3-1</version>
     </parent>
     <artifactId>nifi-kafka-bundle</artifactId>
     <packaging>pom</packaging>
@@ -26,6 +26,7 @@
         <kafka1.0.version>1.0.2</kafka1.0.version>
         <kafka2.0.version>2.0.0</kafka2.0.version>
         <kafka2.6.version>2.6.3</kafka2.6.version>
+        <kafka2.8.version>2.8.2.3.3.6.3-1</kafka2.8.version>
         <aws-msk-iam-auth.version>1.1.5</aws-msk-iam-auth.version>
     </properties>
 
@@ -43,22 +44,22 @@
             <dependency>
                 <groupId>org.apache.nifi</groupId>
                 <artifactId>nifi-kafka-1-0-processors</artifactId>
-                <version>1.27.0.3.3.6.0-1</version>
+                <version>1.27.0.3.3.6.3-1</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.nifi</groupId>
                 <artifactId>nifi-kafka-2-0-processors</artifactId>
-                <version>1.27.0.3.3.6.0-1</version>
+                <version>1.27.0.3.3.6.3-1</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.nifi</groupId>
                 <artifactId>nifi-kafka-2-6-processors</artifactId>
-                <version>1.27.0.3.3.6.0-1</version>
+                <version>1.27.0.3.3.6.3-1</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.nifi</groupId>
                 <artifactId>nifi-kafka-shared</artifactId>
-                <version>1.27.0.3.3.6.0-1</version>
+                <version>1.27.0.3.3.6.3-1</version>
             </dependency>
             <dependency>
                 <groupId>io.netty</groupId>

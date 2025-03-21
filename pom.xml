@@ -19,7 +19,7 @@
     </parent>
     <groupId>org.apache.nifi</groupId>
     <artifactId>nifi</artifactId>
-    <version>1.27.0.3.3.6.0-1</version>
+    <version>1.27.0.3.3.6.3-1</version>
     <packaging>pom</packaging>
     <description>Apache NiFi is an easy to use, powerful, and reliable system to process and distribute data.</description>
     <modules>
@@ -100,7 +100,7 @@
         <node.version>v16.13.2</node.version>
         <frontend.mvn.plugin.version>1.14.2</frontend.mvn.plugin.version>
         <nifi.nar.maven.plugin.version>1.5.1</nifi.nar.maven.plugin.version>
-        <project.build.outputTimestamp>1721799367</project.build.outputTimestamp>
+        <project.build.outputTimestamp>1742533128</project.build.outputTimestamp>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <inceptionYear>2014</inceptionYear>
@@ -124,7 +124,7 @@
         <testcontainers.version>1.19.8</testcontainers.version>
         <org.slf4j.version>2.0.13</org.slf4j.version>
         <com.jayway.jsonpath.version>2.9.0</com.jayway.jsonpath.version>
-        <ranger.version>2.4.0</ranger.version>
+        <ranger.version>2.5.0.3.3.6.3-1</ranger.version>
         <jetty.version>9.4.54.v20240208</jetty.version>
         <jackson.bom.version>2.17.1</jackson.bom.version>
         <avro.version>1.11.3</avro.version>
@@ -135,8 +135,8 @@
         <nifi.groovy.version>3.0.21</nifi.groovy.version>
         <groovy.eclipse.batch.version>3.0.8-01</groovy.eclipse.batch.version>
         <surefire.version>3.2.5</surefire.version>
-        <hadoop.version>3.4.0</hadoop.version>
-        <ozone.version>1.2.1</ozone.version>
+        <hadoop.version>3.3.6.3.3.6.3-1</hadoop.version>
+        <ozone.version>1.4.0.3.3.6.3-1</ozone.version>
         <gcs.version>2.1.5</gcs.version>
         <aspectj.version>1.9.6</aspectj.version>
         <jersey.bom.version>2.43</jersey.bom.version>
@@ -150,7 +150,7 @@
         <spring.security.version>5.8.13</spring.security.version>
         <swagger.annotations.version>1.6.14</swagger.annotations.version>
         <h2.version>2.2.224</h2.version>
-        <zookeeper.version>3.9.2</zookeeper.version>
+        <zookeeper.version>3.8.4.3.3.6.3-1</zookeeper.version>
         <caffeine.version>2.9.3</caffeine.version>
     </properties>
     <dependencyManagement>
@@ -725,18 +725,18 @@
             <dependency>
                 <groupId>org.apache.nifi</groupId>
                 <artifactId>nifi-standard-shared-nar</artifactId>
-                <version>1.27.0.3.3.6.0-1</version>
+                <version>1.27.0.3.3.6.3-1</version>
                 <type>nar</type>
             </dependency>
             <dependency>
                 <groupId>org.apache.nifi</groupId>
                 <artifactId>nifi-property-utils</artifactId>
-                <version>1.27.0.3.3.6.0-1</version>
+                <version>1.27.0.3.3.6.3-1</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.nifi</groupId>
                 <artifactId>nifi-utils</artifactId>
-                <version>1.27.0.3.3.6.0-1</version>
+                <version>1.27.0.3.3.6.3-1</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
