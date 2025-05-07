@@ -1219,6 +1219,7 @@ public abstract class AbstractComponentNode implements ComponentNode {
 
     @Override
     public void resetValidationState() {
+        logger.info("===============> AbstractComponentNode.ResetValidationState");
         lock.lock();
         try {
             validationContext = null;
@@ -1232,6 +1233,7 @@ public abstract class AbstractComponentNode implements ComponentNode {
         } finally {
             lock.unlock();
         }
+        logger.info("AbstractComponentNode.ResetValidationState ===============>");
     }
 
     @Override

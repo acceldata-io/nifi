@@ -280,17 +280,20 @@ public class StandardVersionedComponentSynchronizer implements VersionedComponen
         // transition the service into the RUNNING state, and then we need to update a Connection that is connected to it,
         // updating the Connection will fail because the Connection's source & destination must both be stopped in order to
         // update it. To avoid that, we simply pause the scheduler. Once all updates have been made, we will resume the scheduler.
+        LOG.info("===========> Enter synchronize() ");
         context.getComponentScheduler().pause();
-
+        LOG.info("===========> context.getComponentScheduler().pause() ");
         group.setComments(proposed.getComments());
-
+        LOG.info("===========> group.setComments(proposed.getComments()) ");
         if (syncOptions.isUpdateSettings()) {
             if (proposed.getName() != null) {
                 group.setName(proposed.getName());
+                LOG.info("===========> proposed.getName() != null ");
             }
 
             if (proposed.getPosition() != null) {
                 group.setPosition(new Position(proposed.getPosition().getX(), proposed.getPosition().getY()));
+                LOG.info("===========> group.setPosition  ", proposed.getPosition().getX(),proposed.getPosition().getY());
             }
         }
 
@@ -616,6 +619,7 @@ public class StandardVersionedComponentSynchronizer implements VersionedComponen
     private void removeMissingConnections(final ProcessGroup group, final VersionedProcessGroup proposed, final Map<String, Connection> connectionsByVersionedId) {
         final Set<String> connectionsRemoved = new HashSet<>(connectionsByVersionedId.keySet());
         final Set<String> connectionsRemovedDueToChangingSourceId = new HashSet<>();
+        LOG.info("=================> removeMissingConnections");
 
         for (final VersionedConnection proposedConnection : proposed.getConnections()) {
             connectionsRemoved.remove(proposedConnection.getIdentifier());
@@ -853,6 +857,7 @@ public class StandardVersionedComponentSynchronizer implements VersionedComponen
                 LOG.info("Updated {}", port);
             } else {
                 port.setPosition(new Position(proposedPort.getPosition().getX(), proposedPort.getPosition().getY()));
+                LOG.info("Updated positions {} {}",proposedProcessor.getPosition().getX(), proposedProcessor.getPosition().getY());
             }
         }
     }
@@ -910,6 +915,7 @@ public class StandardVersionedComponentSynchronizer implements VersionedComponen
                 LOG.info("Updated {}", label);
             } else {
                 label.setPosition(new Position(proposedLabel.getPosition().getX(), proposedLabel.getPosition().getY()));
+                LOG.info("Updated positions {} {}",proposedProcessor.getPosition().getX(), proposedProcessor.getPosition().getY());
             }
         }
     }
@@ -1001,6 +1007,7 @@ public class StandardVersionedComponentSynchronizer implements VersionedComponen
     private void synchronizeProcessors(final ProcessGroup group, final VersionedProcessGroup proposed, final Map<String, ProcessorNode> processorsByVersionedId,
                                        final ProcessGroup topLevelGroup)
                 throws ProcessorInstantiationException {
+        LOG.info("======================> synchronizeProcessors");
 
         for (final VersionedProcessor proposedProcessor : proposed.getProcessors()) {
             final ProcessorNode processor = processorsByVersionedId.get(proposedProcessor.getIdentifier());
@@ -1012,8 +1019,10 @@ public class StandardVersionedComponentSynchronizer implements VersionedComponen
                 LOG.info("Updated {}", processor);
             } else {
                 processor.setPosition(new Position(proposedProcessor.getPosition().getX(), proposedProcessor.getPosition().getY()));
+                LOG.info("Updated positions {} {}",proposedProcessor.getPosition().getX(), proposedProcessor.getPosition().getY());
             }
         }
+        LOG.info(" synchronizeProcessors ======================>");
     }
 
     private void synchronizeRemoteGroups(final ProcessGroup group, final VersionedProcessGroup proposed, final Map<String, RemoteProcessGroup> rpgsByVersionedId) {
