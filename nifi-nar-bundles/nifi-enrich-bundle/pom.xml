@@ -18,25 +18,25 @@
     <parent>
         <artifactId>nifi-standard-shared-bom</artifactId>
         <groupId>org.apache.nifi</groupId>
-        <version>1.27.0.3.3.6.1-1</version>
+        <version>1.27.0.3.3.6.1-SNAPSHOT</version>
         <relativePath>../nifi-standard-shared-bundle/nifi-standard-shared-bom</relativePath>
     </parent>
 
     <artifactId>nifi-enrich-bundle</artifactId>
     <packaging>pom</packaging>
     <description>NiFi Enrichment Capability Set</description>
-	
+
     <modules>
         <module>nifi-enrich-processors</module>
         <module>nifi-enrich-nar</module>
     </modules>
-	
+
     <dependencyManagement>
         <dependencies>
             <dependency>
                 <groupId>org.apache.nifi</groupId>
                 <artifactId>nifi-enrich-processors</artifactId>
-                <version>1.27.0.3.3.6.1-1</version>
+                <version>1.27.0.3.3.6.1-SNAPSHOT</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

@@ -18,7 +18,7 @@
     <parent>
         <groupId>org.apache.nifi</groupId>
         <artifactId>nifi</artifactId>
-        <version>1.27.0.3.3.6.1-1</version>
+        <version>1.27.0.3.3.6.1-SNAPSHOT</version>
     </parent>
     <packaging>pom</packaging>
     <artifactId>nifi-docs</artifactId>
@@ -44,7 +44,7 @@
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>            
+            </plugin>
             <plugin>
                 <groupId>org.asciidoctor</groupId>
                 <artifactId>asciidoctor-maven-plugin</artifactId>
@@ -147,7 +147,7 @@
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>            
+            </plugin>
         </plugins>
     </build>
 </project>

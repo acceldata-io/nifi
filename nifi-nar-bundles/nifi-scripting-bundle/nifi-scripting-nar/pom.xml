@@ -19,7 +19,7 @@
     <parent>
         <groupId>org.apache.nifi</groupId>
         <artifactId>nifi-scripting-bundle</artifactId>
-        <version>1.27.0.3.3.6.1-1</version>
+        <version>1.27.0.3.3.6.1-SNAPSHOT</version>
     </parent>
 
     <artifactId>nifi-scripting-nar</artifactId>
@@ -36,10 +36,10 @@
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-standard-shared-nar</artifactId>
-            <version>1.27.0.3.3.6.1-1</version>
+            <version>1.27.0.3.3.6.1-SNAPSHOT</version>
             <type>nar</type>
         </dependency>
-        
+
         <!-- nifi-metrics dependency to include in the NAR for processor to use at runtime -->
         <dependency>
             <groupId>org.apache.nifi</groupId>

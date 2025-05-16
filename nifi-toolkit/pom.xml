@@ -18,7 +18,7 @@
     <parent>
         <groupId>org.apache.nifi</groupId>
         <artifactId>nifi</artifactId>
-        <version>1.27.0.3.3.6.1-1</version>
+        <version>1.27.0.3.3.6.1-SNAPSHOT</version>
     </parent>
     <artifactId>nifi-toolkit</artifactId>
     <packaging>pom</packaging>
@@ -89,8 +89,8 @@
     </dependencies>
     <profiles>
         <profile>
-            <!-- This profile, activating when compiling on Java versions above 
-                1.8, provides configuration changes to allow NiFi to be compiled on those 
+            <!-- This profile, activating when compiling on Java versions above
+                1.8, provides configuration changes to allow NiFi to be compiled on those
                 JDKs. -->
             <id>jigsaw</id>
             <activation>

@@ -21,7 +21,7 @@ limitations under the License.
     <parent>
         <groupId>org.apache.nifi.minifi</groupId>
         <artifactId>minifi</artifactId>
-        <version>1.27.0.3.3.6.1-1</version>
+        <version>1.27.0.3.3.6.1-SNAPSHOT</version>
     </parent>
 
     <artifactId>minifi-docker</artifactId>
@@ -34,7 +34,7 @@ limitations under the License.
     </properties>
 
     <profiles>
-        <!-- Profile for building official Docker images. Not bound to build phases since that would require anyone build to have the Docker engine installed on their machine -->       
+        <!-- Profile for building official Docker images. Not bound to build phases since that would require anyone build to have the Docker engine installed on their machine -->
         <profile>
             <id>docker</id>
             <build>

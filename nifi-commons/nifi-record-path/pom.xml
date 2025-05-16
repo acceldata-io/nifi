@@ -19,7 +19,7 @@
   <parent>
     <groupId>org.apache.nifi</groupId>
     <artifactId>nifi-commons</artifactId>
-    <version>1.27.0.3.3.6.1-1</version>
+    <version>1.27.0.3.3.6.1-SNAPSHOT</version>
   </parent>
 
   <artifactId>nifi-record-path</artifactId>
@@ -81,30 +81,30 @@
                         <exclude>src/test/resources/json/address-book.json</exclude>
                     </excludes>
                 </configuration>
-            </plugin>            
+            </plugin>
         </plugins>
     </build>
-    
+
     <dependencies>
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-api</artifactId>
-            <version>1.27.0.3.3.6.1-1</version>
+            <version>1.27.0.3.3.6.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-record</artifactId>
-            <version>1.27.0.3.3.6.1-1</version>
+            <version>1.27.0.3.3.6.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-properties</artifactId>
-            <version>1.27.0.3.3.6.1-1</version>
+            <version>1.27.0.3.3.6.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-uuid5</artifactId>
-            <version>1.27.0.3.3.6.1-1</version>
+            <version>1.27.0.3.3.6.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.antlr</groupId>
