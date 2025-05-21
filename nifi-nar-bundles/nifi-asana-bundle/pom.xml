@@ -25,6 +25,10 @@
     <artifactId>nifi-asana-bundle</artifactId>
     <packaging>pom</packaging>
 
+    <properties>
+        <guava.version>33.3.1-jre</guava.version>
+    </properties>
+
     <modules>
         <module>nifi-asana-processors</module>
         <module>nifi-asana-processors-nar</module>
@@ -77,6 +81,11 @@
                 <groupId>io.grpc</groupId>
                 <artifactId>grpc-context</artifactId>
                 <version>1.59.0</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${guava.version}</version> <!-- or any stable version -->
             </dependency>
         </dependencies>
     </dependencyManagement>
