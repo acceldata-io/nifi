@@ -48,6 +48,8 @@ import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static org.apache.nifi.processors.aws.util.RegionUtilV1.S3_REGION;
+
 @Tags({"Amazon", "S3", "AWS", "Archive", "Exists"})
 @InputRequirement(InputRequirement.Requirement.INPUT_REQUIRED)
 @CapabilityDescription("Check for the existence of a file in S3 without attempting to download it. This processor can be " +

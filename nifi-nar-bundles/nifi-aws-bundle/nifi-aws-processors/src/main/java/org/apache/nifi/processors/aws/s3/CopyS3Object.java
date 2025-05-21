@@ -49,6 +49,8 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import static org.apache.nifi.processors.aws.util.RegionUtilV1.S3_REGION;
+
 @Tags({"Amazon", "S3", "AWS", "Archive", "Copy"})
 @InputRequirement(InputRequirement.Requirement.INPUT_REQUIRED)
 @CapabilityDescription("Copies a file from one bucket and key to another in AWS S3")

@@ -886,7 +886,7 @@ public class PutS3Object extends AbstractS3Processor {
                 getLogger().info(e.getMessage());
                 session.rollback();
             } else {
-                getLogger().error("Failed to put {} to Amazon S3", flowFile, pe);
+                getLogger().error("Failed to put {} to Amazon S3", flowFile, e);
                 flowFile = session.penalize(flowFile);
                 session.transfer(flowFile, REL_FAILURE);
             }
