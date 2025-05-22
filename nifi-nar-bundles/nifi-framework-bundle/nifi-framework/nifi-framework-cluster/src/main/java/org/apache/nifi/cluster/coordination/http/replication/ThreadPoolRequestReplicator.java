@@ -392,6 +392,7 @@ public class ThreadPoolRequestReplicator implements RequestReplicator {
             }
 
             int numRequests = responseMap.size();
+            logger.info("Current number of outstanding replication request : AsyncClusterResponse replicate: numRequests={}", numRequests);
             if (numRequests >= maxConcurrentRequests) {
                 numRequests = purgeExpiredRequests();
             }
