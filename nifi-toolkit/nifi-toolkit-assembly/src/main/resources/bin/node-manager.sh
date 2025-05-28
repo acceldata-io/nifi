@@ -110,7 +110,7 @@ run() {
    export NIFI_TOOLKIT_HOME="$NIFI_TOOLKIT_HOME"
 
    umask 0077
-   exec "${JAVA}" -cp "${CLASSPATH}" ${JAVA_OPTS:--Xms12m -Xmx24m} org.apache.nifi.toolkit.admin.nodemanager.NodeManagerTool "$@"
+   exec "${JAVA}" -cp "${CLASSPATH}" ${JAVA_OPTS:--Xms48m -Xmx96m} org.apache.nifi.toolkit.admin.nodemanager.NodeManagerTool "$@"
 }
 
 
