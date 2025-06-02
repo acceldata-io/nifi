@@ -26,7 +26,7 @@
     <packaging>pom</packaging>
 
     <properties>
-        <hbase.version>2.5.5-hadoop3</hbase.version>
+        <hbase.version>2.6.2-hadoop3</hbase.version>
     </properties>
 
     <modules>

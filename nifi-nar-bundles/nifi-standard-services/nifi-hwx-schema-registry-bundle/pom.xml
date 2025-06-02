@@ -24,7 +24,7 @@
     <packaging>pom</packaging>
 
     <properties>
-        <hwx.registry.version>1.0.1</hwx.registry.version>
+        <hwx.registry.version>1.0.0.3.3.6.2-1</hwx.registry.version>
     </properties>
     <dependencyManagement>
         <dependencies>
