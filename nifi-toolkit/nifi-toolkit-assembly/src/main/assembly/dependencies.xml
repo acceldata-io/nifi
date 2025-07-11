@@ -32,12 +32,6 @@
             <useProjectArtifact>false</useProjectArtifact>
             <directoryMode>0770</directoryMode>
             <fileMode>0660</fileMode>
-            <includes>
-                <include>org.glassfish.jaxb:jaxb-runtime</include>
-                <include>jakarta.xml.bind:jakarta.xml.bind-api</include>
-                <include>com.sun.activation:jakarta.activation</include>
-                <include>jakarta.activation:jakarta.activation-api</include>
-            </includes>
         </dependencySet>
     </dependencySets>
 
