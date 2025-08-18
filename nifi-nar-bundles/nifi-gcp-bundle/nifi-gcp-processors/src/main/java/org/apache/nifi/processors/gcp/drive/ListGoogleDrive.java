@@ -163,8 +163,9 @@ public class ListGoogleDrive extends AbstractListProcessor<GoogleDriveFileInfo> 
             TRACKING_TIME_WINDOW,
             INITIAL_LISTING_TARGET,
             RECORD_WRITER,
-            ProxyConfiguration.createProxyConfigPropertyDescriptor(false, ProxyAwareTransportFactory.PROXY_SPECS)
-    ));
+            ProxyConfiguration.createProxyConfigPropertyDescriptor(false, ProxyAwareTransportFactory.PROXY_SPECS),
+            CONNECT_TIMEOUT,
+            READ_TIMEOUT    ));
 
     private volatile Drive driveService;
 

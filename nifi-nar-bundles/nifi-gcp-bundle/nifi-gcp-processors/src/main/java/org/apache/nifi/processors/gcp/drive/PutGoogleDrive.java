@@ -171,7 +171,9 @@ public class PutGoogleDrive extends AbstractProcessor implements GoogleDriveTrai
             CONFLICT_RESOLUTION,
             CHUNKED_UPLOAD_THRESHOLD,
             CHUNKED_UPLOAD_SIZE,
-            ProxyConfiguration.createProxyConfigPropertyDescriptor(false, ProxyAwareTransportFactory.PROXY_SPECS)
+            ProxyConfiguration.createProxyConfigPropertyDescriptor(false, ProxyAwareTransportFactory.PROXY_SPECS),
+            CONNECT_TIMEOUT,
+            READ_TIMEOUT
     ));
 
     public static final Relationship REL_SUCCESS =

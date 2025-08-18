@@ -214,11 +214,13 @@ public class FetchGoogleDrive extends AbstractProcessor implements GoogleDriveTr
     private static final List<PropertyDescriptor> PROPERTIES = Collections.unmodifiableList(Arrays.asList(
             GoogleUtils.GCP_CREDENTIALS_PROVIDER_SERVICE,
             FILE_ID,
-            ProxyConfiguration.createProxyConfigPropertyDescriptor(false, ProxyAwareTransportFactory.PROXY_SPECS),
             GOOGLE_DOC_EXPORT_TYPE,
             GOOGLE_SPREADSHEET_EXPORT_TYPE,
             GOOGLE_PRESENTATION_EXPORT_TYPE,
-            GOOGLE_DRAWING_EXPORT_TYPE
+            GOOGLE_DRAWING_EXPORT_TYPE,
+            ProxyConfiguration.createProxyConfigPropertyDescriptor(false, ProxyAwareTransportFactory.PROXY_SPECS),
+            CONNECT_TIMEOUT,
+            READ_TIMEOUT
     ));
 
     public static final Set<Relationship> RELATIONSHIPS = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(
