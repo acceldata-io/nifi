@@ -20,6 +20,16 @@ import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.DriveScopes;
 import com.google.api.services.drive.model.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import org.apache.nifi.annotation.behavior.InputRequirement;
 import org.apache.nifi.annotation.behavior.ReadsAttribute;
 import org.apache.nifi.annotation.behavior.WritesAttribute;
@@ -42,17 +52,6 @@ import org.apache.nifi.processor.util.StandardValidators;
 import org.apache.nifi.processors.gcp.ProxyAwareTransportFactory;
 import org.apache.nifi.processors.gcp.util.GoogleUtils;
 import org.apache.nifi.proxy.ProxyConfiguration;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 import static org.apache.nifi.processors.gcp.drive.GoogleDriveAttributes.ERROR_CODE;
 import static org.apache.nifi.processors.gcp.drive.GoogleDriveAttributes.ERROR_CODE_DESC;
@@ -103,9 +102,9 @@ public class FetchGoogleDrive extends AbstractProcessor implements GoogleDriveTr
     private static final AllowableValue EXPORT_OPEN_SPREADSHEET = new AllowableValue("application/x-vnd.oasis.opendocument.spreadsheet", "OpenDocument Spreadsheet");
     private static final AllowableValue EXPORT_PDF_SPREADSHEET = new AllowableValue("application/pdf", "PDF");
     private static final AllowableValue EXPORT_CSV = new AllowableValue("text/csv", "CSV (first sheet only)",
-        "Comma-separated values. Only the first sheet will be exported.");
+            "Comma-separated values. Only the first sheet will be exported.");
     private static final AllowableValue EXPORT_TSV = new AllowableValue("text/tab-separated-values", "TSV (first sheet only)",
-        "Tab-separate values. Only the first sheet will be exported.");
+            "Tab-separate values. Only the first sheet will be exported.");
     private static final AllowableValue EXPORT_HTML_SPREADSHEET = new AllowableValue("text/html", "Web Page (HTML)");
 
     // Google Presentation Export Types
@@ -114,7 +113,7 @@ public class FetchGoogleDrive extends AbstractProcessor implements GoogleDriveTr
     private static final AllowableValue EXPORT_PNG = new AllowableValue("image/png", "PNG (first slide only)");
     private static final AllowableValue EXPORT_JPEG = new AllowableValue("image/jpeg", "JPEG (first slide only)");
     private static final AllowableValue EXPORT_SVG = new AllowableValue("image/svg+xml", "SVG (first slide only)",
-        "Scalable Vector Graphics. Only the first slide will be exported.");
+            "Scalable Vector Graphics. Only the first slide will be exported.");
 
     // Drawings Export Types
     private static final AllowableValue EXPORT_PNG_DRAWING = new AllowableValue("image/png", "PNG");
@@ -143,10 +142,11 @@ public class FetchGoogleDrive extends AbstractProcessor implements GoogleDriveTr
     }
 
 
-    public static final PropertyDescriptor FILE_ID = new PropertyDescriptor.Builder()
-            .name("drive-file-id")
+    public static final PropertyDescriptor FILE_ID = new PropertyDescriptor
+            .Builder().name("drive-file-id")
             .displayName("File ID")
-            .description("The Drive ID of the File to fetch. Please see Additional Details for information on how to obtain the Drive ID.")
+            .description("The Drive ID of the File to fetch. "
+                         + "Please see Additional Details to obtain Drive ID.")
             .required(true)
             .defaultValue("${drive.id}")
             .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
@@ -154,56 +154,57 @@ public class FetchGoogleDrive extends AbstractProcessor implements GoogleDriveTr
             .build();
 
     public static final PropertyDescriptor GOOGLE_DOC_EXPORT_TYPE = new PropertyDescriptor.Builder()
-        .name("Google Doc Export Type")
-        .description("Google Documents cannot be downloaded directly from Google Drive but instead must be exported to a specified MIME Type. In the event " +
-            "that the incoming FlowFile's MIME Type indicates that the file is a Google Document, this property specifies the MIME Type to export the document to.")
-        .required(true)
-        .allowableValues(
-            EXPORT_PDF, EXPORT_PLAIN_TEXT, EXPORT_MS_WORD,
-            EXPORT_OPEN_DOCUMENT, EXPORT_RICH_TEXT, EXPORT_HTML_DOC, EXPORT_EPUB)
-        .defaultValue(EXPORT_PDF.getValue())
-        .build();
+            .name("Google Doc Export Type")
+            .description("Google Documents cannot be downloaded directly from Google Drive but instead must be exported to a specified MIME Type. In the event " +
+                         "that the incoming FlowFile's MIME Type indicates that the file is a Google Document, this property specifies the MIME Type to export the document to.")
+            .required(true)
+            .allowableValues(
+                    EXPORT_PDF, EXPORT_PLAIN_TEXT, EXPORT_MS_WORD,
+                    EXPORT_OPEN_DOCUMENT, EXPORT_RICH_TEXT, EXPORT_HTML_DOC, EXPORT_EPUB)
+            .defaultValue(EXPORT_PDF.getValue())
+            .build();
 
     public static final PropertyDescriptor GOOGLE_SPREADSHEET_EXPORT_TYPE = new PropertyDescriptor.Builder()
-        .name("Google Spreadsheet Export Type")
-        .description("Google Spreadsheets cannot be downloaded directly from Google Drive but instead must be exported to a specified MIME Type. In the event " +
-            "that the incoming FlowFile's MIME Type indicates that the file is a Google Spreadsheet, this property specifies the MIME Type to export the spreadsheet to.")
-        .required(true)
-        .allowableValues(
-            EXPORT_CSV, EXPORT_MS_EXCEL, EXPORT_PDF_SPREADSHEET,
-            EXPORT_TSV, EXPORT_HTML_SPREADSHEET, EXPORT_OPEN_SPREADSHEET)
-        .defaultValue(EXPORT_CSV.getValue())
-        .build();
+            .name("Google Spreadsheet Export Type")
+            .description("Google Spreadsheets cannot be downloaded directly from Google Drive but instead must be exported to a specified MIME Type. In the event " +
+                         "that the incoming FlowFile's MIME Type indicates that the file is a Google Spreadsheet, this property specifies the MIME Type to export the spreadsheet to.")
+            .required(true)
+            .allowableValues(
+                    EXPORT_CSV, EXPORT_MS_EXCEL, EXPORT_PDF_SPREADSHEET,
+                    EXPORT_TSV, EXPORT_HTML_SPREADSHEET, EXPORT_OPEN_SPREADSHEET)
+            .defaultValue(EXPORT_CSV.getValue())
+            .build();
 
     public static final PropertyDescriptor GOOGLE_PRESENTATION_EXPORT_TYPE = new PropertyDescriptor.Builder()
-        .name("Google Presentation Export Type")
-        .description("Google Presentations cannot be downloaded directly from Google Drive but instead must be exported to a specified MIME Type. In the event " +
-            "that the incoming FlowFile's MIME Type indicates that the file is a Google Presentation, this property specifies the MIME Type to export the presentation to.")
-        .required(true)
-        .allowableValues(
-            EXPORT_PDF, EXPORT_MS_POWERPOINT, EXPORT_PLAIN_TEXT, EXPORT_OPEN_PRESENTATION,
-            EXPORT_PNG, EXPORT_JPEG, EXPORT_SVG)
-        .defaultValue(EXPORT_PDF.getValue())
-        .build();
+            .name("Google Presentation Export Type")
+            .description("Google Presentations cannot be downloaded directly from Google Drive but instead must be exported to a specified MIME Type. In the event " +
+                         "that the incoming FlowFile's MIME Type indicates that the file is a Google Presentation, this property specifies the MIME Type to export the presentation to.")
+            .required(true)
+            .allowableValues(
+                    EXPORT_PDF, EXPORT_MS_POWERPOINT, EXPORT_PLAIN_TEXT, EXPORT_OPEN_PRESENTATION,
+                    EXPORT_PNG, EXPORT_JPEG, EXPORT_SVG)
+            .defaultValue(EXPORT_PDF.getValue())
+            .build();
 
     public static final PropertyDescriptor GOOGLE_DRAWING_EXPORT_TYPE = new PropertyDescriptor.Builder()
-        .name("Google Drawing Export Type")
-        .description("Google Drawings cannot be downloaded directly from Google Drive but instead must be exported to a specified MIME Type. In the event " +
-            "that the incoming FlowFile's MIME Type indicates that the file is a Google Drawing, this property specifies the MIME Type to export the drawing to.")
-        .required(true)
-        .allowableValues(
-            EXPORT_PDF, EXPORT_PNG_DRAWING, EXPORT_JPEG_DRAWING, EXPORT_SVG_DRAWING)
-        .defaultValue(EXPORT_PDF.getValue())
-        .build();
-
-
-
-
-
-    public static final Relationship REL_SUCCESS = new Relationship.Builder()
-            .name("success")
-            .description("A FlowFile will be routed here for each successfully fetched File.")
+            .name("Google Drawing Export Type")
+            .description("Google Drawings cannot be downloaded directly from Google Drive but instead must be exported to a specified MIME Type. In the event " +
+                         "that the incoming FlowFile's MIME Type indicates that the file is a Google Drawing, this property specifies the MIME Type to export the drawing to.")
+            .required(true)
+            .allowableValues(
+                    EXPORT_PDF, EXPORT_PNG_DRAWING, EXPORT_JPEG_DRAWING, EXPORT_SVG_DRAWING)
+            .defaultValue(EXPORT_PDF.getValue())
             .build();
+
+
+
+
+
+    public static final Relationship REL_SUCCESS =
+            new Relationship.Builder()
+                    .name("success")
+                    .description("A FlowFile will be routed here for each successfully fetched File.")
+                    .build();
 
     public static final Relationship REL_FAILURE = new Relationship.Builder()
             .name("failure")
@@ -211,18 +212,20 @@ public class FetchGoogleDrive extends AbstractProcessor implements GoogleDriveTr
             .build();
 
     private static final List<PropertyDescriptor> PROPERTIES = Collections.unmodifiableList(Arrays.asList(
-        GoogleUtils.GCP_CREDENTIALS_PROVIDER_SERVICE,
-        FILE_ID,
-        ProxyConfiguration.createProxyConfigPropertyDescriptor(false, ProxyAwareTransportFactory.PROXY_SPECS),
-        GOOGLE_DOC_EXPORT_TYPE,
-        GOOGLE_SPREADSHEET_EXPORT_TYPE,
-        GOOGLE_PRESENTATION_EXPORT_TYPE,
-        GOOGLE_DRAWING_EXPORT_TYPE
+            GoogleUtils.GCP_CREDENTIALS_PROVIDER_SERVICE,
+            FILE_ID,
+            GOOGLE_DOC_EXPORT_TYPE,
+            GOOGLE_SPREADSHEET_EXPORT_TYPE,
+            GOOGLE_PRESENTATION_EXPORT_TYPE,
+            GOOGLE_DRAWING_EXPORT_TYPE,
+            ProxyConfiguration.createProxyConfigPropertyDescriptor(false, ProxyAwareTransportFactory.PROXY_SPECS),
+            CONNECT_TIMEOUT,
+            READ_TIMEOUT
     ));
 
     public static final Set<Relationship> RELATIONSHIPS = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(
-        REL_SUCCESS,
-        REL_FAILURE
+            REL_SUCCESS,
+            REL_FAILURE
     )));
 
     private volatile Drive driveService;
@@ -311,10 +314,10 @@ public class FetchGoogleDrive extends AbstractProcessor implements GoogleDriveTr
 
     private FlowFile downloadFile(final String fileId, final ProcessSession session, final FlowFile flowFile) throws IOException {
         try (final InputStream driveFileInputStream = driveService
-            .files()
-            .get(fileId)
-            .setSupportsAllDrives(true)
-            .executeMediaAsInputStream()) {
+                .files()
+                .get(fileId)
+                .setSupportsAllDrives(true)
+                .executeMediaAsInputStream()) {
 
             return session.importFrom(driveFileInputStream, flowFile);
         }
@@ -329,9 +332,9 @@ public class FetchGoogleDrive extends AbstractProcessor implements GoogleDriveTr
         }
 
         try (final InputStream driveFileInputStream = driveService
-            .files()
-            .export(fileId, exportMimeType)
-            .executeMediaAsInputStream()) {
+                .files()
+                .export(fileId, exportMimeType)
+                .executeMediaAsInputStream()) {
 
             return session.importFrom(driveFileInputStream, flowFile);
         }
