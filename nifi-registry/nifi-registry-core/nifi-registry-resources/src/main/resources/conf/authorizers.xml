@@ -320,4 +320,35 @@
         <property name="Access Policy Provider">file-access-policy-provider</property>
     </authorizer>
 
+    <!--
+        The RangerAuthorizer provides Apache Ranger integration for NiFi Registry authorization.
+        This authorizer requires the NiFi Registry Ranger extension to be installed.
+        
+        To install the extension:
+        1. Build NiFi Registry with the include-ranger profile: mvn clean install -Pinclude-ranger
+        2. Or build the extension separately and install it manually (see README in nifi-registry-extensions/nifi-registry-ranger)
+        
+        Configuration properties:
+        - User Group Provider - The identifier for a User Group Provider defined above
+        - Ranger Service Type - The service type for Ranger (default: nifi-registry)
+        - Ranger Application Id - The service name configured in Ranger
+        - Ranger Security Config Path - Path to ranger security configuration
+        - Ranger Audit Config Path - Path to ranger audit configuration
+        - Ranger Admin Identity - Identity used by Ranger to access NiFi Registry
+        - Ranger Kerberos Enabled - Whether Ranger is kerberized (default: false)
+    -->
+    <!-- To enable the ranger-authorizer remove 2 lines. This is 1 of 2.
+    <authorizer>
+        <identifier>ranger-authorizer</identifier>
+        <class>org.apache.nifi.registry.ranger.RangerAuthorizer</class>
+        <property name="Ranger Service Type">nifi-registry</property>
+        <property name="User Group Provider">file-user-group-provider</property>
+        <property name="Ranger Application Id">nifi-registry-service-name</property>
+        <property name="Ranger Security Config Path">./ext/ranger/conf/ranger-nifi-registry-security.xml</property>
+        <property name="Ranger Audit Config Path">./ext/ranger/conf/ranger-nifi-registry-audit.xml</property>
+        <property name="Ranger Admin Identity">ranger@NIFI</property>
+        <property name="Ranger Kerberos Enabled">false</property>
+    </authorizer>
+    To enable the ranger-authorizer remove 2 lines. This is 2 of 2. -->
+
 </authorizers>
