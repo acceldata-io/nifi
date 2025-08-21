@@ -498,6 +498,7 @@ public class LdapUserGroupProvider implements UserGroupProvider {
               final User user = buildUser(ctx);
 
               // store the user for group member later
+              logger.debug("AD:::adding user {} with identifier {} to userlookup map", getReferencedUserValue(ctx), user);
               userLookup.put(getReferencedUserValue(ctx), user);
 
               if (StringUtils.isNotBlank(userGroupNameAttribute)) {
