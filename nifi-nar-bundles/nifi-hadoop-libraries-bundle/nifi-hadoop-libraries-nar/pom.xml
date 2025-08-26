@@ -152,7 +152,7 @@
         <profile>
             <id>include-hadoop-ozone</id>
             <activation>
-                <activeByDefault>false</activeByDefault>
+                <activeByDefault>true</activeByDefault>
             </activation>
             <dependencies>
                 <dependency>

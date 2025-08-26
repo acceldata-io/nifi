@@ -147,7 +147,7 @@
         <groovy.eclipse.batch.version>3.0.8-01</groovy.eclipse.batch.version>
         <surefire.version>3.0.0</surefire.version>
         <hadoop.version>3.3.6</hadoop.version>
-        <ozone.version>1.2.1</ozone.version>
+        <ozone.version>1.4.0</ozone.version>
         <gcs.version>2.1.5</gcs.version>
         <aspectj.version>1.9.6</aspectj.version>
         <jersey.bom.version>2.39.1</jersey.bom.version>
