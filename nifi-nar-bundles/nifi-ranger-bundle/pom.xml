@@ -13,13 +13,14 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
         <groupId>org.apache.nifi</groupId>
         <artifactId>nifi-nar-bundles</artifactId>
-        <version>1.28.1.3.3.6.1-SNAPSHOT</version>
+        <version>1.28.1.3.3.6.2-1</version>
     </parent>
 
     <artifactId>nifi-ranger-bundle</artifactId>
@@ -28,11 +29,11 @@
     <modules>
         <module>nifi-ranger-plugin</module>
         <module>nifi-ranger-nar</module>
-	    <module>nifi-ranger-resources</module>
+        <module>nifi-ranger-resources</module>
     </modules>
 
     <properties>
-        <ranger.hadoop.version>3.4.1</ranger.hadoop.version>
+        <ranger.hadoop.version>3.3.6.3.3.6.2-1</ranger.hadoop.version>
     </properties>
 
     <dependencyManagement>
@@ -43,11 +44,33 @@
                 <artifactId>commons-beanutils</artifactId>
                 <version>1.9.4</version>
             </dependency>
+            <!--  hadoop-shaded-protobuf_3_25 upgrade to resolve CVE-2024-7254 -->
+            <dependency>
+                <groupId>org.apache.hadoop.thirdparty</groupId>
+                <artifactId>hadoop-shaded-protobuf_3_25</artifactId>
+                <version>1.3.0</version>
+            </dependency>
+            <!-- dnsjava upgrade to resolve CVE-2024-25638. -->
+            <dependency>
+                <groupId>dnsjava</groupId>
+                <artifactId>dnsjava</artifactId>
+                <version>3.6.0</version>
+            </dependency>
             <!-- Override Hadoop -->
             <dependency>
                 <groupId>org.apache.hadoop</groupId>
                 <artifactId>hadoop-common</artifactId>
                 <version>${ranger.hadoop.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.apache.hadoop.thirdparty</groupId>
+                        <artifactId>hadoop-shaded-protobuf_3_7</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>dnsjava</groupId>
+                        <artifactId>dnsjava</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <!-- Override SolrJ 8.6.3 from Ranger -->
             <dependency>
@@ -84,6 +107,17 @@
                     </exclusion>
                 </exclusions>
             </dependency>
+            <dependency>
+                <groupId>org.apache.hadoop</groupId>
+                <artifactId>hadoop-client</artifactId>
+                <version>${ranger.hadoop.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.apache.hadoop.thirdparty</groupId>
+                        <artifactId>hadoop-shaded-protobuf_3_7</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
             <!-- Override Guava 27 -->
             <dependency>
                 <groupId>com.google.guava</groupId>
@@ -96,6 +130,7 @@
                 <artifactId>jettison</artifactId>
                 <version>1.5.4</version>
             </dependency>
+
         </dependencies>
     </dependencyManagement>
 </project>

@@ -19,7 +19,7 @@
     <parent>
         <groupId>org.apache.nifi</groupId>
         <artifactId>nifi-ranger-bundle</artifactId>
-        <version>1.28.1.3.3.6.1-SNAPSHOT</version>
+        <version>1.28.1.3.3.6.2-1</version>
     </parent>
 
     <artifactId>nifi-ranger-resources</artifactId>
@@ -34,6 +34,12 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>log4j-over-slf4j</artifactId>
+        </dependency>
+        <!-- dnsjava upgrade to resolve CVE-2024-25638. -->
+        <dependency>
+            <groupId>dnsjava</groupId>
+            <artifactId>dnsjava</artifactId>
+            <version>3.6.0</version>
         </dependency>
         <dependency>
             <groupId>org.apache.ranger</groupId>
@@ -59,6 +65,10 @@
                 <exclusion>
                     <groupId>commons-logging</groupId>
                     <artifactId>commons-logging</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>dnsjava</groupId>
+                    <artifactId>dnsjava</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>

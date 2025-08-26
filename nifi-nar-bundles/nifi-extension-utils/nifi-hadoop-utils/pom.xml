@@ -18,7 +18,7 @@
     <parent>
         <groupId>org.apache.nifi</groupId>
         <artifactId>nifi-extension-utils</artifactId>
-        <version>1.28.1.3.3.6.1-SNAPSHOT</version>
+        <version>1.28.1.3.3.6.2-1</version>
     </parent>
     <artifactId>nifi-hadoop-utils</artifactId>
     <packaging>jar</packaging>
@@ -31,12 +31,12 @@
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-utils</artifactId>
-            <version>1.28.1.3.3.6.1-SNAPSHOT</version>
+            <version>1.28.1.3.3.6.2-1</version>
         </dependency>
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-security-kerberos</artifactId>
-            <version>1.28.1.3.3.6.1-SNAPSHOT</version>
+            <version>1.28.1.3.3.6.2-1</version>
         </dependency>
         <dependency>
             <groupId>org.apache.nifi</groupId>
@@ -53,6 +53,12 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>jcl-over-slf4j</artifactId>
+        </dependency>
+        <!-- dnsjava upgrade to resolve CVE-2024-25638. -->
+        <dependency>
+            <groupId>dnsjava</groupId>
+            <artifactId>dnsjava</artifactId>
+            <version>3.6.0</version>
         </dependency>
         <!-- Other modules using nifi-hadoop-utils are expected to have the below dependencies available, typically through a NAR dependency -->
         <dependency>
@@ -81,6 +87,10 @@
                 <exclusion>
                     <groupId>org.bouncycastle</groupId>
                     <artifactId>bcprov-jdk15on</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>dnsjava</groupId>
+                    <artifactId>dnsjava</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
