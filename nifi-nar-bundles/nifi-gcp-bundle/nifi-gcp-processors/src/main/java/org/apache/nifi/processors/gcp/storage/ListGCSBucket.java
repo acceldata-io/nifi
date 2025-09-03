@@ -69,6 +69,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -182,12 +183,17 @@ public class ListGCSBucket extends AbstractGCSProcessor {
             " However an additional DistributedMapCache controller service is required and more JVM heap memory is used." +
             " For more information on how the 'Entity Tracking Time Window' property works, see the description.");
 
+    public static final AllowableValue NO_TRACKING = new AllowableValue("none", "No Tracking",
+            "This strategy lists all entities without any tracking. The same entities will be listed each time" +
+                    " this processor is scheduled. It is recommended to change the default run schedule value." +
+                    " Any property that relates to the persisting state will be ignored.");
+
     public static final PropertyDescriptor LISTING_STRATEGY = new PropertyDescriptor.Builder()
         .name("listing-strategy")
         .displayName("Listing Strategy")
         .description("Specify how to determine new/updated entities. See each strategy descriptions for detail.")
         .required(true)
-        .allowableValues(BY_TIMESTAMPS, BY_ENTITIES)
+        .allowableValues(BY_TIMESTAMPS, BY_ENTITIES, NO_TRACKING)
         .defaultValue(BY_TIMESTAMPS.getValue())
         .build();
 
@@ -269,40 +275,64 @@ public class ListGCSBucket extends AbstractGCSProcessor {
         return relationships;
     }
 
-    // State tracking
+    private static final Set<PropertyDescriptor> TRACKING_RESET_PROPERTIES = Collections.unmodifiableSet(
+            new HashSet<>(Arrays.asList(
+                    BUCKET,
+                    PREFIX,
+                    LISTING_STRATEGY
+            ))
+    );
+
+    // used by Tracking Timestamps tracking strategy
     public static final String CURRENT_TIMESTAMP = "currentTimestamp";
     public static final String CURRENT_KEY_PREFIX = "key-";
     private volatile long currentTimestamp = 0L;
     private final Set<String> currentKeys = Collections.synchronizedSet(new HashSet<>());
 
-    private volatile boolean justElectedPrimaryNode = false;
-    private volatile boolean resetEntityTrackingState = false;
+    // used by Tracking Entities tracking strategy
     private volatile ListedEntityTracker<ListableBlob> listedEntityTracker;
+
+    private volatile boolean justElectedPrimaryNode = false;
+    private volatile boolean resetTracking = false;
 
     @OnPrimaryNodeStateChange
     public void onPrimaryNodeChange(final PrimaryNodeState newState) {
         justElectedPrimaryNode = (newState == PrimaryNodeState.ELECTED_PRIMARY_NODE);
     }
 
+    @Override
+    public void onPropertyModified(final PropertyDescriptor descriptor, final String oldValue, final String newValue) {
+        if (isConfigurationRestored() && TRACKING_RESET_PROPERTIES.contains(descriptor)) {
+            resetTracking = true;
+        }
+    }
+
     @OnScheduled
-    public void initListedEntityTracker(ProcessContext context) {
-        final boolean isTrackingEntityStrategy = BY_ENTITIES.getValue().equals(context.getProperty(LISTING_STRATEGY).getValue());
-        if (listedEntityTracker != null && (resetEntityTrackingState || !isTrackingEntityStrategy)) {
+    public void initTrackingStrategy(ProcessContext context) throws IOException {
+        final String listingStrategy = context.getProperty(LISTING_STRATEGY).getValue();
+        final boolean isTrackingTimestampsStrategy = BY_TIMESTAMPS.getValue().equals(listingStrategy);
+        final boolean isTrackingEntityStrategy = BY_ENTITIES.getValue().equals(listingStrategy);
+
+        if (resetTracking || !isTrackingTimestampsStrategy) {
+            context.getStateManager().clear(Scope.CLUSTER);
+            currentTimestamp = 0L;
+            currentKeys.clear();
+        }
+
+        if (listedEntityTracker != null && (resetTracking || !isTrackingEntityStrategy)) {
             try {
                 listedEntityTracker.clearListedEntities();
+                listedEntityTracker = null;
             } catch (IOException e) {
-                throw new RuntimeException("Failed to reset previously listed entities due to " + e, e);
+                throw new RuntimeException("Failed to reset previously listed entities", e);
             }
         }
-        resetEntityTrackingState = false;
 
-        if (isTrackingEntityStrategy) {
-            if (listedEntityTracker == null) {
-                listedEntityTracker = createListedEntityTracker();
-            }
-        } else {
-            listedEntityTracker = null;
+        if (isTrackingEntityStrategy && listedEntityTracker == null) {
+            listedEntityTracker = createListedEntityTracker();
         }
+
+        resetTracking = false;
     }
 
     protected ListedEntityTracker<ListableBlob> createListedEntityTracker() {
@@ -396,9 +426,29 @@ public class ListGCSBucket extends AbstractGCSProcessor {
             listByTrackingTimestamps(context, session);
         } else if (BY_ENTITIES.equals(listingStrategy)) {
             listByTrackingEntities(context, session);
+        } else if (NO_TRACKING.equals(listingStrategy)) {
+            listNoTracking(context, session);
         } else {
             throw new ProcessException("Unknown listing strategy: " + listingStrategy);
         }
+    }
+
+    private void listNoTracking(ProcessContext context, ProcessSession session) {
+        final long startNanos = System.nanoTime();
+        final ListingAction listingAction = new NoTrackingListingAction(context, session);
+
+        try {
+            listBucket(context, listingAction);
+        } catch (final Exception e) {
+            getLogger().error("Failed to list contents of GCS Bucket", e);
+            listingAction.getBlobWriter().finishListingExceptionally(e);
+            session.rollback();
+            context.yield();
+            return;
+        }
+
+        final long listMillis = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startNanos);
+        getLogger().info("Successfully listed GCS bucket {} in {} millis", context.getProperty(BUCKET).evaluateAttributeExpressions().getValue(), listMillis);
     }
 
     private void listByTrackingTimestamps(ProcessContext context, ProcessSession session) {
@@ -416,7 +466,7 @@ public class ListGCSBucket extends AbstractGCSProcessor {
         try {
             listBucket(context, listingAction);
         } catch (final Exception e) {
-            getLogger().error("Failed to list contents of GCS Bucket due to {}", new Object[] {e}, e);
+            getLogger().error("Failed to list contents of GCS Bucket", e);
             listingAction.getBlobWriter().finishListingExceptionally(e);
             session.rollback();
             context.yield();
@@ -424,7 +474,7 @@ public class ListGCSBucket extends AbstractGCSProcessor {
         }
 
         final long listMillis = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startNanos);
-        getLogger().info("Successfully listed GCS bucket {} in {} millis", new Object[]{ context.getProperty(BUCKET).evaluateAttributeExpressions().getValue(), listMillis });
+        getLogger().info("Successfully listed GCS bucket {} in {} millis", context.getProperty(BUCKET).evaluateAttributeExpressions().getValue(), listMillis);
     }
 
     private void listBucket(final ProcessContext context, final ListingAction listingAction) throws IOException, SchemaNotFoundException {
@@ -524,7 +574,7 @@ public class ListGCSBucket extends AbstractGCSProcessor {
 
     private void commit(final ProcessSession session, final int listCount) {
         if (listCount > 0) {
-            getLogger().info("Successfully listed {} new files from GCS; routing to success", new Object[] {listCount});
+            getLogger().info("Successfully listed {} new files from GCS; routing to success", listCount);
             session.commitAsync();
         }
     }
@@ -539,6 +589,49 @@ public class ListGCSBucket extends AbstractGCSProcessor {
         void finishListing(int listCount, long maxTimestamp, Set<String> keysMatchingTimestamp);
 
         void commit(int listCount);
+    }
+
+    private class NoTrackingListingAction implements ListingAction<BlobWriter> {
+        final ProcessContext context;
+        final ProcessSession session;
+        final BlobWriter blobWriter;
+
+        private NoTrackingListingAction(final ProcessContext context, final ProcessSession session) {
+            this.context = context;
+            this.session = session;
+
+            final RecordSetWriterFactory writerFactory = context.getProperty(RECORD_WRITER).asControllerService(RecordSetWriterFactory.class);
+            if (writerFactory == null) {
+                blobWriter = new AttributeBlobWriter(session);
+            } else {
+                blobWriter = new RecordBlobWriter(session, writerFactory, getLogger());
+            }
+        }
+
+        @Override
+        public boolean skipBlob(final Blob blob) {
+            return false;
+        }
+
+        @Override
+        public void commit(final int listCount) {
+            ListGCSBucket.this.commit(session, listCount);
+        }
+
+        @Override
+        public BlobWriter getBlobWriter() {
+            return blobWriter;
+        }
+
+        @Override
+        public Storage getCloudService() {
+            return ListGCSBucket.this.getCloudService();
+        }
+
+        @Override
+        public void finishListing(final int listCount, final long maxTimestamp, final Set<String> keysMatchingTimestamp) {
+            // nothing to do
+        }
     }
 
     private class TriggerListingAction implements ListingAction<BlobWriter> {
@@ -645,7 +738,7 @@ public class ListGCSBucket extends AbstractGCSProcessor {
 
                 writer.finishListing();
             } catch (final Exception e) {
-                getLogger().error("Failed to list contents of bucket due to {}", new Object[] {e}, e);
+                getLogger().error("Failed to list contents of bucket", e);
                 writer.finishListingExceptionally(e);
                 session.rollback();
                 context.yield();
@@ -827,7 +920,7 @@ public class ListGCSBucket extends AbstractGCSProcessor {
             try {
                 recordWriter.close();
             } catch (IOException e) {
-                logger.error("Failed to write listing as Records due to {}", new Object[] {e}, e);
+                logger.error("Failed to write listing as Records", e);
             }
 
             session.remove(flowFile);
@@ -957,5 +1050,17 @@ public class ListGCSBucket extends AbstractGCSProcessor {
         public int getCount() {
             return count;
         }
+    }
+
+    long getCurrentTimestamp() {
+        return currentTimestamp;
+    }
+
+    ListedEntityTracker<ListableBlob> getListedEntityTracker() {
+        return listedEntityTracker;
+    }
+
+    boolean isResetTracking() {
+        return resetTracking;
     }
 }
