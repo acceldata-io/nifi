@@ -19,7 +19,7 @@
     </parent>
     <groupId>org.apache.nifi</groupId>
     <artifactId>nifi</artifactId>
-    <version>1.23.2.3.2.3.3-3</version>
+    <version>1.23.2.3.2.3.3-SNAPSHOT</version>
     <packaging>pom</packaging>
     <description>Apache NiFi is an easy to use, powerful, and reliable system to process and distribute data.</description>
     <modules>
@@ -114,7 +114,7 @@
         <node.version>v16.13.2</node.version>
         <frontend.mvn.plugin.version>1.12.1</frontend.mvn.plugin.version>
         <nifi.nar.maven.plugin.version>1.5.1</nifi.nar.maven.plugin.version>
-        <project.build.outputTimestamp>1733389917</project.build.outputTimestamp>
+        <project.build.outputTimestamp>1729521064</project.build.outputTimestamp>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <inceptionYear>2014</inceptionYear>
@@ -147,7 +147,7 @@
         <groovy.eclipse.batch.version>3.0.8-01</groovy.eclipse.batch.version>
         <surefire.version>3.0.0</surefire.version>
         <hadoop.version>3.3.6</hadoop.version>
-        <ozone.version>1.4.0</ozone.version>
+        <ozone.version>1.2.1</ozone.version>
         <gcs.version>2.1.5</gcs.version>
         <aspectj.version>1.9.6</aspectj.version>
         <jersey.bom.version>2.39.1</jersey.bom.version>
