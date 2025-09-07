@@ -33,7 +33,7 @@
     </modules>
 
     <properties>
-        <ranger.hadoop.version>3.3.6.3.2.3.4-2</ranger.hadoop.version>
+        <ranger.hadoop.version>3.3.6</ranger.hadoop.version>
     </properties>
 
     <dependencyManagement>
