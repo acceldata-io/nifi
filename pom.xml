@@ -88,6 +88,20 @@
         <system>JIRA</system>
         <url>https://issues.apache.org/jira/browse/NIFI</url>
     </issueManagement>
+
+    <distributionManagement>
+        <repository>
+            <id>nexus-releases</id>
+            <name>Releases</name>
+            <url>https://repo1.acceldata.dev/repository/odp-staging-release/</url>
+        </repository>
+        <snapshotRepository>
+            <id>nexus-snapshots</id>
+            <name>Snapshot</name>
+            <url>https://repo1.acceldata.dev/repository/odp-staging-snapshot/</url>
+        </snapshotRepository>
+    </distributionManagement>
+
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
