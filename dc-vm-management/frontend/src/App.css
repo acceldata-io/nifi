@@ -1,0 +1,108 @@
+.App {
+  text-align: left;
+}
+
+.logo {
+  height: 32px;
+  margin: 16px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+}
+
+.site-layout .site-layout-background {
+  background: #fff;
+}
+
+.ant-layout-header {
+  padding: 0 24px;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.ant-layout-content {
+  margin: 24px 16px;
+  padding: 24;
+  background: #fff;
+  min-height: 280;
+  border-radius: 8px;
+}
+
+.ant-menu-dark .ant-menu-item-selected {
+  background-color: #1890ff;
+}
+
+.metric-card {
+  text-align: center;
+}
+
+.metric-card .ant-statistic-title {
+  color: #666;
+  font-size: 14px;
+}
+
+.metric-card .ant-statistic-content {
+  color: #262626;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.chart-container {
+  padding: 20px;
+}
+
+.alert-item {
+  margin-bottom: 8px;
+  padding: 8px 12px;
+  border-radius: 4px;
+  border-left: 4px solid;
+}
+
+.alert-warning {
+  background-color: #fff7e6;
+  border-left-color: #faad14;
+}
+
+.alert-error {
+  background-color: #fff2f0;
+  border-left-color: #ff4d4f;
+}
+
+.alert-info {
+  background-color: #e6f7ff;
+  border-left-color: #1890ff;
+}
+
+.vm-status-running {
+  color: #52c41a;
+}
+
+.vm-status-stopped {
+  color: #faad14;
+}
+
+.vm-status-provisioning {
+  color: #1890ff;
+}
+
+.vm-status-terminating {
+  color: #ff4d4f;
+}
+
+.resource-utilization-high {
+  color: #ff4d4f;
+}
+
+.resource-utilization-medium {
+  color: #faad14;
+}
+
+.resource-utilization-low {
+  color: #52c41a;
+}
