@@ -25,6 +25,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.nifi.annotation.documentation.CapabilityDescription;
 import org.apache.nifi.annotation.documentation.Tags;
@@ -41,9 +44,11 @@ import org.apache.nifi.serialization.RecordReaderFactory;
         "The schema will come from the Parquet data itself.")
 public class ParquetReader extends AbstractControllerService implements RecordReaderFactory {
 
-    private static final List<PropertyDescriptor> PROPERTY_DESCRIPTORS = List.of(
-            AVRO_READ_COMPATIBILITY,
-            AVRO_ADD_LIST_ELEMENT_RECORDS
+    private static final List<PropertyDescriptor> PROPERTY_DESCRIPTORS = Collections.unmodifiableList(
+            Arrays.asList(
+                    AVRO_READ_COMPATIBILITY,
+                    AVRO_ADD_LIST_ELEMENT_RECORDS
+            )
     );
 
     @Override
