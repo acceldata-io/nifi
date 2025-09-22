@@ -50,6 +50,8 @@ import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 
@@ -57,6 +59,7 @@ import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
  * This class contains variables and methods common to scripting processors, reporting tasks, etc.
  */
 public class ScriptingComponentHelper {
+    private static final Logger logger = LoggerFactory.getLogger(ScriptingComponentHelper.class);
     private static final String UNKNOWN_VERSION = "UNKNOWN";
 
     private static final List<String> DEPRECATED_LANGUAGE_NAMES =
@@ -236,6 +239,13 @@ public class ScriptingComponentHelper {
     public void setupScriptRunners(final boolean newQ, final int numberOfScriptEngines, final String scriptToRun, final ComponentLog log) {
         if (newQ) {
             scriptRunnerQ = new LinkedBlockingQueue<>(numberOfScriptEngines);
+              logger.info("Acceldata: Initialized new ScriptRunner queue capacity={} newQ={} engine='{}'",
+                  numberOfScriptEngines, newQ, scriptEngineName);
+        } else {
+            logger.debug("Acceldata: Reusing existing ScriptRunner queue size={} capacityEstimate={} engine='{}'",
+                scriptRunnerQ == null ? -1 : scriptRunnerQ.size(),
+                scriptRunnerQ == null ? -1 : (scriptRunnerQ.size() + scriptRunnerQ.remainingCapacity()),
+                scriptEngineName);
         }
         ClassLoader originalContextClassLoader = Thread.currentThread().getContextClassLoader();
         try {
@@ -243,10 +253,21 @@ public class ScriptingComponentHelper {
                 throw new IllegalArgumentException("The script engine name cannot be null");
             }
 
+
+            logger.info("Acceldata: Preparing ScriptRunners: engine='{}' requestedEngines={} modulesPresent={} scriptPath='{}' scriptBodyPresent={} availableFactories={} newQ={}",
+                    scriptEngineName,
+                    numberOfScriptEngines,
+                    modules == null ? 0 : modules.asLocations().size(),
+                    scriptPath,
+                    scriptBody != null && !scriptBody.isEmpty(),
+                    scriptEngineFactoryMap == null ? "null" : scriptEngineFactoryMap.keySet(),
+                    newQ);
+
             // Get a list of URLs from the configurator (if present), or just convert modules from Strings to URLs
             final String[] locations = (modules == null) ? new String[0] : modules.asLocations().toArray(new String[0]);
             final URL[] additionalClasspathURLs = ScriptRunnerFactory.getInstance().getModuleURLsForClasspath(scriptEngineName, locations, log);
 
+            logger.info("Acceldata: Resolved module/classpath URLs for engine='{}': {}", scriptEngineName, additionalClasspathURLs == null ? "[]" : Arrays.toString(additionalClasspathURLs));
 
             // Need the right classloader when the engine is created. This ensures the NAR's execution class loader
             // (plus the module path) becomes the parent for the script engine
@@ -259,19 +280,47 @@ public class ScriptingComponentHelper {
 
             try {
                 for (int i = 0; i < numberOfScriptEngines; i++) {
-                    //
-                    ScriptEngineFactory factory = scriptEngineFactoryMap.get(scriptEngineName);
+                    ScriptEngineFactory factory = scriptEngineFactoryMap == null ? null : scriptEngineFactoryMap.get(scriptEngineName);
+                    if (factory == null) {
+                        logger.error("Acceldata: No ScriptEngineFactory found for engine='{}'. Available engines={} (cannot create ScriptRunner index={})", scriptEngineName, scriptEngineFactoryMap == null ? "null" : scriptEngineFactoryMap.keySet(), i);
+                        break; // No point continuing loop
+                    }
+                    long startNanos = System.nanoTime();
                     ScriptRunner scriptRunner = ScriptRunnerFactory.getInstance().createScriptRunner(factory, scriptToRun, locations);
+                    long durationMs = (System.nanoTime() - startNanos) / 1_000_000L;
+                    if (scriptRunner == null) {
+                        logger.error("Acceldata: ScriptRunnerFactory returned null for engine='{}' (index={})", scriptEngineName, i);
+                        continue;
+                    }
                     if (!scriptRunnerQ.offer(scriptRunner)) {
-                        log.error("Error adding script engine {}", scriptRunner.getScriptEngineName());
+                        logger.error("Acceldata: Error adding script engine {}", scriptRunner.getScriptEngineName());
+                        logger.error("Acceldata: Error adding script engine {}. queueSize={}, remainingCapacity={}, iteration={}, requestedEngines={}, newQ={}, modules={}, scriptPath={}, scriptBodyPresent={}",
+                                scriptRunner.getScriptEngineName(),
+                                scriptRunnerQ.size(),
+                                scriptRunnerQ.remainingCapacity(),
+                                i,
+                                numberOfScriptEngines,
+                                newQ,
+                                Arrays.toString(locations),
+                                scriptPath,
+                                scriptBody != null && !scriptBody.isEmpty());
+                    } else  {
+                        logger.info("Acceldata: Created and queued ScriptRunner index={} engine='{}' impl='{}' queueSizeAfterAdd={} createTimeMs={}",
+                                i,
+                                scriptEngineName,
+                                scriptRunner.getClass().getName(),
+                                scriptRunnerQ.size(),
+                                durationMs);
                     }
                 }
             } catch (ScriptException se) {
+                logger.error("Acceldata: Could not instantiate script engines for engine='{}': {}", scriptEngineName, se.toString(), se);
                 throw new ProcessException("Could not instantiate script engines", se);
             }
         } finally {
             // Restore original context class loader
             Thread.currentThread().setContextClassLoader(originalContextClassLoader);
+            logger.debug("Acceldata: setupScriptRunners complete: engine='{}' finalQueueSize={}", scriptEngineName, scriptRunnerQ == null ? -1 : scriptRunnerQ.size());
         }
     }
 

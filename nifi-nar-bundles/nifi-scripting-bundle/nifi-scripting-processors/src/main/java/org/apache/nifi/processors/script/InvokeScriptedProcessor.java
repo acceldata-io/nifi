@@ -66,7 +66,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Tags({"script", "invoke", "groovy", "python", "jython", "jruby", "ruby", "javascript", "js", "lua", "luaj"})
 @CapabilityDescription("Experimental - Invokes a script engine for a Processor defined in the given script. The script must define "
@@ -93,6 +96,8 @@ import java.util.concurrent.atomic.AtomicReference;
 )
 public class InvokeScriptedProcessor extends AbstractSessionFactoryProcessor {
 
+    private static final Logger log = LoggerFactory.getLogger(InvokeScriptedProcessor.class);
+
     private final AtomicReference<Processor> processor = new AtomicReference<>();
     private final AtomicReference<Collection<ValidationResult>> validationResults = new AtomicReference<>(new ArrayList<>());
 
@@ -103,6 +108,7 @@ public class InvokeScriptedProcessor extends AbstractSessionFactoryProcessor {
     private volatile File kerberosConfigFile = null;
     private volatile File kerberosServiceKeytab = null;
     volatile ScriptingComponentHelper scriptingComponentHelper = new ScriptingComponentHelper();
+    private static final AtomicLong RELOAD_ATTEMPT_COUNTER = new AtomicLong(0L);
 
     /**
      * Returns the valid relationships for this processor as supplied by the
@@ -224,11 +230,19 @@ public class InvokeScriptedProcessor extends AbstractSessionFactoryProcessor {
 
     public void setup() {
         if (scriptNeedsReload.get() || processor.get() == null) {
-            if (ScriptingComponentHelper.isFile(scriptingComponentHelper.getScriptPath())) {
-                scriptNeedsReload.set(!reloadScriptFile(scriptingComponentHelper.getScriptPath()));
-            } else {
-                scriptNeedsReload.set(!reloadScriptBody(scriptingComponentHelper.getScriptBody()));
-            }
+            final boolean file = ScriptingComponentHelper.isFile(scriptingComponentHelper.getScriptPath());
+            final boolean result = file ? reloadScriptFile(scriptingComponentHelper.getScriptPath()) : reloadScriptBody(scriptingComponentHelper.getScriptBody());
+            final boolean previous = scriptNeedsReload.get();
+            // Maintain existing negative logic semantics (result=false on success currently) but log clearly
+            scriptNeedsReload.set(!result);
+            log.info("Acceldata: setup() reload completed: sourceType={} reloadMethodResult={} (meaning successWhenResultIsFalse={}) previousNeedsReload={} newNeedsReload={} scriptPath='{}' bodyPresent={}",
+                    file ? "file" : "body",
+                    result,
+                    !result,
+                    previous,
+                    scriptNeedsReload.get(),
+                    scriptingComponentHelper.getScriptPath(),
+                    scriptingComponentHelper.getScriptBody() != null && !scriptingComponentHelper.getScriptBody().isEmpty());
         }
     }
 
@@ -354,7 +368,15 @@ public class InvokeScriptedProcessor extends AbstractSessionFactoryProcessor {
         if (StringUtils.isEmpty(scriptBody)) {
             return true;
         }
-
+        final long attempt = RELOAD_ATTEMPT_COUNTER.incrementAndGet();
+        log.info("Acceldata: reloadScript attempt={} start engine='{}' scriptPath='{}' bodyLength={} existingRunner={} queueSize={} needsReloadFlag={}",
+                attempt,
+                scriptingComponentHelper.getScriptEngineName(),
+                scriptingComponentHelper.getScriptPath(),
+                scriptBody.length(),
+                scriptRunner != null,
+                scriptingComponentHelper.scriptRunnerQ == null ? -1 : scriptingComponentHelper.scriptRunnerQ.size(),
+                scriptNeedsReload.get());
         // note we are starting here with a fresh listing of validation
         // results since we are (re)loading a new/updated script. any
         // existing validation results are not relevant
@@ -363,11 +385,23 @@ public class InvokeScriptedProcessor extends AbstractSessionFactoryProcessor {
         try {
             // Create a single script engine, the Processor object is reused by each task
             if (scriptRunner == null) {
-                scriptingComponentHelper.setupScriptRunners(1, scriptBody, getLogger());
-                scriptRunner = scriptingComponentHelper.scriptRunnerQ.poll();
+                final ComponentLog logger = getLogger();
+                log.info("Acceldata: Attempting to create ScriptRunner (attempt={}). Engine='{}' ScriptPath='{}' ScriptBodyEmpty={} Modules='{}'", attempt,
+                        scriptingComponentHelper.getScriptEngineName(),
+                        scriptingComponentHelper.getScriptPath(),
+                        StringUtils.isEmpty(scriptBody),
+                        scriptingComponentHelper.getModules());
+                scriptingComponentHelper.setupScriptRunners(1, scriptBody, logger);
+                log.debug("(attempt={}) ScriptRunner queue size after setup: {}", attempt,
+                        scriptingComponentHelper.scriptRunnerQ != null ? scriptingComponentHelper.scriptRunnerQ.size() : -1);
+                scriptRunner = scriptingComponentHelper.scriptRunnerQ != null ? scriptingComponentHelper.scriptRunnerQ.poll() : null;
             }
 
             if (scriptRunner == null) {
+                log.error("Acceldata: reloadScript attempt={} failed: No script runner available (engine='{}' queueSize={} factories={})", attempt,
+                        scriptingComponentHelper.getScriptEngineName(),
+                        scriptingComponentHelper.scriptRunnerQ == null ? -1 : scriptingComponentHelper.scriptRunnerQ.size(),
+                        scriptingComponentHelper.scriptEngineFactoryMap == null ? "null" : scriptingComponentHelper.scriptEngineFactoryMap.keySet());
                 throw new ProcessException("No script runner available");
             }
             // get the engine and ensure its invocable
@@ -395,7 +429,9 @@ public class InvokeScriptedProcessor extends AbstractSessionFactoryProcessor {
                     // record the processor for use later
                     final Processor scriptProcessor = invocable.getInterface(obj, Processor.class);
                     processor.set(scriptProcessor);
-
+                    if (scriptProcessor != null) {
+                        log.info("Acceldata: reloadScript attempt={} obtained processor impl='{}'", attempt, scriptProcessor.getClass().getName());
+                    }
                     if (scriptProcessor != null) {
                         try {
                             scriptProcessor.initialize(new ProcessorInitializationContext() {
@@ -440,6 +476,8 @@ public class InvokeScriptedProcessor extends AbstractSessionFactoryProcessor {
                         }
                     }
                 } else {
+                    log.error("Acceldata: reloadScript attempt={} script did not define variable 'processor'. Available bindings={}",
+                        attempt, scriptEngine.getBindings(ScriptContext.ENGINE_SCOPE).keySet());
                     throw new ScriptException("No processor was defined by the script.");
                 }
             }
@@ -459,9 +497,10 @@ public class InvokeScriptedProcessor extends AbstractSessionFactoryProcessor {
 
         // store the updated validation results
         validationResults.set(results);
-
-        // return whether there were any issues loading the configured script
-        return !results.isEmpty();
+        final boolean returnValue = !results.isEmpty(); // existing semantics retained
+        log.info("Acceldata: reloadScript attempt={} end validationErrors={} returning={} (meaning successWhenReturningFalse={})",
+            attempt, results.size(), returnValue, !returnValue);
+        return returnValue;
     }
 
     /**
