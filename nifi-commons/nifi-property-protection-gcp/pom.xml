@@ -24,6 +24,7 @@
     <properties>
         <gcp.sdk.version>26.40.0</gcp.sdk.version>
         <guava.version>33.3.1-jre</guava.version>
+        <google-cloud-kms.version>2.55.0</google-cloud-kms.version>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -60,6 +61,7 @@
         <dependency>
             <groupId>com.google.cloud</groupId>
             <artifactId>google-cloud-kms</artifactId>
+            <version>${google-cloud-kms.version}}</version>
             <exclusions>
                 <exclusion>
                     <groupId>commons-logging</groupId>
