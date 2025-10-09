@@ -21,7 +21,7 @@
     <parent>
         <artifactId>nifi-nar-bundles</artifactId>
         <groupId>org.apache.nifi</groupId>
-        <version>1.23.2.3.2.3.3-3</version>
+        <version>1.23.2.3.2.3.3-301</version>
     </parent>
 
     <artifactId>nifi-workday-bundle</artifactId>
