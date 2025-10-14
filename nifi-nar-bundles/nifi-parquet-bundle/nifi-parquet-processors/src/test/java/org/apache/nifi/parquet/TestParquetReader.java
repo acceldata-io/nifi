@@ -206,7 +206,7 @@ public class TestParquetReader {
 
         runner.run();
         runner.assertAllFlowFilesTransferred(TestParquetProcessor.SUCCESS, 1);
-        runner.getFlowFilesForRelationship(TestParquetProcessor.SUCCESS).getFirst().assertContentEquals(
+        runner.getFlowFilesForRelationship(TestParquetProcessor.SUCCESS).get(0).assertContentEquals(
                 "MapRecord[{name=Bob, favorite_number=1, favorite_colors=[MapRecord[{element=blue}], MapRecord[{element=red}], MapRecord[{element=yellow}]]}]");
     }
 
@@ -225,7 +225,7 @@ public class TestParquetReader {
 
         runner.run();
         runner.assertAllFlowFilesTransferred(TestParquetProcessor.SUCCESS, 1);
-        runner.getFlowFilesForRelationship(TestParquetProcessor.SUCCESS).getFirst().assertContentEquals(
+        runner.getFlowFilesForRelationship(TestParquetProcessor.SUCCESS).get(0).assertContentEquals(
                 "MapRecord[{name=Bob, favorite_number=1, favorite_colors=[blue, red, yellow]}]");
     }
 
