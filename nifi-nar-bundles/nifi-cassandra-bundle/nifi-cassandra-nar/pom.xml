@@ -19,7 +19,7 @@
     <parent>
         <groupId>org.apache.nifi</groupId>
         <artifactId>nifi-cassandra-bundle</artifactId>
-        <version>1.28.1.3.2.3.4-2003</version>
+        <version>1.28.1.3.2.3.4-2</version>
     </parent>
 
     <artifactId>nifi-cassandra-nar</artifactId>
@@ -40,7 +40,7 @@
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-cassandra-services-api-nar</artifactId>
-            <version>1.28.1.3.2.3.4-2003</version>
+            <version>1.28.1.3.2.3.4-2</version>
             <type>nar</type>
         </dependency>
         <dependency>
