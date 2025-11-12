@@ -18,7 +18,7 @@
     <parent>
         <groupId>org.apache.nifi</groupId>
         <artifactId>nifi-record-utils</artifactId>
-        <version>1.28.1.3.2.3.4-3</version>
+        <version>1.28.1.3.2.3.4-3001</version>
     </parent>
     <artifactId>nifi-hadoop-record-utils</artifactId>
     <packaging>jar</packaging>
@@ -26,12 +26,12 @@
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-hadoop-utils</artifactId>
-            <version>1.28.1.3.2.3.4-3</version>
+            <version>1.28.1.3.2.3.4-3001</version>
         </dependency>
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-avro-record-utils</artifactId>
-            <version>1.28.1.3.2.3.4-3</version>
+            <version>1.28.1.3.2.3.4-3001</version>
         </dependency>
         <!-- dnsjava upgrade to resolve CVE-2024-25638. -->
         <dependency>
