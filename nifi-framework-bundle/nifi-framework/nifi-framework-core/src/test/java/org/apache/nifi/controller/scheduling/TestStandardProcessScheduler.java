@@ -26,6 +26,7 @@ import org.apache.nifi.components.PropertyDescriptor;
 import org.apache.nifi.components.state.StateManagerProvider;
 import org.apache.nifi.components.validation.ValidationStatus;
 import org.apache.nifi.components.validation.ValidationTrigger;
+import org.apache.nifi.components.validation.VerifiableComponentFactory;
 import org.apache.nifi.controller.AbstractControllerService;
 import org.apache.nifi.controller.ConfigurationContext;
 import org.apache.nifi.controller.ExtensionBuilder;
@@ -197,6 +198,7 @@ public class TestStandardProcessScheduler {
                 .nodeTypeProvider(Mockito.mock(NodeTypeProvider.class))
                 .validationTrigger(Mockito.mock(ValidationTrigger.class))
                 .reloadComponent(Mockito.mock(ReloadComponent.class))
+                .verifiableComponentFactory(Mockito.mock(VerifiableComponentFactory.class))
                 .stateManagerProvider(Mockito.mock(StateManagerProvider.class))
                 .extensionManager(extensionManager)
                 .buildControllerService();
@@ -248,6 +250,7 @@ public class TestStandardProcessScheduler {
         proc.initialize(new StandardProcessorInitializationContext(uuid, null, null, null, KerberosConfig.NOT_CONFIGURED));
 
         final ReloadComponent reloadComponent = Mockito.mock(ReloadComponent.class);
+        final VerifiableComponentFactory verifiableComponentFactory = Mockito.mock(VerifiableComponentFactory.class);
 
         final ControllerServiceNode service = flowManager.createControllerService(NoStartServiceImpl.class.getName(), "service",
                 systemBundle.getBundleDetails().getCoordinate(), null, true, true, null);
@@ -257,7 +260,7 @@ public class TestStandardProcessScheduler {
         final LoggableComponent<Processor> loggableComponent = new LoggableComponent<>(proc, systemBundle.getBundleDetails().getCoordinate(), null);
         final ValidationContextFactory validationContextFactory = new StandardValidationContextFactory(serviceProvider);
         final ProcessorNode procNode = new StandardProcessorNode(loggableComponent, uuid, validationContextFactory, scheduler,
-            serviceProvider, reloadComponent, extensionManager, new SynchronousValidationTrigger());
+            serviceProvider, reloadComponent, verifiableComponentFactory, extensionManager, new SynchronousValidationTrigger());
 
         rootGroup.addProcessor(procNode);
 
@@ -538,10 +541,12 @@ public class TestStandardProcessScheduler {
 
         proc.initialize(new StandardProcessorInitializationContext(UUID.randomUUID().toString(), null, null, null, KerberosConfig.NOT_CONFIGURED));
         final ReloadComponent reloadComponent = Mockito.mock(ReloadComponent.class);
+        final VerifiableComponentFactory verifiableComponentFactory = Mockito.mock(VerifiableComponentFactory.class);
         final LoggableComponent<Processor> loggableComponent = new LoggableComponent<>(proc, systemBundle.getBundleDetails().getCoordinate(), null);
 
         final ProcessorNode procNode = new StandardProcessorNode(loggableComponent, UUID.randomUUID().toString(),
-            new StandardValidationContextFactory(serviceProvider), scheduler, serviceProvider, reloadComponent, extensionManager, new SynchronousValidationTrigger());
+            new StandardValidationContextFactory(serviceProvider), scheduler, serviceProvider, reloadComponent,
+            verifiableComponentFactory, extensionManager, new SynchronousValidationTrigger());
 
         procNode.performValidation();
         rootGroup.addProcessor(procNode);
@@ -564,11 +569,12 @@ public class TestStandardProcessScheduler {
 
         proc.initialize(new StandardProcessorInitializationContext(UUID.randomUUID().toString(), null, null, null, KerberosConfig.NOT_CONFIGURED));
         final ReloadComponent reloadComponent = Mockito.mock(ReloadComponent.class);
+        final VerifiableComponentFactory verifiableComponentFactory = Mockito.mock(VerifiableComponentFactory.class);
         final LoggableComponent<Processor> loggableComponent = new LoggableComponent<>(proc, systemBundle.getBundleDetails().getCoordinate(), null);
 
         final ProcessorNode procNode = new StandardProcessorNode(loggableComponent, UUID.randomUUID().toString(),
             new StandardValidationContextFactory(serviceProvider),
-            scheduler, serviceProvider, reloadComponent, extensionManager, new SynchronousValidationTrigger());
+            scheduler, serviceProvider, reloadComponent, verifiableComponentFactory, extensionManager, new SynchronousValidationTrigger());
 
         rootGroup.addProcessor(procNode);
 
@@ -594,10 +600,12 @@ public class TestStandardProcessScheduler {
 
         proc.initialize(new StandardProcessorInitializationContext(UUID.randomUUID().toString(), null, null, null, KerberosConfig.NOT_CONFIGURED));
         final ReloadComponent reloadComponent = Mockito.mock(ReloadComponent.class);
+        final VerifiableComponentFactory verifiableComponentFactory = Mockito.mock(VerifiableComponentFactory.class);
         final LoggableComponent<Processor> loggableComponent = new LoggableComponent<>(proc, systemBundle.getBundleDetails().getCoordinate(), null);
 
         final ProcessorNode procNode = new StandardProcessorNode(loggableComponent, UUID.randomUUID().toString(),
-            new StandardValidationContextFactory(serviceProvider), scheduler, serviceProvider, reloadComponent, extensionManager, new SynchronousValidationTrigger());
+            new StandardValidationContextFactory(serviceProvider), scheduler, serviceProvider, reloadComponent,
+            verifiableComponentFactory, extensionManager, new SynchronousValidationTrigger());
 
         rootGroup.addProcessor(procNode);
 
