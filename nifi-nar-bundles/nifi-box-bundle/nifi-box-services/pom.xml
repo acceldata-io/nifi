@@ -19,7 +19,7 @@
     <parent>
         <artifactId>nifi-box-bundle</artifactId>
         <groupId>org.apache.nifi</groupId>
-        <version>1.28.1.3.2.3.4-SNAPSHOT</version>
+        <version>1.28.1.3.2.3.5-2</version>
     </parent>
 
     <artifactId>nifi-box-services</artifactId>
@@ -29,18 +29,18 @@
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-box-services-api</artifactId>
-            <version>1.28.1.3.2.3.4-SNAPSHOT</version>
+            <version>1.28.1.3.2.3.5-2</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-utils</artifactId>
-            <version>1.28.1.3.2.3.4-SNAPSHOT</version>
+            <version>1.28.1.3.2.3.5-2</version>
         </dependency>
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-json-utils</artifactId>
-            <version>1.28.1.3.2.3.4-SNAPSHOT</version>
+            <version>1.28.1.3.2.3.5-2</version>
         </dependency>
         <dependency>
             <groupId>org.apache.nifi</groupId>
