@@ -47,9 +47,6 @@ public class ListGoogleDriveSimpleTest {
 
     private String listingModeAsString = "EXECUTION";
 
-    String folderId = "folder_id";
-    String folderName = "folder_name";
-
     @BeforeEach
     void setUp() throws Exception {
         mockProcessContext = mock(ProcessContext.class, RETURNS_DEEP_STUBS);
@@ -77,6 +74,9 @@ public class ListGoogleDriveSimpleTest {
         // GIVEN
         Long minTimestamp = 0L;
         listingModeAsString = "EXECUTION";
+
+        String folderId = "folder_id";
+        String folderName = "folder_name";
 
         String id = "id_1";
         String filename = "file_name_1";
