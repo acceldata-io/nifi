@@ -149,7 +149,7 @@ public class FetchGoogleDriveTest extends AbstractGoogleDriveTest {
 
         assertFlowFileAttributes(FetchGoogleDrive.REL_SUCCESS);
 
-        final MockFlowFile flowFile = testRunner.getFlowFilesForRelationship(FetchGoogleDrive.REL_SUCCESS).getFirst();
+        final MockFlowFile flowFile = testRunner.getFlowFilesForRelationship(FetchGoogleDrive.REL_SUCCESS).get(0);
 
         flowFile.assertAttributeEquals(GoogleDriveAttributes.OWNER, TEST_OWNER);
         flowFile.assertAttributeEquals(GoogleDriveAttributes.LAST_MODIFYING_USER, TEST_LAST_MODIFYING_USER);
