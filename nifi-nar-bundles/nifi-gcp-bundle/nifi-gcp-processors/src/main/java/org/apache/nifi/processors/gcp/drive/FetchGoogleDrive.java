@@ -313,7 +313,7 @@ public class FetchGoogleDrive extends AbstractProcessor implements GoogleDriveTr
 
                 Optional.ofNullable(fileMetadata.getParents())
                         .filter(parents -> !parents.isEmpty())
-                        .map(List::getFirst)
+                        .map(parents -> parents.get(0))
                         .map(folderId -> getFolderDetails(driveService, folderId))
                         .ifPresent(folderDetails -> fileInfoBuilder
                                 .parentFolderId(folderDetails.getFolderId())
