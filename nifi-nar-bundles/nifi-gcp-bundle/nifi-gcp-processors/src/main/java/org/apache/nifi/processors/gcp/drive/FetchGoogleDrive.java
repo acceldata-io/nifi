@@ -285,7 +285,7 @@ public class FetchGoogleDrive extends AbstractProcessor implements GoogleDriveTr
         try {
             final File fileMetadata = fetchFileMetadata(fileId);
             final Map<String, String> attributeMap = createGoogleDriveFileInfoBuilder(fileMetadata)
-                    .owner(Optional.ofNullable(fileMetadata.getOwners()).filter(owners -> !owners.isEmpty()).map(List::getFirst).map(User::getDisplayName).orElse(null))
+                    .owner(Optional.ofNullable(fileMetadata.getOwners()).filter(owners -> !owners.isEmpty()).map(owners -> owners.get(0)).map(User::getDisplayName).orElse(null))
                     .lastModifyingUser(Optional.ofNullable(fileMetadata.getLastModifyingUser()).map(User::getDisplayName).orElse(null))
                     .webViewLink(fileMetadata.getWebViewLink())
                     .webContentLink(fileMetadata.getWebContentLink())
