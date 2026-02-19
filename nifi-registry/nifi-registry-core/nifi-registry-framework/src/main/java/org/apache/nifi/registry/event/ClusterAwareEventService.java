@@ -146,14 +146,18 @@ public class ClusterAwareEventService implements EventService, DisposableBean {
         try {
             final List<PersistedEvent> pending = queryPendingEvents();
             for (final PersistedEvent row : pending) {
-                final Event event = deserializeEvent(row.eventType, row.eventData);
-                if (event == null) {
-                    // Malformed record: mark processed to prevent infinite retry.
+                try {
+                    final Event event = deserializeEvent(row.eventType, row.eventData);
+                    if (event == null) {
+                        // Malformed record: mark processed to prevent infinite retry.
+                        markProcessed(row.eventId);
+                        continue;
+                    }
+                    deliverToProviders(event);
                     markProcessed(row.eventId);
-                    continue;
+                } catch (final Exception eventException) {
+                    LOGGER.error("Error delivering cluster event with ID {} and type {}", row.eventId, row.eventType, eventException);
                 }
-                deliverToProviders(event);
-                markProcessed(row.eventId);
             }
 
             purgeOldEvents();
