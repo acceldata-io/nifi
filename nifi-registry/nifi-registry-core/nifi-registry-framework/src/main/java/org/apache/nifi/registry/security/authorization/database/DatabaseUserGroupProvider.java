@@ -77,6 +77,8 @@ public class DatabaseUserGroupProvider implements ConfigurableUserGroupProvider 
     @Override
     public void initialize(final UserGroupProviderInitializationContext initializationContext) throws SecurityProviderCreationException {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
+        // Register with the cluster cache poller so it can trigger refreshes on version change.
+        CacheRefreshPoller.setUserGroupProvider(this);
     }
 
     @Override
@@ -131,6 +133,7 @@ public class DatabaseUserGroupProvider implements ConfigurableUserGroupProvider 
         jdbcTemplate.update(sql, user.getIdentifier(), user.getIdentity());
 
         refreshUserGroupHolder();
+        bumpCacheVersion();
 
         return user;
     }
@@ -149,6 +152,7 @@ public class DatabaseUserGroupProvider implements ConfigurableUserGroupProvider 
         }
 
         refreshUserGroupHolder();
+        bumpCacheVersion();
 
         return user;
     }
@@ -215,6 +219,7 @@ public class DatabaseUserGroupProvider implements ConfigurableUserGroupProvider 
         }
 
         refreshUserGroupHolder();
+        bumpCacheVersion();
 
         return user;
     }
@@ -240,6 +245,7 @@ public class DatabaseUserGroupProvider implements ConfigurableUserGroupProvider 
         createUserGroups(group);
 
         refreshUserGroupHolder();
+        bumpCacheVersion();
 
         return group;
     }
@@ -265,6 +271,7 @@ public class DatabaseUserGroupProvider implements ConfigurableUserGroupProvider 
         createUserGroups(group);
 
         refreshUserGroupHolder();
+        bumpCacheVersion();
 
         return group;
     }
@@ -314,6 +321,7 @@ public class DatabaseUserGroupProvider implements ConfigurableUserGroupProvider 
         }
 
         refreshUserGroupHolder();
+        bumpCacheVersion();
 
         return group;
     }
@@ -335,10 +343,20 @@ public class DatabaseUserGroupProvider implements ConfigurableUserGroupProvider 
                 .build();
     }
 
-    private synchronized void refreshUserGroupHolder() {
+    synchronized void refreshUserGroupHolder() {
         final Set<User> allUsers = getDatabaseUsers();
         final Set<Group> allGroups = getDatabaseGroups();
         this.userGroupHolder.set(new DatabaseUserGroupHolder(allUsers, allGroups));
+    }
+
+    private void bumpCacheVersion() {
+        try {
+            jdbcTemplate.update(
+                    "UPDATE CACHE_VERSION SET VERSION = VERSION + 1 WHERE CACHE_DOMAIN = ?",
+                    CacheRefreshPoller.DOMAIN_USER_GROUPS);
+        } catch (final Exception e) {
+            LOGGER.warn("Failed to bump CACHE_VERSION for domain {}: {}", CacheRefreshPoller.DOMAIN_USER_GROUPS, e.getMessage());
+        }
     }
 
     //-- util methods

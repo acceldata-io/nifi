@@ -123,6 +123,11 @@ public class NiFiRegistryProperties extends ApplicationProperties {
     // Revision Management Properties
     public static final String REVISIONS_ENABLED = "nifi.registry.revisions.enabled";
 
+    // Cluster properties
+    public static final String CLUSTER_ENABLED = "nifi.registry.cluster.enabled";
+    public static final String CLUSTER_NODE_IDENTIFIER = "nifi.registry.cluster.node.identifier";
+    public static final String CLUSTER_CACHE_REFRESH_INTERVAL_MS = "nifi.registry.cluster.cache.refresh.interval.ms";
+
     // Defaults
     public static final String DEFAULT_WEB_WORKING_DIR = "./work/jetty";
     public static final String DEFAULT_WEB_HTTPS_APPLICATION_PROTOCOLS = "h2 http/1.1";
@@ -136,6 +141,7 @@ public class NiFiRegistryProperties extends ApplicationProperties {
     public static final String DEFAULT_WEB_SHOULD_SEND_SERVER_VERSION = "true";
     public static final String DEFAULT_SECURITY_USER_OIDC_CONNECT_TIMEOUT = "5 secs";
     public static final String DEFAULT_SECURITY_USER_OIDC_READ_TIMEOUT = "5 secs";
+    public static final long DEFAULT_CLUSTER_CACHE_REFRESH_INTERVAL_MS = 15_000L;
 
     public NiFiRegistryProperties() {
         this(Collections.EMPTY_MAP);
@@ -344,6 +350,26 @@ public class NiFiRegistryProperties extends ApplicationProperties {
 
     public boolean areRevisionsEnabled() {
         return Boolean.parseBoolean(getPropertyAsTrimmedString(REVISIONS_ENABLED));
+    }
+
+    public boolean isClusterEnabled() {
+        return Boolean.parseBoolean(getPropertyAsTrimmedString(CLUSTER_ENABLED));
+    }
+
+    public String getClusterNodeIdentifier() {
+        return getPropertyAsTrimmedString(CLUSTER_NODE_IDENTIFIER);
+    }
+
+    public long getClusterCacheRefreshIntervalMs() {
+        final String value = getPropertyAsTrimmedString(CLUSTER_CACHE_REFRESH_INTERVAL_MS);
+        if (StringUtils.isBlank(value)) {
+            return DEFAULT_CLUSTER_CACHE_REFRESH_INTERVAL_MS;
+        }
+        try {
+            return Long.parseLong(value);
+        } catch (final NumberFormatException nfe) {
+            throw new IllegalStateException(String.format("%s must be a long integer value.", CLUSTER_CACHE_REFRESH_INTERVAL_MS));
+        }
     }
 
     // Helper functions for common ways of interpreting property values

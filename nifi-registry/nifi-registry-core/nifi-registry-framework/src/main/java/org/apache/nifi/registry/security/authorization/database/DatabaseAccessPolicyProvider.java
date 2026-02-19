@@ -80,6 +80,8 @@ public class DatabaseAccessPolicyProvider extends AbstractConfigurableAccessPoli
     protected void doInitialize(AccessPolicyProviderInitializationContext initializationContext) throws SecurityProviderCreationException {
         super.doInitialize(initializationContext);
         this.jdbcTemplate = new JdbcTemplate(dataSource);
+        // Register with the cluster cache poller so it can trigger refreshes on version change.
+        CacheRefreshPoller.setAccessPolicyProvider(this);
     }
 
     @Override
@@ -174,6 +176,7 @@ public class DatabaseAccessPolicyProvider extends AbstractConfigurableAccessPoli
         createPolicyUserAndGroups(accessPolicy);
 
         refreshAccessPolicyHolder();
+        bumpCacheVersion();
 
         return accessPolicy;
     }
@@ -201,6 +204,7 @@ public class DatabaseAccessPolicyProvider extends AbstractConfigurableAccessPoli
         createPolicyUserAndGroups(accessPolicy);
 
         refreshAccessPolicyHolder();
+        bumpCacheVersion();
 
         return accessPolicy;
     }
@@ -271,6 +275,7 @@ public class DatabaseAccessPolicyProvider extends AbstractConfigurableAccessPoli
         }
 
         refreshAccessPolicyHolder();
+        bumpCacheVersion();
 
         return accessPolicy;
     }
@@ -293,12 +298,14 @@ public class DatabaseAccessPolicyProvider extends AbstractConfigurableAccessPoli
         final String policyGroupSql = "INSERT INTO APP_POLICY_GROUP(POLICY_IDENTIFIER, GROUP_IDENTIFIER) VALUES (?, ?)";
         jdbcTemplate.update(policyGroupSql, policyIdentifier, groupIdentifier);
         refreshAccessPolicyHolder();
+        bumpCacheVersion();
     }
 
     protected void insertPolicyUser(final String policyIdentifier, final String userIdentifier) {
         final String policyUserSql = "INSERT INTO APP_POLICY_USER(POLICY_IDENTIFIER, USER_IDENTIFIER) VALUES (?, ?)";
         jdbcTemplate.update(policyUserSql, policyIdentifier, userIdentifier);
         refreshAccessPolicyHolder();
+        bumpCacheVersion();
     }
 
     protected DatabaseAccessPolicy getDatabaseAcessPolicy(final String policyIdentifier) {
@@ -366,9 +373,19 @@ public class DatabaseAccessPolicyProvider extends AbstractConfigurableAccessPoli
         }
     }
 
-    private synchronized void refreshAccessPolicyHolder() {
+    synchronized void refreshAccessPolicyHolder() {
         final Set<AccessPolicy> allPolicies = getDatabaseAccessPolicies();
         this.accessPoliciesHolder.set(new DatabaseAccessPolicyHolder(allPolicies));
+    }
+
+    private void bumpCacheVersion() {
+        try {
+            jdbcTemplate.update(
+                    "UPDATE CACHE_VERSION SET VERSION = VERSION + 1 WHERE CACHE_DOMAIN = ?",
+                    CacheRefreshPoller.DOMAIN_ACCESS_POLICIES);
+        } catch (final Exception e) {
+            LOGGER.warn("Failed to bump CACHE_VERSION for domain {}: {}", CacheRefreshPoller.DOMAIN_ACCESS_POLICIES, e.getMessage());
+        }
     }
 
     //-- util methods
