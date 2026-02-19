@@ -33,6 +33,8 @@ import org.apache.nifi.registry.web.security.authentication.jwt.JwtIdentityProvi
 import org.apache.nifi.registry.web.security.authentication.x509.X509IdentityAuthenticationProvider;
 import org.apache.nifi.registry.web.security.authentication.x509.X509IdentityProvider;
 import org.apache.nifi.registry.web.security.authorization.ResourceAuthorizationFilter;
+import org.apache.nifi.registry.web.security.maintenance.MaintenanceModeFilter;
+import org.apache.nifi.registry.web.security.maintenance.MaintenanceModeManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,6 +81,9 @@ public class NiFiRegistrySecurityConfig {
     private Authorizer authorizer;
 
     @Autowired
+    private MaintenanceModeManager maintenanceModeManager;
+
+    @Autowired
     private X509IdentityProvider x509IdentityProvider;
 
     @Autowired
@@ -87,6 +92,7 @@ public class NiFiRegistrySecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(final HttpSecurity http) throws Exception {
         return http
+                .addFilterBefore(maintenanceModeFilter(), AnonymousAuthenticationFilter.class)
                 .addFilterBefore(x509AuthenticationFilter(), AnonymousAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthenticationFilter(), AnonymousAuthenticationFilter.class)
                 // Add Resource Authorization after Spring Security but before Jersey Resources
@@ -147,6 +153,10 @@ public class NiFiRegistrySecurityConfig {
 
     private IdentityAuthenticationProvider jwtAuthenticationProvider() {
         return new IdentityAuthenticationProvider(authorizer, jwtIdentityProvider, identityMapper);
+    }
+
+    private MaintenanceModeFilter maintenanceModeFilter() {
+        return new MaintenanceModeFilter(maintenanceModeManager);
     }
 
     private ResourceAuthorizationFilter resourceAuthorizationFilter() {
