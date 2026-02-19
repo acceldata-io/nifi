@@ -1294,6 +1294,35 @@ nifi.registry.db.password=<password>
 NOTE: Place the PostgreSQL or MySQL JDBC driver JAR in the `lib` directory on every Registry node, or set
 `nifi.registry.db.driver.directory` to the directory containing the driver.
 
+[[leader_election]]
+=== Leader Election
+
+When cluster mode is enabled, exactly one node at a time is designated the *leader* via a TTL-based lease
+stored in the `CLUSTER_LEADER` database table.  Leadership is used to coordinate tasks that must run on
+exactly one node — most notably, delivering <<Event Hooks,event hook>> notifications from the durable
+`REGISTRY_EVENT` log.
+
+[options="header,footer"]
+|====
+|*Parameter*|*Value*|*Description*
+|Lease duration|30 seconds|How long a node's leader status is valid before it must be renewed.
+|Heartbeat interval|10 seconds|How often each node attempts to renew (if leader) or claim (if follower) the lease.
+|====
+
+The election algorithm runs on every heartbeat:
+
+. *Renew* — if this node already owns the `CLUSTER_LEADER` row, update `EXPIRES_AT` and stay leader.
+. *Claim* — if the lease has expired (previous leader died), take ownership and become leader.
+. *Bootstrap* — if no row exists yet (first node to start), insert the row and become leader.
+. *Follow* — if another node holds a valid lease, remain a follower this cycle.
+
+If the current leader node stops sending heartbeats, any follower node will claim the lease within one
+lease-duration window (30 seconds by default) and resume leader duties automatically.  There is no manual
+failover step required.
+
+NOTE: Leader election and event-hook delivery require cluster mode (`nifi.registry.cluster.enabled=true`).
+In standalone mode these features are inactive and event hooks are delivered in-process as before.
+
 == Metadata Database
 
 The metadata database maintains the knowledge of which buckets exist, which versioned items belong to which buckets, as well as the version history for each item.
@@ -1682,6 +1711,23 @@ Qualified class name: `org.apache.nifi.registry.aws.S3BundlePersistenceProvider`
 
 == Event Hooks
 Event hooks are an integration point that allows for custom code to to be triggered when NiFi Registry application events occur.
+
+[[cluster_event_hooks]]
+=== Event Hook Delivery in Cluster Mode
+
+In standalone mode (the default), events are queued in memory on the node that received the request and
+delivered to hook providers on that same node.
+
+When `nifi.registry.cluster.enabled=true`, event delivery changes to a durable, exactly-once model:
+
+* *Any* node that handles a write request persists the event to the `REGISTRY_EVENT` database table.
+* Only the current <<leader_election,leader>> node polls for unprocessed events (every 5 seconds) and
+  delivers them to the configured hook providers.
+* Once delivered, each row is marked `PROCESSED = TRUE`.  Processed rows older than 7 days are
+  automatically purged by the leader.
+
+This guarantees that every event fires exactly once even if the node that handled the original request
+crashes before delivery completes, or if cluster membership changes mid-operation.
 
 [options="header,footer"]
 |==================================================================================================================================================

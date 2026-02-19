@@ -17,99 +17,30 @@
 package org.apache.nifi.registry.event;
 
 import org.apache.nifi.registry.hook.Event;
-import org.apache.nifi.registry.hook.EventHookProvider;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.DisposableBean;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import jakarta.annotation.PostConstruct;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
 
 /**
- * Service used for publishing events and passing events to the hook providers.
+ * Service used for publishing events and passing them to configured hook providers.
+ *
+ * <p>In standalone mode (the default) a {@link StandardEventService} is used: events
+ * are queued in memory and delivered on a single background thread.
+ *
+ * <p>In cluster mode ({@code nifi.registry.cluster.enabled=true}) a
+ * {@link ClusterAwareEventService} is used: events are persisted to the
+ * {@code REGISTRY_EVENT} database table and delivered exactly once by the
+ * current leader node.
+ *
+ * <p>The active implementation is selected by {@link EventServiceConfiguration}.
  */
-@Service
-public class EventService implements DisposableBean {
+public interface EventService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(EventService.class);
-
-    // Should only be a few events in the queue at a time, but setting a capacity just so it isn't unbounded
-    static final int EVENT_QUEUE_SIZE = 10_000;
-
-    private final BlockingQueue<Event> eventQueue;
-    private final ExecutorService scheduledExecutorService;
-    private final List<EventHookProvider> eventHookProviders;
-
-    @Autowired
-    public EventService(final List<EventHookProvider> eventHookProviders) {
-        this.eventQueue = new LinkedBlockingQueue<>(EVENT_QUEUE_SIZE);
-        this.scheduledExecutorService = Executors.newSingleThreadExecutor();
-        this.eventHookProviders = new ArrayList<>(eventHookProviders);
-    }
-
-    @PostConstruct
-    public void postConstruct() {
-        LOGGER.info("Starting event consumer...");
-
-        this.scheduledExecutorService.execute(() -> {
-            while (!Thread.interrupted()) {
-                try {
-                    final Event event = eventQueue.poll(1000, TimeUnit.MILLISECONDS);
-                    if (event == null) {
-                        continue;
-                    }
-
-                    // event was available so notify each provider, contain errors per-provider
-                    for (final EventHookProvider provider : eventHookProviders) {
-                        try {
-                            if (event.getEventType() == null
-                                    || (event.getEventType() != null && provider.shouldHandle(event.getEventType()))) {
-                                provider.handle(event);
-                            }
-                        } catch (Exception e) {
-                            LOGGER.error("Error handling event hook", e);
-                        }
-                    }
-                } catch (InterruptedException e) {
-                    LOGGER.warn("Interrupted while polling event queue");
-                    return;
-                }
-            }
-        });
-
-        LOGGER.info("Event consumer started!");
-    }
-
-    @Override
-    public void destroy() throws Exception {
-        LOGGER.info("Shutting down event consumer...");
-        this.scheduledExecutorService.shutdownNow();
-        LOGGER.info("Event consumer shutdown!");
-    }
-
-    public void publish(final Event event) {
-        if (event == null) {
-            return;
-        }
-
-        try {
-            event.validate();
-
-            final boolean queued = eventQueue.offer(event);
-            if (!queued) {
-                LOGGER.error("Unable to queue event because queue is full");
-            }
-        } catch (IllegalStateException e) {
-            LOGGER.error("Invalid event", e);
-        }
-    }
-
+    /**
+     * Publishes the given event for delivery to all configured
+     * {@link org.apache.nifi.registry.hook.EventHookProvider}s.
+     *
+     * <p>Null events and invalid events (those that fail {@link Event#validate()})
+     * are silently discarded.
+     *
+     * @param event the event to publish
+     */
+    void publish(Event event);
 }
