@@ -167,6 +167,7 @@
         <h2.version>2.2.224</h2.version>
         <zookeeper.version>3.9.3</zookeeper.version>
         <caffeine.version>2.9.3</caffeine.version>
+        <commons.beanutils.version>1.11.0</commons.beanutils.version>
     </properties>
     <dependencyManagement>
         <dependencies>
