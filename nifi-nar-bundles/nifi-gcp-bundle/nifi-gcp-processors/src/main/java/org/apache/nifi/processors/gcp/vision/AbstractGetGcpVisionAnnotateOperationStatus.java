@@ -21,7 +21,7 @@ import static org.apache.nifi.expression.ExpressionLanguageScope.FLOWFILE_ATTRIB
 
 import com.google.longrunning.Operation;
 import com.google.protobuf.ByteString;
-import com.google.protobuf.GeneratedMessageV3;
+import com.google.protobuf.Message;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.util.JsonFormat;
 import com.google.rpc.Status;
@@ -91,7 +91,7 @@ abstract public class AbstractGetGcpVisionAnnotateOperationStatus extends Abstra
             Operation operation = getVisionClient().getOperationsClient().getOperation(operationKey);
             getLogger().info(operation.toString());
             if (operation.getDone() && !operation.hasError()) {
-                GeneratedMessageV3 response = deserializeResponse(operation.getResponse().getValue());
+                Message response = deserializeResponse(operation.getResponse().getValue());
                 FlowFile childFlowFile = session.create(flowFile);
                 session.write(childFlowFile, out -> out.write(JsonFormat.printer().print(response).getBytes(StandardCharsets.UTF_8)));
                 session.putAttribute(childFlowFile, CoreAttributes.MIME_TYPE.key(), "application/json");
@@ -110,5 +110,5 @@ abstract public class AbstractGetGcpVisionAnnotateOperationStatus extends Abstra
         }
     }
 
-    abstract protected GeneratedMessageV3 deserializeResponse(ByteString responseValue) throws InvalidProtocolBufferException;
+    abstract protected Message deserializeResponse(ByteString responseValue) throws InvalidProtocolBufferException;
 }
