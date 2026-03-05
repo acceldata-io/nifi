@@ -30,7 +30,7 @@ import com.google.longrunning.Operation;
 import com.google.longrunning.OperationsClient;
 import com.google.protobuf.Any;
 import com.google.protobuf.ByteString;
-import com.google.protobuf.GeneratedMessageV3;
+import com.google.protobuf.Message;
 import com.google.rpc.Status;
 import java.util.Collections;
 import org.apache.nifi.gcp.credentials.service.GCPCredentialsService;
@@ -68,7 +68,7 @@ public class GetGcpVisionAnnotateFilesOperationStatusTest {
             }
 
             @Override
-            protected GeneratedMessageV3 deserializeResponse(ByteString responseValue) {
+            protected Message deserializeResponse(ByteString responseValue) {
                 return AsyncBatchAnnotateFilesResponse.newBuilder().build();
             }
         };

@@ -26,16 +26,12 @@
     <artifactId>nifi-gcp-bundle</artifactId>
     <packaging>pom</packaging>
 
-    <properties>
-        <google.libraries.version>26.47.0</google.libraries.version>
-    </properties>
-
     <dependencyManagement>
         <dependencies>
             <dependency>
                 <groupId>com.google.cloud</groupId>
                 <artifactId>libraries-bom</artifactId>
-                <version>${google.libraries.version}</version>
+                <version>${gcp.sdk.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>

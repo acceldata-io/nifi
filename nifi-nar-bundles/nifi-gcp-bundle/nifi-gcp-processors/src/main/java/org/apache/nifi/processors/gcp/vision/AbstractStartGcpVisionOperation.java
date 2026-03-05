@@ -18,6 +18,7 @@
 package org.apache.nifi.processors.gcp.vision;
 
 import com.google.api.gax.longrunning.OperationFuture;
+import com.google.protobuf.Message;
 import com.google.protobuf.util.JsonFormat;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -36,7 +37,8 @@ import org.apache.nifi.processor.ProcessSession;
 import org.apache.nifi.processor.exception.ProcessException;
 import org.apache.nifi.processor.util.StandardValidators;
 
-public abstract class AbstractStartGcpVisionOperation<B extends com.google.protobuf.GeneratedMessageV3.Builder<B>> extends AbstractGcpVisionProcessor  {
+public abstract class AbstractStartGcpVisionOperation<B extends Message.Builder> extends AbstractGcpVisionProcessor {
+
     public static final PropertyDescriptor FEATURE_TYPE = new PropertyDescriptor.Builder()
             .name("vision-feature-type")
             .displayName("Vision Feature Type")

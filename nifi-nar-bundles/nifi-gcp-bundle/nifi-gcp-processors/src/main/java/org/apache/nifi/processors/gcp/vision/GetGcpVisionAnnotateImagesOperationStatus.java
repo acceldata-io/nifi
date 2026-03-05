@@ -19,8 +19,8 @@ package org.apache.nifi.processors.gcp.vision;
 
 import com.google.cloud.vision.v1.AsyncBatchAnnotateImagesResponse;
 import com.google.protobuf.ByteString;
-import com.google.protobuf.GeneratedMessageV3;
 import com.google.protobuf.InvalidProtocolBufferException;
+import com.google.protobuf.Message;
 import org.apache.nifi.annotation.behavior.ReadsAttribute;
 import org.apache.nifi.annotation.behavior.ReadsAttributes;
 import org.apache.nifi.annotation.documentation.CapabilityDescription;
@@ -31,11 +31,11 @@ import org.apache.nifi.annotation.documentation.Tags;
 @CapabilityDescription("Retrieves the current status of an Google Vision operation.")
 @SeeAlso({StartGcpVisionAnnotateImagesOperation.class})
 @ReadsAttributes({
-        @ReadsAttribute(attribute = "operationKey", description = "A unique identifier of the operation designated by the Vision server.")
+    @ReadsAttribute(attribute = "operationKey", description = "A unique identifier of the operation designated by the Vision server.")
 })
 public class GetGcpVisionAnnotateImagesOperationStatus extends AbstractGetGcpVisionAnnotateOperationStatus {
     @Override
-    protected GeneratedMessageV3 deserializeResponse(ByteString responseValue) throws InvalidProtocolBufferException {
+    protected Message deserializeResponse(ByteString responseValue) throws InvalidProtocolBufferException {
         return AsyncBatchAnnotateImagesResponse.parseFrom(responseValue);
     }
 }
