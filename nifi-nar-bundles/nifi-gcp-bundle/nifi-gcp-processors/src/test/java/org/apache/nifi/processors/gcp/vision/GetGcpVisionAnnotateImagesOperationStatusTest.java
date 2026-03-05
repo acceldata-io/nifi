@@ -30,7 +30,7 @@ import com.google.longrunning.Operation;
 import com.google.longrunning.OperationsClient;
 import com.google.protobuf.Any;
 import com.google.protobuf.ByteString;
-import com.google.protobuf.GeneratedMessageV3;
+import com.google.protobuf.Message;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.rpc.Status;
 import java.util.Collections;
@@ -69,7 +69,7 @@ public class GetGcpVisionAnnotateImagesOperationStatusTest {
             }
 
             @Override
-            protected GeneratedMessageV3 deserializeResponse(ByteString responseValue) throws InvalidProtocolBufferException {
+            protected Message deserializeResponse(ByteString responseValue) throws InvalidProtocolBufferException {
                 return AsyncBatchAnnotateImagesResponse.newBuilder().build();
             }
         };
