@@ -137,8 +137,8 @@
         <org.apache.commons.text.version>1.15.0</org.apache.commons.text.version>
 
         <!-- Big data platforms -->
-        <hadoop.version>3.3.6.3.3.6.3-1</hadoop.version>
-        <ozone.version>3.3.6.3.3.6.3-1</ozone.version>
+        <hadoop.version>3.3.6.3.3.6.4-1</hadoop.version>
+        <ozone.version>1.4.1.3.3.6.4-1</ozone.version>
 
         <!-- Kubernetes -->
         <io.fabric8.kubernetes.client.version>7.4.0</io.fabric8.kubernetes.client.version>
