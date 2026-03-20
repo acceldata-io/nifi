@@ -59,6 +59,7 @@ public class DatabaseUserGroupProvider implements ConfigurableUserGroupProvider 
 
     private DataSource dataSource;
     private IdentityMapper identityMapper;
+    private CacheRefreshPoller cacheRefreshPoller;
 
     private JdbcTemplate jdbcTemplate;
 
@@ -74,11 +75,18 @@ public class DatabaseUserGroupProvider implements ConfigurableUserGroupProvider 
         this.identityMapper = identityMapper;
     }
 
+    @AuthorizerContext
+    public void setCacheRefreshPoller(final CacheRefreshPoller cacheRefreshPoller) {
+        this.cacheRefreshPoller = cacheRefreshPoller;
+    }
+
     @Override
     public void initialize(final UserGroupProviderInitializationContext initializationContext) throws SecurityProviderCreationException {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
         // Register with the cluster cache poller so it can trigger refreshes on version change.
-        CacheRefreshPoller.setUserGroupProvider(this);
+        if (cacheRefreshPoller != null) {
+            cacheRefreshPoller.setUserGroupProvider(this);
+        }
     }
 
     @Override
