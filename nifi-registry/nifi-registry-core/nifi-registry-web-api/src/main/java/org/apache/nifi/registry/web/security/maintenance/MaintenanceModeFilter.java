@@ -41,6 +41,7 @@ import java.util.Set;
 public class MaintenanceModeFilter extends GenericFilterBean {
 
     private static final Set<String> WRITE_METHODS = Set.of("POST", "PUT", "PATCH", "DELETE");
+    private static final String ACTUATOR_PATH_PREFIX = "/actuator/";
     private static final int RETRY_AFTER_SECONDS = 60;
     private static final String MAINTENANCE_RESPONSE_BODY =
             "{\"status\":\"SERVICE_UNAVAILABLE\","
@@ -57,6 +58,11 @@ public class MaintenanceModeFilter extends GenericFilterBean {
             final FilterChain filterChain) throws IOException, ServletException {
         final HttpServletRequest httpRequest = (HttpServletRequest) servletRequest;
         final HttpServletResponse httpResponse = (HttpServletResponse) servletResponse;
+
+        if (httpRequest.getServletPath().startsWith(ACTUATOR_PATH_PREFIX)) {
+            filterChain.doFilter(servletRequest, servletResponse);
+            return;
+        }
 
         if (maintenanceModeManager.isEnabled() && isWriteMethod(httpRequest.getMethod())) {
             sendMaintenanceModeResponse(httpResponse);
