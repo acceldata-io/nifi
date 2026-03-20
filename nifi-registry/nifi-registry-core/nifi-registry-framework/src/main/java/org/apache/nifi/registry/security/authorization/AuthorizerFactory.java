@@ -51,6 +51,7 @@ import org.apache.nifi.registry.security.authorization.exception.AuthorizationAc
 import org.apache.nifi.registry.security.authorization.exception.UninheritableAuthorizationsException;
 import org.apache.nifi.registry.security.authorization.generated.Authorizers;
 import org.apache.nifi.registry.security.authorization.generated.Prop;
+import org.apache.nifi.registry.security.authorization.database.CacheRefreshPoller;
 import org.apache.nifi.registry.security.exception.SecurityProviderCreationException;
 import org.apache.nifi.registry.security.exception.SecurityProviderDestructionException;
 import org.apache.nifi.registry.security.identity.IdentityMapper;
@@ -103,6 +104,7 @@ public class AuthorizerFactory implements UserGroupProviderLookup, AccessPolicyP
     private final RegistryService registryService;
     private final DataSource dataSource;
     private final IdentityMapper identityMapper;
+    private final CacheRefreshPoller cacheRefreshPoller;
 
     private Authorizer authorizer;
     private final Map<String, UserGroupProvider> userGroupProviders = new HashMap<>();
@@ -115,13 +117,15 @@ public class AuthorizerFactory implements UserGroupProviderLookup, AccessPolicyP
             final ExtensionManager extensionManager,
             final RegistryService registryService,
             final DataSource dataSource,
-            final IdentityMapper identityMapper) {
+            final IdentityMapper identityMapper,
+            final CacheRefreshPoller cacheRefreshPoller) {
 
         this.properties = Objects.requireNonNull(properties);
         this.extensionManager = Objects.requireNonNull(extensionManager);
         this.registryService = Objects.requireNonNull(registryService);
         this.dataSource = Objects.requireNonNull(dataSource);
         this.identityMapper = Objects.requireNonNull(identityMapper);
+        this.cacheRefreshPoller = Objects.requireNonNull(cacheRefreshPoller);
     }
 
     /***** UserGroupProviderLookup *****/
@@ -444,6 +448,9 @@ public class AuthorizerFactory implements UserGroupProviderLookup, AccessPolicyP
                     } else if (IdentityMapper.class.isAssignableFrom(argumentType)) {
                         // identity mapper injection
                         method.invoke(instance, identityMapper);
+                    } else if (CacheRefreshPoller.class.isAssignableFrom(argumentType)) {
+                        // cache refresh poller injection
+                        method.invoke(instance, cacheRefreshPoller);
                     }
                 }
             }
@@ -476,6 +483,9 @@ public class AuthorizerFactory implements UserGroupProviderLookup, AccessPolicyP
                     } else if (IdentityMapper.class.isAssignableFrom(fieldType)) {
                         // identity mapper injection
                         field.set(instance, identityMapper);
+                    } else if (CacheRefreshPoller.class.isAssignableFrom(fieldType)) {
+                        // cache refresh poller injection
+                        field.set(instance, cacheRefreshPoller);
                     }
                 }
             }

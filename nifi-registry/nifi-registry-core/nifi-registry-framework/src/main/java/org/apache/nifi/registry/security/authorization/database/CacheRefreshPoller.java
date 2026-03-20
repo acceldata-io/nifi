@@ -40,11 +40,10 @@ import javax.sql.DataSource;
  * {@code nifi-registry.properties}. The poll interval defaults to 15 s and is
  * configurable via {@code nifi.registry.cluster.cache.refresh.interval.ms}.
  *
- * <p>Provider instances register themselves via the static
- * {@link #setAccessPolicyProvider} / {@link #setUserGroupProvider} setters,
- * which are called during provider initialisation. The static fields are
- * volatile, so visibility across threads is guaranteed without additional
- * synchronisation in the setter path.
+ * <p>Provider instances register themselves by calling
+ * {@link #setAccessPolicyProvider} / {@link #setUserGroupProvider} on the
+ * poller instance, which is injected into each provider via the
+ * {@code @AuthorizerContext} mechanism during provider initialisation.
  */
 @Component
 public class CacheRefreshPoller implements DisposableBean {
@@ -54,9 +53,10 @@ public class CacheRefreshPoller implements DisposableBean {
     static final String DOMAIN_ACCESS_POLICIES = "ACCESS_POLICIES";
     static final String DOMAIN_USER_GROUPS = "USER_GROUPS";
 
-    // Provider instances are not Spring beans; they self-register here on initialisation.
-    private static volatile DatabaseAccessPolicyProvider accessPolicyProvider;
-    private static volatile DatabaseUserGroupProvider userGroupProvider;
+    // Provider instances are not Spring beans; they register themselves on initialisation
+    // via the CacheRefreshPoller instance injected through @AuthorizerContext.
+    private DatabaseAccessPolicyProvider accessPolicyProvider;
+    private DatabaseUserGroupProvider userGroupProvider;
 
     private final JdbcTemplate jdbcTemplate;
     private final NiFiRegistryProperties properties;
@@ -99,7 +99,7 @@ public class CacheRefreshPoller implements DisposableBean {
      * Called by {@link DatabaseAccessPolicyProvider} during initialisation so the
      * poller can trigger a cache reload on that provider when the version changes.
      */
-    static void setAccessPolicyProvider(final DatabaseAccessPolicyProvider provider) {
+    void setAccessPolicyProvider(final DatabaseAccessPolicyProvider provider) {
         accessPolicyProvider = provider;
     }
 
@@ -107,7 +107,7 @@ public class CacheRefreshPoller implements DisposableBean {
      * Called by {@link DatabaseUserGroupProvider} during initialisation so the
      * poller can trigger a cache reload on that provider when the version changes.
      */
-    static void setUserGroupProvider(final DatabaseUserGroupProvider provider) {
+    void setUserGroupProvider(final DatabaseUserGroupProvider provider) {
         userGroupProvider = provider;
     }
 

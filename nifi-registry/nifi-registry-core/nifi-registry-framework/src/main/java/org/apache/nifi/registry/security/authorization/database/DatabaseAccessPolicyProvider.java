@@ -61,6 +61,7 @@ public class DatabaseAccessPolicyProvider extends AbstractConfigurableAccessPoli
 
     private DataSource dataSource;
     private IdentityMapper identityMapper;
+    private CacheRefreshPoller cacheRefreshPoller;
 
     private JdbcTemplate jdbcTemplate;
 
@@ -76,12 +77,19 @@ public class DatabaseAccessPolicyProvider extends AbstractConfigurableAccessPoli
         this.identityMapper = identityMapper;
     }
 
+    @AuthorizerContext
+    public void setCacheRefreshPoller(final CacheRefreshPoller cacheRefreshPoller) {
+        this.cacheRefreshPoller = cacheRefreshPoller;
+    }
+
     @Override
     protected void doInitialize(AccessPolicyProviderInitializationContext initializationContext) throws SecurityProviderCreationException {
         super.doInitialize(initializationContext);
         this.jdbcTemplate = new JdbcTemplate(dataSource);
         // Register with the cluster cache poller so it can trigger refreshes on version change.
-        CacheRefreshPoller.setAccessPolicyProvider(this);
+        if (cacheRefreshPoller != null) {
+            cacheRefreshPoller.setAccessPolicyProvider(this);
+        }
     }
 
     @Override
