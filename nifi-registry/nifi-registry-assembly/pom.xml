@@ -146,6 +146,12 @@
             <groupId>org.apache.nifi.registry</groupId>
             <artifactId>nifi-registry-properties-loader</artifactId>
         </dependency>
+        <!-- MySQL JDBC driver for shared-database cluster mode -->
+        <dependency>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
+            <version>9.5.0</version>
+        </dependency>
     </dependencies>
 
     <properties>
