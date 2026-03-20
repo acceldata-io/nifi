@@ -25,12 +25,3 @@ CREATE TABLE CACHE_VERSION (
 INSERT INTO CACHE_VERSION (CACHE_DOMAIN, VERSION) VALUES ('ACCESS_POLICIES', 0);
 INSERT INTO CACHE_VERSION (CACHE_DOMAIN, VERSION) VALUES ('USER_GROUPS', 0);
 
--- Cluster node registration table: tracks live nodes for operational visibility.
--- Updated by a heartbeat thread on each node; no quorum or eviction is performed in this phase.
-
-CREATE TABLE CLUSTER_NODE (
-    NODE_ID        VARCHAR(100) NOT NULL,
-    HOSTNAME       VARCHAR(255) NOT NULL,
-    LAST_HEARTBEAT TIMESTAMP   NOT NULL,
-    CONSTRAINT PK__CLUSTER_NODE PRIMARY KEY (NODE_ID)
-);
