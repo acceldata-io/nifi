@@ -92,11 +92,13 @@ public class NiFiRegistrySecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(final HttpSecurity http) throws Exception {
         return http
-                .addFilterBefore(maintenanceModeFilter(), AnonymousAuthenticationFilter.class)
                 .addFilterBefore(x509AuthenticationFilter(), AnonymousAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthenticationFilter(), AnonymousAuthenticationFilter.class)
                 // Add Resource Authorization after Spring Security but before Jersey Resources
                 .addFilterAfter(resourceAuthorizationFilter(), AuthorizationFilter.class)
+                // Maintenance mode runs after auth is fully resolved so unauthenticated write requests
+                // are rejected with 401 (not 503) before reaching this filter.
+                .addFilterAfter(maintenanceModeFilter(), ResourceAuthorizationFilter.class)
                 .anonymous(anonymous -> anonymous.authenticationFilter(new AnonymousIdentityFilter()))
                 .csrf(csrf -> {
                     csrf.requireCsrfProtectionMatcher(new CsrfRequestMatcher());
