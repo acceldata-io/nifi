@@ -206,6 +206,8 @@
         <pmd.version>7.19.0</pmd.version>
         <checkstyle.version>12.2.0</checkstyle.version>
         <testcontainers.version>2.0.2</testcontainers.version>
+        <zookeeper.version>3.9.4</zookeeper.version>
+        <curator.version>5.9.0</curator.version>
     </properties>
     <dependencyManagement>
         <dependencies>

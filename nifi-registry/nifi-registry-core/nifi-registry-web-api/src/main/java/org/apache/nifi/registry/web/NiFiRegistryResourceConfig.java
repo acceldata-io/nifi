@@ -26,6 +26,7 @@ import org.apache.nifi.registry.web.api.ExtensionRepoResource;
 import org.apache.nifi.registry.web.api.BundleResource;
 import org.apache.nifi.registry.web.api.ExtensionResource;
 import org.apache.nifi.registry.web.api.FlowResource;
+import org.apache.nifi.registry.web.api.InternalSyncResource;
 import org.apache.nifi.registry.web.api.ItemResource;
 import org.apache.nifi.registry.web.api.TenantResource;
 import org.apache.nifi.registry.web.api.RegistryAboutResource;
@@ -72,6 +73,7 @@ public class NiFiRegistryResourceConfig extends ResourceConfig {
         register(TenantResource.class);
         register(ConfigResource.class);
         register(RegistryAboutResource.class);
+        register(InternalSyncResource.class);
 
         // register multipart feature
         register(MultiPartFeature.class);
