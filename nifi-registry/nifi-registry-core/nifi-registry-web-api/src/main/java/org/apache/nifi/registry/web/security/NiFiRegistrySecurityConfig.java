@@ -117,8 +117,9 @@ public class NiFiRegistrySecurityConfig {
                 // are rejected with 401 (not 503) before reaching this filter.
                 .addFilterAfter(maintenanceModeFilter(), ResourceAuthorizationFilter.class)
                 // Write replication: follower forwards to leader; leader fans out to followers.
-                // Runs after maintenance mode so 503-rejected writes never reach replication logic.
-                .addFilterAfter(writeReplicationFilter(), MaintenanceModeFilter.class)
+                // Runs before ResourceAuthorizationFilter so that leader→follower fan-out requests
+                // bypass per-resource authorization checks (they carry a validated internal token).
+                .addFilterBefore(writeReplicationFilter(), ResourceAuthorizationFilter.class)
                 .anonymous(anonymous -> anonymous.authenticationFilter(new AnonymousIdentityFilter()))
                 .csrf(csrf -> {
                     csrf.requireCsrfProtectionMatcher(new CsrfRequestMatcher());

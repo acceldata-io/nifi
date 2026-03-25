@@ -34,7 +34,7 @@ import java.util.Set;
  * <ul>
  *   <li>Status: 503 Service Unavailable</li>
  *   <li>Retry-After: 60 seconds</li>
- *   <li>Body: JSON describing the maintenance mode state</li>
+ *   <li>Body: plain-text message describing the maintenance mode state</li>
  * </ul>
  * Read-only methods (GET, HEAD, OPTIONS) pass through unchanged.
  */
@@ -76,7 +76,7 @@ public class MaintenanceModeFilter extends GenericFilterBean {
 
     private void sendMaintenanceModeResponse(final HttpServletResponse response) throws IOException {
         response.setStatus(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
-        response.setContentType("application/json");
+        response.setContentType("text/plain");
         response.setHeader("Retry-After", String.valueOf(RETRY_AFTER_SECONDS));
         response.getWriter().println(MAINTENANCE_RESPONSE_BODY);
     }

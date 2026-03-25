@@ -116,6 +116,15 @@ public class DataSyncBootstrapper {
         LOGGER.info("DataSyncBootstrapper: local H2 database is empty and this node is a follower. "
                 + "Initiating bootstrap sync from leader.");
 
+        final String authToken = properties.getClusterNodeInternalAuthToken();
+        if (authToken == null || authToken.isBlank()) {
+            LOGGER.warn("DataSyncBootstrapper: '{}' is not configured. "
+                    + "Skipping bootstrap sync to avoid repeated 403 errors. "
+                    + "This node will start with an empty database and populate via write replication.",
+                    "nifi.registry.cluster.node.internal.auth.token");
+            return;
+        }
+
         final NodeAddress leader = waitForLeader();
         if (leader == null) {
             LOGGER.warn("DataSyncBootstrapper: no leader elected within {}ms. "

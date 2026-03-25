@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 
 /**
  * Creates and starts the {@link CuratorFramework} client used by
@@ -48,7 +49,13 @@ public class ZkClientFactory {
      *
      * <p>The returned client is started here; callers should close it via
      * {@link LeaderElectionConfiguration} / {@link ZkLeaderElectionManager#destroy()}.
+     *
+     * <p>The bean is declared {@code @Lazy} so that it is only instantiated when
+     * first requested. In database-coordination or standalone mode no component
+     * requests this bean, so it is never created and a blank connect string
+     * does not cause a startup failure.
      */
+    @Lazy
     @Bean(destroyMethod = "close")
     public CuratorFramework curatorFramework(final NiFiRegistryProperties properties) {
         final String connectString = properties.getZooKeeperConnectString();

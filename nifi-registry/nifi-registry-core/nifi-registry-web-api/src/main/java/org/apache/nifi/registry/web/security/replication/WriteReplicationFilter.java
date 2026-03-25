@@ -47,8 +47,11 @@ import java.util.Set;
  *
  * <ol>
  *   <li><strong>Follower path</strong> — if this node is not the current leader
- *       it proxies the write request verbatim to the leader and returns the
- *       leader's response to the client.</li>
+ *       it returns a {@code 307 Temporary Redirect} pointing at the leader's URL
+ *       so that the client retries the write directly against the leader.  This
+ *       preserves the client's TLS/mTLS identity end-to-end (unlike transparent
+ *       proxying, which would substitute the follower node's certificate on the
+ *       outbound connection).</li>
  *   <li><strong>Leader path</strong> — if this node is the leader it lets the
  *       request proceed through the normal filter/resource chain (writing to
  *       the local database), then fans out the same request to all followers
@@ -61,17 +64,14 @@ import java.util.Set;
  *       directly without further forwarding.</li>
  * </ol>
  *
- * <p>Read-only methods (GET, HEAD, OPTIONS) and actuator paths bypass the
- * filter entirely.
+ * <p>This filter is registered before {@link
+ * org.apache.nifi.registry.web.security.authorization.ResourceAuthorizationFilter}
+ * so that leader→follower fan-out requests (carrying a validated internal auth token)
+ * bypass per-resource authorization checks on the receiving follower.
  *
  * <p>When the {@link NodeRegistry} or {@link ReplicationClient} is {@code null}
  * (standalone or database-coordination mode) every request passes through
  * unchanged.
- *
- * <p>This filter is registered after {@link
- * org.apache.nifi.registry.web.security.maintenance.MaintenanceModeFilter}
- * so that write requests rejected by maintenance mode never reach the
- * replication logic.
  */
 public class WriteReplicationFilter extends GenericFilterBean {
 
@@ -141,21 +141,35 @@ public class WriteReplicationFilter extends GenericFilterBean {
             return;
         }
 
-        // 5. This node is a follower: forward the write to the leader.
+        // 5. This node is a follower: redirect the client to the leader.
+        //    Transparent HTTP proxying (forwardToLeader) cannot preserve the client's
+        //    TLS/mTLS identity because the outbound JDK HttpClient connection carries the
+        //    node's own certificate, not the original client certificate.  A 307 Temporary
+        //    Redirect instructs the client (or an intelligent load balancer) to retry the
+        //    write directly against the leader, preserving client credentials end-to-end.
         if (!leaderElectionManager.isLeader()) {
             final Optional<NodeAddress> leaderOpt = nodeRegistry.getLeaderAddress();
             if (leaderOpt.isEmpty()) {
-                LOGGER.warn("Cannot forward write {} {}: no leader is currently known.",
+                LOGGER.warn("Cannot redirect write {} {}: no leader is currently known.",
                         request.getMethod(), request.getRequestURI());
                 response.setStatus(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
                 response.setContentType("text/plain");
                 response.getWriter().write("No cluster leader available. Please retry.");
                 return;
             }
-            final byte[] body = request.getInputStream().readAllBytes();
-            LOGGER.debug("Forwarding {} {} to leader '{}'.",
+            final String path = buildPath(request);
+            // Guard against open-redirect: the request path must begin with '/' to ensure it
+            // is appended as a relative path to the leader's base URL, never as an absolute URL.
+            if (path == null || !path.startsWith("/")) {
+                LOGGER.warn("Rejecting redirect: unexpected request path '{}' does not start with '/'.", path);
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                return;
+            }
+            final String leaderUrl = leaderOpt.get().getBaseUrl() + path;
+            LOGGER.debug("Redirecting {} {} to leader '{}' via 307.",
                     request.getMethod(), request.getRequestURI(), leaderOpt.get().getNodeId());
-            replicationClient.forwardToLeader(request, body, response, leaderOpt.get());
+            response.setStatus(HttpServletResponse.SC_TEMPORARY_REDIRECT);
+            response.setHeader("Location", leaderUrl);
             return;
         }
 

@@ -166,7 +166,8 @@ public class ClusterAwareEventService implements EventService, DisposableBean, L
     // Leader-only delivery loop
     // -------------------------------------------------------------------------
 
-    private void deliverPendingEvents() {
+    // Package-private to allow direct invocation from unit tests without reflection.
+    void deliverPendingEvents() {
         if (!leaderElectionManager.isLeader()) {
             return;
         }
