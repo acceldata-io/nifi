@@ -1267,9 +1267,9 @@ user/group and access-policy authorizers (see `providers.xml` and `authorizers.x
 |*Property*|*Description*
 |`nifi.registry.cluster.enabled`|Set to `true` to activate cluster mode.  When `false` (the default) the
 `CacheRefreshPoller` background thread does not start and no cluster-related database tables are read.
-|`nifi.registry.cluster.node.identifier`|Optional human-readable label for this node.  Stored in the `CLUSTER_NODE`
-table and included in log messages to make it easier to identify which node generated a log entry.
-When blank, the JVM hostname is used.
+|`nifi.registry.cluster.node.identifier`|Optional human-readable label for this node. Used in cluster leader-election
+records (stored in the `CLUSTER_LEADER` table) and included in log messages to make it easier to identify which node
+generated a log entry. When blank, the JVM hostname is used.
 |`nifi.registry.cluster.cache.refresh.interval.ms`|Interval, in milliseconds, at which each node polls the
 `CACHE_VERSION` table in the shared database to check whether another node has mutated authorization data.
 When a version increment is detected the node reloads the affected in-memory cache from the database.
