@@ -48,8 +48,13 @@ import javax.sql.DataSource;
  *
  * <p>Events published by <em>any</em> cluster node are persisted to the
  * {@code REGISTRY_EVENT} database table. Only the current leader node delivers
- * events to {@link EventHookProvider}s, guaranteeing exactly-once delivery even
- * across node failures.
+ * events to {@link EventHookProvider}s.
+ *
+ * <p>Delivery is performed in a background loop with retries, providing
+ * at-least-once semantics for each event. If a delivery attempt fails for any
+ * provider, the event may be retried and therefore re-delivered to providers
+ * that have already processed it. {@link EventHookProvider} implementations
+ * must be idempotent and tolerate duplicate deliveries.
  *
  * <p>The delivery loop runs every 5 seconds. Processed events are retained for
  * {@value #RETENTION_DAYS} days before being purged.
