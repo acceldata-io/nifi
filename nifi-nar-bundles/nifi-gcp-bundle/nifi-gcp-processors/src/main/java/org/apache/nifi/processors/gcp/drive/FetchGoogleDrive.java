@@ -22,6 +22,7 @@ import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpRequestFactory;
 import com.google.api.client.http.HttpResponse;
 import com.google.api.services.drive.Drive;
+import com.google.api.services.drive.DriveScopes;
 import com.google.api.services.drive.model.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -74,7 +75,6 @@ import static org.apache.nifi.processors.gcp.drive.GoogleDriveAttributes.SIZE_AV
 import static org.apache.nifi.processors.gcp.drive.GoogleDriveAttributes.SIZE_DESC;
 import static org.apache.nifi.processors.gcp.drive.GoogleDriveAttributes.TIMESTAMP;
 import static org.apache.nifi.processors.gcp.drive.GoogleDriveAttributes.TIMESTAMP_DESC;
-import static org.apache.nifi.processors.gcp.util.GoogleUtils.GOOGLE_CLOUD_PLATFORM_SCOPE;
 
 @InputRequirement(InputRequirement.Requirement.INPUT_REQUIRED)
 @Tags({"google", "drive", "storage", "fetch"})
@@ -253,7 +253,7 @@ public class FetchGoogleDrive extends AbstractProcessor implements GoogleDriveTr
         driveService = createDriveService(
                 context,
                 new ProxyAwareTransportFactory(proxyConfiguration).create(),
-                GOOGLE_CLOUD_PLATFORM_SCOPE
+                DriveScopes.DRIVE, DriveScopes.DRIVE_FILE
         );
     }
 
