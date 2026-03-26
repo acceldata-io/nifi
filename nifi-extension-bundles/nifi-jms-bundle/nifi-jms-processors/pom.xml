@@ -19,7 +19,7 @@
     <packaging>jar</packaging>
 
     <properties>
-        <activemq.version>6.2.1</activemq.version>
+        <activemq.version>6.2.2</activemq.version>
         <odp.release.version>3.4.3.0-SNAPSHOT</odp.release.version>
     </properties>
 
