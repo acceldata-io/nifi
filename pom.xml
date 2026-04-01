@@ -140,6 +140,7 @@
         <!-- Big data platforms -->
         <hadoop.version>3.4.3.${odp.release.version}</hadoop.version>
         <ozone.version>2.1.0.${odp.release.version}</ozone.version>
+        <zookeeper.version>3.8.6.3.4.3.0-1</zookeeper.version>
 
         <!-- Kubernetes -->
         <io.fabric8.kubernetes.client.version>7.5.2</io.fabric8.kubernetes.client.version>
@@ -208,6 +209,7 @@
         <checkstyle.version>13.2.0</checkstyle.version>
         <testcontainers.version>2.0.3</testcontainers.version>
         <jacoco.version>0.8.14</jacoco.version>
+        <curator.version>5.9.0</curator.version>
     </properties>
     <dependencyManagement>
         <dependencies>
