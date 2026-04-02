@@ -118,6 +118,16 @@
                         <groupId>com.google.code.findbugs</groupId>
                         <artifactId>jsr305</artifactId>
                     </exclusion>
+                    <!-- Conscrypt Security Provider not required for Google Cloud Storage -->
+                    <exclusion>
+                        <groupId>org.conscrypt</groupId>
+                        <artifactId>conscrypt-openjdk-uber</artifactId>
+                    </exclusion>
+                    <!-- grpc-netty-shaded excluded in favor of grpc-netty -->
+                    <exclusion>
+                        <groupId>io.grpc</groupId>
+                        <artifactId>grpc-netty-shaded</artifactId>
+                    </exclusion>
                 </exclusions>
             </dependency>
         </dependencies>
