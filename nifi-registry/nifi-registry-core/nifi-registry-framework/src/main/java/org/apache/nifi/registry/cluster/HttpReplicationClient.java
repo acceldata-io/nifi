@@ -62,6 +62,19 @@ public class HttpReplicationClient implements ReplicationClient, DisposableBean 
             "content-length"   // HttpClient sets this from the body publisher
     );
 
+    /**
+     * Headers from the original browser request that must NOT be forwarded to followers.
+     *
+     * <p>{@code cookie} — The browser's session cookies (including the CSRF token cookie)
+     * must be stripped.  If forwarded, the follower's {@code CsrfRequestMatcher} sees the
+     * CSRF cookie and requires a CSRF token header, which the server-to-server fan-out
+     * request does not carry, causing a 403 that silently drops the replication.
+     *
+     * <p>{@code origin} — A forwarded Origin header would trigger CORS processing on the
+     * follower against the wrong request context.
+     */
+    private static final Set<String> SESSION_HEADERS = Set.of("cookie", "origin");
+
     private static final Duration CONNECT_TIMEOUT = Duration.ofSeconds(5);
     private static final Duration REQUEST_TIMEOUT = Duration.ofSeconds(30);
 
@@ -130,7 +143,9 @@ public class HttpReplicationClient implements ReplicationClient, DisposableBean 
                     .header(INTERNAL_AUTH_HEADER, authToken);
 
             headers.forEach((name, value) -> {
-                if (!HOP_BY_HOP.contains(name.toLowerCase())
+                final String lower = name.toLowerCase();
+                if (!HOP_BY_HOP.contains(lower)
+                        && !SESSION_HEADERS.contains(lower)
                         && !REPLICATION_HEADER.equalsIgnoreCase(name)
                         && !INTERNAL_AUTH_HEADER.equalsIgnoreCase(name)) {
                     try {
@@ -145,8 +160,16 @@ public class HttpReplicationClient implements ReplicationClient, DisposableBean 
                     httpClient.send(builder.build(), HttpResponse.BodyHandlers.discarding());
 
             if (response.statusCode() >= 400) {
-                LOGGER.warn("Replication to follower '{}' for {} {} returned HTTP {}.",
-                        follower.getNodeId(), method, path, response.statusCode());
+                // 404 on DELETE is idempotent (resource already absent on follower); log at DEBUG.
+                // All other 4xx/5xx responses indicate a genuine replication failure.
+                if (response.statusCode() == 404 && "DELETE".equalsIgnoreCase(method)) {
+                    LOGGER.debug("Replication to follower '{}' for DELETE {} returned HTTP 404 — " +
+                            "resource was already absent on follower (idempotent).", follower.getNodeId(), path);
+                } else {
+                    LOGGER.warn("Replication to follower '{}' for {} {} returned HTTP {}. " +
+                                    "Check follower logs for rejection reason (CSRF/auth/authorization).",
+                            follower.getNodeId(), method, path, response.statusCode());
+                }
             } else {
                 LOGGER.debug("Replicated {} {} to follower '{}': HTTP {}.",
                         method, path, follower.getNodeId(), response.statusCode());
