@@ -97,11 +97,13 @@ public class BucketFlowResource extends ApplicationResource {
     public Response createFlow(
             @PathParam("bucketId")
             @Parameter(description = "The bucket identifier") final String bucketId,
-            @Parameter(description = "The details of the flow to create.", required = true) final VersionedFlow flow) {
+            @Parameter(description = "The details of the flow to create.", required = true) final VersionedFlow flow,
+            @Parameter(description = "Whether source properties like identifier should be kept")
+            @QueryParam("preserveSourceProperties") final boolean preserveSourceProperties) {
 
         verifyPathParamsMatchBody(bucketId, flow);
 
-        final VersionedFlow createdFlow = serviceFacade.createFlow(bucketId, flow);
+        final VersionedFlow createdFlow = serviceFacade.createFlow(bucketId, flow, preserveSourceProperties);
         publish(EventFactory.flowCreated(createdFlow));
         return Response.status(Response.Status.OK).entity(createdFlow).build();
     }
