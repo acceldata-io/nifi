@@ -42,7 +42,7 @@
             <dependency>
                 <groupId>commons-beanutils</groupId>
                 <artifactId>commons-beanutils</artifactId>
-                <version>1.9.4</version>
+                <version>${commons.beanutils.version}</version>
             </dependency>
             <!--  hadoop-shaded-protobuf_3_25 upgrade to resolve CVE-2024-7254 -->
             <dependency>
