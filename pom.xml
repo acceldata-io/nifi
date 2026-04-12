@@ -155,6 +155,8 @@
         <zookeeper.version>3.8.4.3.3.6.4-1</zookeeper.version>
         <caffeine.version>2.9.3</caffeine.version>
         <grpc.version>1.75.0</grpc.version>
+        <com.mchange.c3p0.version>0.12.0</com.mchange.c3p0.version>
+        <com.mchange.mchange-commons-java.version>0.4.0</com.mchange.mchange-commons-java.version>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -814,6 +816,16 @@
                 <artifactId>grpc-xds</artifactId>
                 <version>${grpc.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.mchange</groupId>
+                <artifactId>c3p0</artifactId>
+                <version>${com.mchange.c3p0.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.mchange</groupId>
+                <artifactId>mchange-commons-java</artifactId>
+                <version>${com.mchange.mchange-commons-java.version}</version>
+            </dependency>
             <!-- Managed JUnit 4 version for transitive dependencies such as OkHttp MockWebServer -->
             <dependency>
                 <groupId>junit</groupId>
@@ -1155,6 +1167,8 @@
                                         <exclude>org.bouncycastle:bcmail-jdk15on</exclude>
                                         <!-- Exclude SSHD 2.9.1 and earlier due to CVE-2022-45047 -->
                                         <exclude>org.apache.sshd:*:[,2.9.1]</exclude>
+                                        <exclude>com.mchange:c3p0:[,0.12.0)</exclude>
+                                        <exclude>com.mchange:mchange-commons-java:[,0.4.0)</exclude>
                                         <!-- The Spock Framework should not be used for testing -->
                                         <exclude>org.spockframework:*</exclude>
                                     </excludes>
