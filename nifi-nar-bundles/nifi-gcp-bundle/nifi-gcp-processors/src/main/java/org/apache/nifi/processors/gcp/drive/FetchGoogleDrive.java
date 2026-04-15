@@ -57,8 +57,6 @@ import org.apache.nifi.processors.gcp.ProxyAwareTransportFactory;
 import org.apache.nifi.processors.gcp.util.GoogleUtils;
 import org.apache.nifi.proxy.ProxyConfiguration;
 
-import static org.apache.nifi.processors.gcp.drive.GoogleDriveAttributes.CREATED_TIME;
-import static org.apache.nifi.processors.gcp.drive.GoogleDriveAttributes.CREATED_TIME_DESC;
 import static org.apache.nifi.processors.gcp.drive.GoogleDriveAttributes.ERROR_CODE;
 import static org.apache.nifi.processors.gcp.drive.GoogleDriveAttributes.ERROR_CODE_DESC;
 import static org.apache.nifi.processors.gcp.drive.GoogleDriveAttributes.ERROR_MESSAGE;
@@ -67,8 +65,6 @@ import static org.apache.nifi.processors.gcp.drive.GoogleDriveAttributes.FILENAM
 import static org.apache.nifi.processors.gcp.drive.GoogleDriveAttributes.ID;
 import static org.apache.nifi.processors.gcp.drive.GoogleDriveAttributes.ID_DESC;
 import static org.apache.nifi.processors.gcp.drive.GoogleDriveAttributes.MIME_TYPE_DESC;
-import static org.apache.nifi.processors.gcp.drive.GoogleDriveAttributes.MODIFIED_TIME;
-import static org.apache.nifi.processors.gcp.drive.GoogleDriveAttributes.MODIFIED_TIME_DESC;
 import static org.apache.nifi.processors.gcp.drive.GoogleDriveAttributes.SIZE;
 import static org.apache.nifi.processors.gcp.drive.GoogleDriveAttributes.SIZE_AVAILABLE;
 import static org.apache.nifi.processors.gcp.drive.GoogleDriveAttributes.SIZE_AVAILABLE_DESC;
@@ -89,8 +85,6 @@ import static org.apache.nifi.processors.gcp.drive.GoogleDriveAttributes.TIMESTA
         @WritesAttribute(attribute = SIZE, description = SIZE_DESC),
         @WritesAttribute(attribute = SIZE_AVAILABLE, description = SIZE_AVAILABLE_DESC),
         @WritesAttribute(attribute = TIMESTAMP, description = TIMESTAMP_DESC),
-        @WritesAttribute(attribute = CREATED_TIME, description = CREATED_TIME_DESC),
-        @WritesAttribute(attribute = MODIFIED_TIME, description = MODIFIED_TIME_DESC),
         @WritesAttribute(attribute = ERROR_CODE, description = ERROR_CODE_DESC),
         @WritesAttribute(attribute = ERROR_MESSAGE, description = ERROR_MESSAGE_DESC)
 })
@@ -269,7 +263,7 @@ public class FetchGoogleDrive extends AbstractProcessor implements GoogleDriveTr
         final long startNanos = System.nanoTime();
         try {
             final File fileMetadata = fetchFileMetadata(fileId);
-            final Map<String, String> attributeMap = createGoogleDriveFileInfoBuilder(fileMetadata).build().toAttributeMap();
+            final Map<String, String> attributeMap = createAttributeMap(fileMetadata);
 
             flowFile = fetchFile(fileMetadata, session, context, flowFile, attributeMap);
 
@@ -392,7 +386,7 @@ public class FetchGoogleDrive extends AbstractProcessor implements GoogleDriveTr
                 .files()
                 .get(fileId)
                 .setSupportsAllDrives(true)
-                .setFields("id, name, createdTime, modifiedTime, mimeType, size, exportLinks")
+                .setFields("id, name, createdTime, mimeType, size, exportLinks")
                 .execute();
     }
 
