@@ -23,13 +23,9 @@ import static org.apache.nifi.processors.gcp.drive.GoogleDriveAttributes.ERROR_C
 import static org.apache.nifi.processors.gcp.drive.GoogleDriveAttributes.FILENAME;
 import static org.apache.nifi.processors.gcp.drive.GoogleDriveAttributes.ID;
 import static org.apache.nifi.processors.gcp.drive.GoogleDriveAttributes.LAST_MODIFYING_USER;
-import static org.apache.nifi.processors.gcp.drive.GoogleDriveAttributes.LISTED_FOLDER_ID;
-import static org.apache.nifi.processors.gcp.drive.GoogleDriveAttributes.LISTED_FOLDER_NAME;
 import static org.apache.nifi.processors.gcp.drive.GoogleDriveAttributes.MIME_TYPE;
 import static org.apache.nifi.processors.gcp.drive.GoogleDriveAttributes.MODIFIED_TIME;
 import static org.apache.nifi.processors.gcp.drive.GoogleDriveAttributes.OWNER;
-import static org.apache.nifi.processors.gcp.drive.GoogleDriveAttributes.PARENT_FOLDER_ID;
-import static org.apache.nifi.processors.gcp.drive.GoogleDriveAttributes.PARENT_FOLDER_NAME;
 import static org.apache.nifi.processors.gcp.drive.GoogleDriveAttributes.PATH;
 import static org.apache.nifi.processors.gcp.drive.GoogleDriveAttributes.SIZE;
 import static org.apache.nifi.processors.gcp.drive.GoogleDriveAttributes.SIZE_AVAILABLE;
@@ -196,11 +192,7 @@ public class ListGoogleDriveTestRunnerTest implements OutputChecker {
                         "\"drive.owner\":\"" + owner + "\"," +
                         "\"drive.last.modifying.user\":\"" + lastModifyingUser + "\"," +
                         "\"drive.web.view.link\":\"" + webViewLink + "\"," +
-                        "\"drive.web.content.link\":\"" + webContentLink + "\"," +
-                        "\"drive.parent.folder.id\":\"" + folderId + "\"," +
-                        "\"drive.parent.folder.name\":\"" + folderName + "\"," +
-                        "\"drive.listed.folder.id\":\"" + folderId + "\"," +
-                        "\"drive.listed.folder.name\":\"" + folderName + "\"" +
+                        "\"drive.web.content.link\":\"" + webContentLink + "\"" +
                         "}" +
                         "]");
 
@@ -261,10 +253,6 @@ public class ListGoogleDriveTestRunnerTest implements OutputChecker {
         inputFlowFileAttributes.put(GoogleDriveAttributes.LAST_MODIFYING_USER, lastModifyingUser);
         inputFlowFileAttributes.put(GoogleDriveAttributes.WEB_VIEW_LINK, webViewLink);
         inputFlowFileAttributes.put(GoogleDriveAttributes.WEB_CONTENT_LINK, webContentLink);
-        inputFlowFileAttributes.put(GoogleDriveAttributes.PARENT_FOLDER_ID, folderId);
-        inputFlowFileAttributes.put(GoogleDriveAttributes.PARENT_FOLDER_NAME, folderName);
-        inputFlowFileAttributes.put(GoogleDriveAttributes.LISTED_FOLDER_ID, folderId);
-        inputFlowFileAttributes.put(GoogleDriveAttributes.LISTED_FOLDER_NAME, folderName);
 
 
         HashSet<Map<String, String>> expectedAttributes = new HashSet<>(singletonList(inputFlowFileAttributes));
@@ -312,7 +300,6 @@ public class ListGoogleDriveTestRunnerTest implements OutputChecker {
     public Set<String> getCheckedAttributeNames() {
         return Collections.unmodifiableSet(
                 new HashSet<>(Arrays.asList(ID, FILENAME, SIZE, SIZE_AVAILABLE, TIMESTAMP, CREATED_TIME,
-                        MODIFIED_TIME, MIME_TYPE, PATH, OWNER, LAST_MODIFYING_USER, WEB_VIEW_LINK, WEB_CONTENT_LINK,
-                PARENT_FOLDER_ID, PARENT_FOLDER_NAME, LISTED_FOLDER_ID, LISTED_FOLDER_NAME)));
+                        MODIFIED_TIME, MIME_TYPE, PATH, OWNER, LAST_MODIFYING_USER, WEB_VIEW_LINK, WEB_CONTENT_LINK)));
     }
 }
