@@ -300,16 +300,15 @@ public class ListGoogleDrive extends AbstractListProcessor<GoogleDriveFileInfo> 
                 .setFields("name, driveId")
                 .execute();
 
-        if (folderId.equals(folder.getDriveId())) {
-            // if folderId points to a Shared Drive root, files() returns "Drive" for the name and drives() needs to be used to get the real name
+        if (folder.getDriveId() == null) {
+            return folder.getName();
+        } else {
             return driveService
                     .drives()
                     .get(folderId)
                     .setFields("name")
                     .execute()
                     .getName();
-        } else {
-            return folder.getName();
         }
     }
 
