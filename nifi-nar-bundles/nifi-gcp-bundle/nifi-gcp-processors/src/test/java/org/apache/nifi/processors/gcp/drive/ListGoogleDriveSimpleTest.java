@@ -24,9 +24,7 @@ import com.google.api.services.drive.model.User;
 import org.apache.nifi.processor.ProcessContext;
 import org.apache.nifi.util.EqualsWrapper;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.NullSource;
-import org.junit.jupiter.params.provider.ValueSource;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.List;
@@ -69,18 +67,14 @@ public class ListGoogleDriveSimpleTest {
         };
     }
 
-    @ParameterizedTest
-    @NullSource
-    @ValueSource(strings = {"drive_id"})
-    void testCreatedListableEntityContainsCorrectData(String driveId) throws Exception {
+    @Test
+    void testCreatedListableEntityContainsCorrectData() throws Exception {
         // GIVEN
         Long minTimestamp = 0L;
         listingModeAsString = "EXECUTION";
 
         String folderId = "folder_id";
         String folderName = "folder_name";
-
-        String driveName = driveId != null ? "drive_name" : null;
 
         String id = "id_1";
         String filename = "file_name_1";
@@ -105,15 +99,7 @@ public class ListGoogleDriveSimpleTest {
                 .execute()
         ).thenReturn(new File()
                 .setName(folderName)
-                .setDriveId(driveId)
         );
-
-        when(mockDriverService.drives()
-                .get(driveId)
-                .setFields("name")
-                .execute()
-                .getName()
-        ).thenReturn(driveName);
 
         when(mockDriverService.files()
                 .list()
@@ -157,8 +143,6 @@ public class ListGoogleDriveSimpleTest {
                         .parentFolderName(folderName)
                         .listedFolderId(folderId)
                         .listedFolderName(folderName)
-                        .sharedDriveId(driveId)
-                        .sharedDriveName(driveName)
                         .build()
         );
 
@@ -186,9 +170,7 @@ public class ListGoogleDriveSimpleTest {
                 GoogleDriveFileInfo::getParentFolderId,
                 GoogleDriveFileInfo::getParentFolderName,
                 GoogleDriveFileInfo::getListedFolderId,
-                GoogleDriveFileInfo::getListedFolderName,
-                GoogleDriveFileInfo::getSharedDriveId,
-                GoogleDriveFileInfo::getSharedDriveName
+                GoogleDriveFileInfo::getListedFolderName
         );
 
         List<EqualsWrapper<GoogleDriveFileInfo>> expectedWrapper = wrapList(expected, propertyProviders);
