@@ -26,7 +26,7 @@
     <properties>
         <odp.release.version>3.4.3.0-SNAPSHOT</odp.release.version>
         <poi.version>5.5.1</poi.version>
-        <mime4j.version>0.8.13</mime4j.version>
+        <mime4j.version>0.8.14</mime4j.version>
     </properties>
 
     <modules>
