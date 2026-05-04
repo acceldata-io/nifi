@@ -27,9 +27,9 @@
     <description>Apache NiFi reporting module for aggregating code coverage information</description>
 
     <properties>
+        <ant.version>1.10.17</ant.version>
+        <mime4j.version>0.8.14</mime4j.version>
         <odp.release.version>3.4.3.0-SNAPSHOT</odp.release.version>
-        <ant.version>1.10.15</ant.version>
-        <mime4j.version>0.8.13</mime4j.version>
     </properties>
 
     <!-- Managed Dependency Versions for referenced modules required based on different parent bundle project -->
