@@ -63,6 +63,24 @@ public class GoogleDriveAttributes {
     public static final String WEB_CONTENT_LINK = "drive.web.content.link";
     public static final String WEB_CONTENT_LINK_DESC = "Web content link to the file";
 
+    public static final String PARENT_FOLDER_ID = "drive.parent.folder.id";
+    public static final String PARENT_FOLDER_ID_DESC = "The id of the file's parent folder";
+
+    public static final String PARENT_FOLDER_NAME = "drive.parent.folder.name";
+    public static final String PARENT_FOLDER_NAME_DESC = "The name of the file's parent folder";
+
+    public static final String LISTED_FOLDER_ID = "drive.listed.folder.id";
+    public static final String LISTED_FOLDER_ID_DESC = "The id of the base folder that was listed";
+
+    public static final String LISTED_FOLDER_NAME = "drive.listed.folder.name";
+    public static final String LISTED_FOLDER_NAME_DESC = "The name of the base folder that was listed";
+
+    public static final String SHARED_DRIVE_ID = "drive.shared.drive.id";
+    public static final String SHARED_DRIVE_ID_DESC = "The id of the shared drive (if the file is located on a shared drive)";
+
+    public static final String SHARED_DRIVE_NAME = "drive.shared.drive.name";
+    public static final String SHARED_DRIVE_NAME_DESC = "The name of the shared drive (if the file is located on a shared drive)";
+
     public static final String ERROR_MESSAGE = "error.message";
     public static final String ERROR_MESSAGE_DESC = "The error message returned by Google Drive";
 

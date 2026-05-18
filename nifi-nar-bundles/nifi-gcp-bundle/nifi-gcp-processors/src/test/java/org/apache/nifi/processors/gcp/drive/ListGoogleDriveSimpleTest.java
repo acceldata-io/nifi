@@ -24,7 +24,9 @@ import com.google.api.services.drive.model.User;
 import org.apache.nifi.processor.ProcessContext;
 import org.apache.nifi.util.EqualsWrapper;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.IOException;
 import java.util.List;
@@ -47,9 +49,6 @@ public class ListGoogleDriveSimpleTest {
 
     private String listingModeAsString = "EXECUTION";
 
-    String folderId = "folder_id";
-    String folderName = "folder_name";
-
     @BeforeEach
     void setUp() throws Exception {
         mockProcessContext = mock(ProcessContext.class, RETURNS_DEEP_STUBS);
@@ -68,15 +67,20 @@ public class ListGoogleDriveSimpleTest {
                 return mockDriverService;
             }
         };
-
-        testSubject.onScheduled(mockProcessContext);
     }
 
-    @Test
-    void testCreatedListableEntityContainsCorrectData() throws Exception {
+    @ParameterizedTest
+    @NullSource
+    @ValueSource(strings = {"drive_id"})
+    void testCreatedListableEntityContainsCorrectData(String driveId) throws Exception {
         // GIVEN
         Long minTimestamp = 0L;
         listingModeAsString = "EXECUTION";
+
+        String folderId = "folder_id";
+        String folderName = "folder_name";
+
+        String driveName = driveId != null ? "drive_name" : null;
 
         String id = "id_1";
         String filename = "file_name_1";
@@ -101,7 +105,15 @@ public class ListGoogleDriveSimpleTest {
                 .execute()
         ).thenReturn(new File()
                 .setName(folderName)
+                .setDriveId(driveId)
         );
+
+        when(mockDriverService.drives()
+                .get(driveId)
+                .setFields("name")
+                .execute()
+                .getName()
+        ).thenReturn(driveName);
 
         when(mockDriverService.files()
                 .list()
@@ -141,8 +153,16 @@ public class ListGoogleDriveSimpleTest {
                         .lastModifyingUser(lastModifyingUser)
                         .webViewLink(webViewLink)
                         .webContentLink(webContentLink)
+                        .parentFolderId(folderId)
+                        .parentFolderName(folderName)
+                        .listedFolderId(folderId)
+                        .listedFolderName(folderName)
+                        .sharedDriveId(driveId)
+                        .sharedDriveName(driveName)
                         .build()
         );
+
+        testSubject.onScheduled(mockProcessContext);
 
         // WHEN
         List<GoogleDriveFileInfo> actual = testSubject.performListing(mockProcessContext, minTimestamp, null);
@@ -162,7 +182,13 @@ public class ListGoogleDriveSimpleTest {
                 GoogleDriveFileInfo::getOwner,
                 GoogleDriveFileInfo::getLastModifyingUser,
                 GoogleDriveFileInfo::getWebViewLink,
-                GoogleDriveFileInfo::getWebContentLink
+                GoogleDriveFileInfo::getWebContentLink,
+                GoogleDriveFileInfo::getParentFolderId,
+                GoogleDriveFileInfo::getParentFolderName,
+                GoogleDriveFileInfo::getListedFolderId,
+                GoogleDriveFileInfo::getListedFolderName,
+                GoogleDriveFileInfo::getSharedDriveId,
+                GoogleDriveFileInfo::getSharedDriveName
         );
 
         List<EqualsWrapper<GoogleDriveFileInfo>> expectedWrapper = wrapList(expected, propertyProviders);

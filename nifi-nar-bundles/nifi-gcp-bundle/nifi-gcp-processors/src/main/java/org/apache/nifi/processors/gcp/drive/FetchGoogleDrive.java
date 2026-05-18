@@ -32,8 +32,11 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+
+import com.google.api.services.drive.model.User;
 import org.apache.nifi.annotation.behavior.InputRequirement;
 import org.apache.nifi.annotation.behavior.ReadsAttribute;
 import org.apache.nifi.annotation.behavior.WritesAttribute;
@@ -66,15 +69,32 @@ import static org.apache.nifi.processors.gcp.drive.GoogleDriveAttributes.ERROR_M
 import static org.apache.nifi.processors.gcp.drive.GoogleDriveAttributes.FILENAME_DESC;
 import static org.apache.nifi.processors.gcp.drive.GoogleDriveAttributes.ID;
 import static org.apache.nifi.processors.gcp.drive.GoogleDriveAttributes.ID_DESC;
+import static org.apache.nifi.processors.gcp.drive.GoogleDriveAttributes.LAST_MODIFYING_USER;
+import static org.apache.nifi.processors.gcp.drive.GoogleDriveAttributes.LAST_MODIFYING_USER_DESC;
+import static org.apache.nifi.processors.gcp.drive.GoogleDriveAttributes.LISTED_FOLDER_ID;
 import static org.apache.nifi.processors.gcp.drive.GoogleDriveAttributes.MIME_TYPE_DESC;
 import static org.apache.nifi.processors.gcp.drive.GoogleDriveAttributes.MODIFIED_TIME;
 import static org.apache.nifi.processors.gcp.drive.GoogleDriveAttributes.MODIFIED_TIME_DESC;
+import static org.apache.nifi.processors.gcp.drive.GoogleDriveAttributes.OWNER;
+import static org.apache.nifi.processors.gcp.drive.GoogleDriveAttributes.OWNER_DESC;
+import static org.apache.nifi.processors.gcp.drive.GoogleDriveAttributes.PARENT_FOLDER_ID;
+import static org.apache.nifi.processors.gcp.drive.GoogleDriveAttributes.PARENT_FOLDER_ID_DESC;
+import static org.apache.nifi.processors.gcp.drive.GoogleDriveAttributes.PARENT_FOLDER_NAME;
+import static org.apache.nifi.processors.gcp.drive.GoogleDriveAttributes.PARENT_FOLDER_NAME_DESC;
+import static org.apache.nifi.processors.gcp.drive.GoogleDriveAttributes.SHARED_DRIVE_ID;
+import static org.apache.nifi.processors.gcp.drive.GoogleDriveAttributes.SHARED_DRIVE_ID_DESC;
+import static org.apache.nifi.processors.gcp.drive.GoogleDriveAttributes.SHARED_DRIVE_NAME;
+import static org.apache.nifi.processors.gcp.drive.GoogleDriveAttributes.SHARED_DRIVE_NAME_DESC;
 import static org.apache.nifi.processors.gcp.drive.GoogleDriveAttributes.SIZE;
 import static org.apache.nifi.processors.gcp.drive.GoogleDriveAttributes.SIZE_AVAILABLE;
 import static org.apache.nifi.processors.gcp.drive.GoogleDriveAttributes.SIZE_AVAILABLE_DESC;
 import static org.apache.nifi.processors.gcp.drive.GoogleDriveAttributes.SIZE_DESC;
 import static org.apache.nifi.processors.gcp.drive.GoogleDriveAttributes.TIMESTAMP;
 import static org.apache.nifi.processors.gcp.drive.GoogleDriveAttributes.TIMESTAMP_DESC;
+import static org.apache.nifi.processors.gcp.drive.GoogleDriveAttributes.WEB_CONTENT_LINK;
+import static org.apache.nifi.processors.gcp.drive.GoogleDriveAttributes.WEB_CONTENT_LINK_DESC;
+import static org.apache.nifi.processors.gcp.drive.GoogleDriveAttributes.WEB_VIEW_LINK;
+import static org.apache.nifi.processors.gcp.drive.GoogleDriveAttributes.WEB_VIEW_LINK_DESC;
 
 @InputRequirement(InputRequirement.Requirement.INPUT_REQUIRED)
 @Tags({"google", "drive", "storage", "fetch"})
@@ -91,10 +111,21 @@ import static org.apache.nifi.processors.gcp.drive.GoogleDriveAttributes.TIMESTA
         @WritesAttribute(attribute = TIMESTAMP, description = TIMESTAMP_DESC),
         @WritesAttribute(attribute = CREATED_TIME, description = CREATED_TIME_DESC),
         @WritesAttribute(attribute = MODIFIED_TIME, description = MODIFIED_TIME_DESC),
+        @WritesAttribute(attribute = OWNER, description = OWNER_DESC),
+        @WritesAttribute(attribute = LAST_MODIFYING_USER, description = LAST_MODIFYING_USER_DESC),
+        @WritesAttribute(attribute = WEB_VIEW_LINK, description = WEB_VIEW_LINK_DESC),
+        @WritesAttribute(attribute = WEB_CONTENT_LINK, description = WEB_CONTENT_LINK_DESC),
+        @WritesAttribute(attribute = PARENT_FOLDER_ID, description = PARENT_FOLDER_ID_DESC),
+        @WritesAttribute(attribute = PARENT_FOLDER_NAME, description = PARENT_FOLDER_NAME_DESC),
+        @WritesAttribute(attribute = SHARED_DRIVE_ID, description = SHARED_DRIVE_ID_DESC),
+        @WritesAttribute(attribute = SHARED_DRIVE_NAME, description = SHARED_DRIVE_NAME_DESC),
         @WritesAttribute(attribute = ERROR_CODE, description = ERROR_CODE_DESC),
         @WritesAttribute(attribute = ERROR_MESSAGE, description = ERROR_MESSAGE_DESC)
 })
 public class FetchGoogleDrive extends AbstractProcessor implements GoogleDriveTrait {
+
+    static final String FILE_METADATA_FIELDS_BASIC = "id, name, createdTime, modifiedTime, mimeType, size, exportLinks";
+    static final String FILE_METADATA_FIELDS_EXTENDED = FILE_METADATA_FIELDS_BASIC + ", owners, lastModifyingUser, webViewLink, webContentLink, parents";
 
     private static final long EXPORT_SIZE_LIMIT = 10_000_000;
     private static final String EXPORT_SIZE_ERROR = "exportSizeLimitExceeded";
@@ -268,8 +299,32 @@ public class FetchGoogleDrive extends AbstractProcessor implements GoogleDriveTr
 
         final long startNanos = System.nanoTime();
         try {
-            final File fileMetadata = fetchFileMetadata(fileId);
-            final Map<String, String> attributeMap = createGoogleDriveFileInfoBuilder(fileMetadata).build().toAttributeMap();
+            final boolean listedFile = flowFile.getAttributes().containsKey(LISTED_FOLDER_ID);
+
+            final File fileMetadata = fetchFileMetadata(fileId, listedFile ? FILE_METADATA_FIELDS_BASIC : FILE_METADATA_FIELDS_EXTENDED);
+            final GoogleDriveFileInfo.Builder fileInfoBuilder = createGoogleDriveFileInfoBuilder(fileMetadata);
+
+            if (!listedFile) {
+                fileInfoBuilder
+                        .owner(Optional.ofNullable(fileMetadata.getOwners()).filter(owners -> !owners.isEmpty()).map(owners -> owners.get(0)).map(User::getDisplayName).orElse(null))
+                        .lastModifyingUser(Optional.ofNullable(fileMetadata.getLastModifyingUser()).map(User::getDisplayName).orElse(null))
+                        .webViewLink(fileMetadata.getWebViewLink())
+                        .webContentLink(fileMetadata.getWebContentLink());
+
+                Optional.ofNullable(fileMetadata.getParents())
+                        .filter(parents -> !parents.isEmpty())
+                        .map(parents -> parents.get(0))
+                        .map(folderId -> getFolderDetails(driveService, folderId))
+                        .ifPresent(folderDetails -> fileInfoBuilder
+                                .parentFolderId(folderDetails.getFolderId())
+                                .parentFolderName(folderDetails.getFolderName())
+                                .sharedDriveId(folderDetails.getSharedDriveId())
+                                .sharedDriveName(folderDetails.getSharedDriveName()));
+            }
+
+            final Map<String, String> attributeMap = fileInfoBuilder
+                    .build()
+                    .toAttributeMap();
 
             flowFile = fetchFile(fileMetadata, session, context, flowFile, attributeMap);
 
@@ -338,7 +393,7 @@ public class FetchGoogleDrive extends AbstractProcessor implements GoogleDriveTr
 
         final String fileExtension = fileExtensions.get(exportMimeType);
         if (fileExtension != null) {
-            attributeMap.put(CoreAttributes.FILENAME.key(), flowFile.getAttribute(CoreAttributes.FILENAME.key()) + fileExtension);
+            attributeMap.put(CoreAttributes.FILENAME.key(), attributeMap.get(CoreAttributes.FILENAME.key()) + fileExtension);
         }
 
         if (fileMetadata.getSize() == null || fileMetadata.getSize() < EXPORT_SIZE_LIMIT) {
@@ -387,12 +442,12 @@ public class FetchGoogleDrive extends AbstractProcessor implements GoogleDriveTr
         return exportLink;
     }
 
-    private File fetchFileMetadata(final String fileId) throws IOException {
+    private File fetchFileMetadata(final String fileId, final String fields) throws IOException {
         return driveService
                 .files()
                 .get(fileId)
                 .setSupportsAllDrives(true)
-                .setFields("id, name, createdTime, modifiedTime, mimeType, size, exportLinks")
+                .setFields(fields)
                 .execute();
     }
 
