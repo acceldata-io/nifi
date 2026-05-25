@@ -60,6 +60,8 @@ public class DatabaseAccessPolicyProvider extends AbstractConfigurableAccessPoli
 
     private DataSource dataSource;
     private IdentityMapper identityMapper;
+    private CacheRefreshPoller cacheRefreshPoller;
+    private CacheInvalidator cacheInvalidator;
 
     private JdbcTemplate jdbcTemplate;
 
@@ -73,10 +75,28 @@ public class DatabaseAccessPolicyProvider extends AbstractConfigurableAccessPoli
         this.identityMapper = identityMapper;
     }
 
+    @AuthorizerContext
+    public void setCacheRefreshPoller(final CacheRefreshPoller cacheRefreshPoller) {
+        this.cacheRefreshPoller = cacheRefreshPoller;
+    }
+
+    @AuthorizerContext
+    public void setCacheInvalidator(final CacheInvalidator cacheInvalidator) {
+        this.cacheInvalidator = cacheInvalidator;
+    }
+
     @Override
     protected void doInitialize(AccessPolicyProviderInitializationContext initializationContext) throws SecurityProviderCreationException {
         super.doInitialize(initializationContext);
         this.jdbcTemplate = new JdbcTemplate(dataSource);
+        // Database mode: register with the poller so it can trigger refreshes on version change.
+        if (cacheRefreshPoller != null) {
+            cacheRefreshPoller.setAccessPolicyProvider(this);
+        }
+        // ZooKeeper mode: set up a persistent watch so cache is refreshed on remote writes.
+        if (cacheInvalidator != null) {
+            cacheInvalidator.watchDomain(CacheRefreshPoller.DOMAIN_ACCESS_POLICIES, this::refreshAccessPolicyHolder);
+        }
     }
 
     @Override
@@ -168,6 +188,8 @@ public class DatabaseAccessPolicyProvider extends AbstractConfigurableAccessPoli
         // insert to the policy-user and policy groups table
         createPolicyUserAndGroups(accessPolicy);
 
+        bumpCacheVersion();
+
         return accessPolicy;
     }
 
@@ -192,6 +214,8 @@ public class DatabaseAccessPolicyProvider extends AbstractConfigurableAccessPoli
 
         // re-create the associations
         createPolicyUserAndGroups(accessPolicy);
+
+        bumpCacheVersion();
 
         return accessPolicy;
     }
@@ -274,6 +298,8 @@ public class DatabaseAccessPolicyProvider extends AbstractConfigurableAccessPoli
         if (rowsUpdated <= 0) {
             return null;
         }
+
+        bumpCacheVersion();
 
         return accessPolicy;
     }
@@ -384,6 +410,16 @@ public class DatabaseAccessPolicyProvider extends AbstractConfigurableAccessPoli
         } else {
             // a policy already exists for the given resource and action, so just associate the group with that policy
             insertPolicyGroup(existingPolicy.getIdentifier(), initialGroup.getIdentifier());
+        }
+    }
+
+    void refreshAccessPolicyHolder() {
+        // In this 1.x backport there is no in-memory cache holder; reads go directly to the DB.
+    }
+
+    private void bumpCacheVersion() {
+        if (cacheInvalidator != null) {
+            cacheInvalidator.notifyChanged(CacheRefreshPoller.DOMAIN_ACCESS_POLICIES);
         }
     }
 

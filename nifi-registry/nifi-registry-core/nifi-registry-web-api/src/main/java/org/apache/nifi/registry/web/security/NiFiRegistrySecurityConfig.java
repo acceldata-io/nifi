@@ -27,6 +27,13 @@ import org.apache.nifi.registry.web.security.authentication.jwt.JwtIdentityProvi
 import org.apache.nifi.registry.web.security.authentication.x509.X509IdentityAuthenticationProvider;
 import org.apache.nifi.registry.web.security.authentication.x509.X509IdentityProvider;
 import org.apache.nifi.registry.web.security.authorization.ResourceAuthorizationFilter;
+import org.apache.nifi.registry.cluster.LeaderElectionManager;
+import org.apache.nifi.registry.cluster.NodeRegistry;
+import org.apache.nifi.registry.cluster.ReplicationClient;
+import org.apache.nifi.registry.properties.NiFiRegistryProperties;
+import org.apache.nifi.registry.web.security.maintenance.MaintenanceModeFilter;
+import org.apache.nifi.registry.web.security.maintenance.MaintenanceModeManager;
+import org.apache.nifi.registry.web.security.replication.WriteReplicationFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,6 +71,21 @@ public class NiFiRegistrySecurityConfig {
     private Authorizer authorizer;
 
     @Autowired
+    private MaintenanceModeManager maintenanceModeManager;
+
+    @Autowired
+    private NiFiRegistryProperties properties;
+
+    @Autowired
+    private LeaderElectionManager leaderElectionManager;
+
+    @Autowired(required = false)
+    private NodeRegistry nodeRegistry;
+
+    @Autowired(required = false)
+    private ReplicationClient replicationClient;
+
+    @Autowired
     private X509IdentityProvider x509IdentityProvider;
 
     @Autowired
@@ -76,6 +98,13 @@ public class NiFiRegistrySecurityConfig {
                 .addFilterBefore(jwtAuthenticationFilter(), AnonymousAuthenticationFilter.class)
                 // Add Resource Authorization after Spring Security but before Jersey Resources
                 .addFilterAfter(resourceAuthorizationFilter(), FilterSecurityInterceptor.class)
+                // Maintenance mode runs after auth is fully resolved so unauthenticated write requests
+                // are rejected with 401 (not 503) before reaching this filter.
+                .addFilterAfter(maintenanceModeFilter(), ResourceAuthorizationFilter.class)
+                // Write replication: follower forwards to leader; leader fans out to followers.
+                // Runs before ResourceAuthorizationFilter so that leader→follower fan-out requests
+                // bypass per-resource authorization checks (they carry a validated internal token).
+                .addFilterBefore(writeReplicationFilter(), ResourceAuthorizationFilter.class)
                 .anonymous().authenticationFilter(new AnonymousIdentityFilter()).and()
                 .csrf().disable()
                 .logout().disable()
@@ -124,6 +153,18 @@ public class NiFiRegistrySecurityConfig {
 
     private IdentityAuthenticationProvider jwtAuthenticationProvider() {
         return new IdentityAuthenticationProvider(authorizer, jwtIdentityProvider, identityMapper);
+    }
+
+    private MaintenanceModeFilter maintenanceModeFilter() {
+        return new MaintenanceModeFilter(maintenanceModeManager);
+    }
+
+    private WriteReplicationFilter writeReplicationFilter() {
+        return new WriteReplicationFilter(
+                leaderElectionManager,
+                nodeRegistry,
+                replicationClient,
+                properties.getClusterNodeInternalAuthToken());
     }
 
     private ResourceAuthorizationFilter resourceAuthorizationFilter() {
