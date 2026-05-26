@@ -70,6 +70,7 @@ import org.apache.nifi.web.server.log.StandardRequestLogProvider;
 import org.eclipse.jetty.annotations.AnnotationConfiguration;
 import org.eclipse.jetty.deploy.App;
 import org.eclipse.jetty.deploy.DeploymentManager;
+import org.eclipse.jetty.jmx.MBeanContainer;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.RequestLog;
@@ -105,6 +106,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.UncheckedIOException;
+import java.lang.management.ManagementFactory;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
@@ -199,6 +201,11 @@ public class JettyServer implements NiFiServer, ExtensionUiLoader {
 
         // create the server
         this.server = new Server(threadPool);
+
+        // Register Jetty's MBeans with the platform MBean server so that thread pool, connector and handler
+        // statistics are observable via JMX for tuning and monitoring (e.g. nifi.web.jetty.threads sizing).
+        final MBeanContainer mbeanContainer = new MBeanContainer(ManagementFactory.getPlatformMBeanServer());
+        server.addBean(mbeanContainer);
 
         // enable the annotation based configuration to ensure the jsp container is initialized properly
         final Configuration.ClassList classlist = Configuration.ClassList.setServerDefault(server);
