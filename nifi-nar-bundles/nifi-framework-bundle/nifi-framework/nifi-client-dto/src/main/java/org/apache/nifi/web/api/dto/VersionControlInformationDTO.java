@@ -39,6 +39,7 @@ public class VersionControlInformationDTO {
     private String flowName;
     private String flowDescription;
     private Integer version;
+    private Integer latestVersion;
     private String storageLocation;
     private String state;
     private String stateExplanation;
@@ -122,6 +123,17 @@ public class VersionControlInformationDTO {
 
     public void setVersion(final Integer version) {
         this.version = version;
+    }
+
+    @ApiModelProperty(value = "The latest version of the flow in the Flow Registry, or null if the latest version "
+        + "is not yet known (for example, if the Process Group has not yet synchronized with the Flow Registry).",
+        accessMode = ApiModelProperty.AccessMode.READ_ONLY)
+    public Integer getLatestVersion() {
+        return latestVersion;
+    }
+
+    public void setLatestVersion(final Integer latestVersion) {
+        this.latestVersion = latestVersion;
     }
 
     @ApiModelProperty("The storage location")

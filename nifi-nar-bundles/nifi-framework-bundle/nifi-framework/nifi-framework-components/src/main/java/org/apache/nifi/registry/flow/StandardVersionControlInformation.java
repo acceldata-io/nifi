@@ -33,6 +33,7 @@ public class StandardVersionControlInformation implements VersionControlInformat
     private volatile String flowDescription;
     private volatile String storageLocation;
     private final int version;
+    private volatile Integer latestVersion;
     private volatile VersionedProcessGroup flowSnapshot;
     private final VersionedFlowStatus status;
 
@@ -46,6 +47,7 @@ public class StandardVersionControlInformation implements VersionControlInformat
         private String flowDescription;
         private String storageLocation;
         private int version;
+        private Integer latestVersion;
         private VersionedProcessGroup flowSnapshot;
         private VersionedFlowStatus status;
 
@@ -94,6 +96,11 @@ public class StandardVersionControlInformation implements VersionControlInformat
             return this;
         }
 
+        public Builder latestVersion(Integer latestVersion) {
+            this.latestVersion = latestVersion;
+            return this;
+        }
+
         public Builder flowSnapshot(VersionedProcessGroup snapshot) {
             this.flowSnapshot = snapshot;
             return this;
@@ -125,7 +132,8 @@ public class StandardVersionControlInformation implements VersionControlInformat
                     }
                 })
                 .storageLocation(dto.getStorageLocation())
-                .version(dto.getVersion());
+                .version(dto.getVersion())
+                .latestVersion(dto.getLatestVersion());
 
             return builder;
         }
@@ -143,6 +151,7 @@ public class StandardVersionControlInformation implements VersionControlInformat
             svci.setFlowName(flowName);
             svci.setFlowDescription(flowDescription);
             svci.setStorageLocation(storageLocation);
+            svci.setLatestVersion(latestVersion);
 
             return svci;
         }
@@ -225,6 +234,15 @@ public class StandardVersionControlInformation implements VersionControlInformat
     @Override
     public int getVersion() {
         return version;
+    }
+
+    @Override
+    public Integer getLatestVersion() {
+        return latestVersion;
+    }
+
+    public void setLatestVersion(final Integer latestVersion) {
+        this.latestVersion = latestVersion;
     }
 
     @Override

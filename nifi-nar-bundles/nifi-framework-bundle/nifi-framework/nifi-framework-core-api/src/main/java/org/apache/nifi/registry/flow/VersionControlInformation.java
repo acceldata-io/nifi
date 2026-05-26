@@ -73,6 +73,15 @@ public interface VersionControlInformation {
     int getVersion();
 
     /**
+     * @return the latest version of the flow available in the Flow Registry, or {@code null} if it has not
+     * yet been determined (e.g. the Process Group has not yet synchronized with the Flow Registry, or the
+     * Flow Registry could not be reached).
+     */
+    default Integer getLatestVersion() {
+        return null;
+    }
+
+    /**
      * @return the current status of the Process Group as it relates to the associated Versioned Flow.
      */
     VersionedFlowStatus getStatus();

@@ -2824,6 +2824,7 @@ public final class DtoFactory {
         dto.setFlowName(versionControlInfo.getFlowName());
         dto.setFlowDescription(versionControlInfo.getFlowDescription());
         dto.setVersion(versionControlInfo.getVersion());
+        dto.setLatestVersion(versionControlInfo.getLatestVersion());
         dto.setStorageLocation(versionControlInfo.getStorageLocation());
 
         final VersionedFlowStatus status = versionControlInfo.getStatus();
@@ -4607,6 +4608,7 @@ public final class DtoFactory {
         copy.setFlowName(original.getFlowName());
         copy.setFlowDescription(original.getFlowDescription());
         copy.setVersion(original.getVersion());
+        copy.setLatestVersion(original.getLatestVersion());
         copy.setState(original.getState());
         copy.setStateExplanation(original.getStateExplanation());
         copy.setStorageLocation(original.getStorageLocation());
