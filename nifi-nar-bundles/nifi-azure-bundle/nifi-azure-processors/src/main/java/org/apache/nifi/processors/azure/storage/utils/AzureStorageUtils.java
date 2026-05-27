@@ -19,6 +19,7 @@ package org.apache.nifi.processors.azure.storage.utils;
 import com.azure.core.http.ProxyOptions;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
+import java.util.Base64;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -34,6 +35,8 @@ import com.microsoft.azure.storage.StorageCredentialsAccountAndKey;
 import com.microsoft.azure.storage.StorageCredentialsSharedAccessSignature;
 import com.microsoft.azure.storage.blob.CloudBlobClient;
 
+import org.apache.commons.codec.DecoderException;
+import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.nifi.components.PropertyDescriptor;
 import org.apache.nifi.components.ValidationContext;
@@ -131,6 +134,20 @@ public final class AzureStorageUtils {
             .required(true)
             .build();
 
+    public static final PropertyDescriptor CONTENT_MD5 = new PropertyDescriptor.Builder()
+            .name("Content MD5")
+            .displayName("Content MD5")
+            .description("The MD5 hash of the content. When this property is set, Azure will validate " +
+                    "the uploaded content against this checksum and reject the upload if it doesn't match. This provides " +
+                    "data integrity verification during transfer. The value can be provided in hexadecimal format (32 characters) " +
+                    "or Base64 format. The MD5 checksum must be computed before invoking this processor; " +
+                    "use the CryptographicHashContent processor with algorithm MD5 to store the result as a FlowFile attribute, " +
+                    "then reference it using Expression Language (e.g., ${content_MD5}).")
+            .required(false)
+            .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
+            .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
+            .build();
+            
     public static final String SAS_TOKEN_BASE_DESCRIPTION = "Shared Access Signature token, including the leading '?'. Specify either SAS token (recommended) or Account Key.";
 
     public static final String SAS_TOKEN_SECURITY_DESCRIPTION =
@@ -353,6 +370,27 @@ public final class AzureStorageUtils {
             return ProxyOptions.Type.valueOf(socksVersion.name());
         } else {
             throw new IllegalArgumentException("Unsupported proxy type: " + proxyConfiguration.getProxyType());
+        }
+    }
+
+    /**
+     * Converts an MD5 checksum string to bytes. Accepts both hexadecimal format (as output by CryptographicHashContent)
+     * and Base64 format.
+     *
+     * @param md5String the MD5 checksum as hex (32 chars) or Base64 (24 chars with padding)
+     * @return the MD5 as a 16-byte array
+     */
+    public static byte[] convertMd5ToBytes(final String md5String) {
+        // MD5 in hex format is 32 characters (128 bits = 16 bytes, 2 hex chars per byte)
+        if (md5String.length() == 32 && md5String.matches("[0-9a-fA-F]+")) {
+            try {
+                return Hex.decodeHex(md5String.toCharArray());
+            } catch (final DecoderException e) {
+                throw new IllegalArgumentException("Invalid hexadecimal MD5 value", e);
+            }
+        } else {
+            // Assume Base64 format
+            return Base64.getDecoder().decode(md5String);
         }
     }
 }
