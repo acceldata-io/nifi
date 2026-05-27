@@ -243,13 +243,26 @@ public class StandardServiceFacade implements ServiceFacade {
 
     @Override
     public VersionedFlow createFlow(final String bucketIdentifier, final VersionedFlow versionedFlow) {
+        return createFlow(bucketIdentifier, versionedFlow, false);
+    }
+
+    @Override
+    public VersionedFlow createFlow(final String bucketIdentifier, final VersionedFlow versionedFlow,
+                                    final boolean preserveSourceProperties) {
         authorizeBucketAccess(RequestAction.WRITE, bucketIdentifier);
         validateCreationOfRevisableEntity(versionedFlow, VERSIONED_FLOW_ENTITY_TYPE);
 
-        // NOTE: Don't validate that identifier is null...
-        // NiFi has been sending an identifier, so we must maintain backwards compatibility
-        if (versionedFlow.getIdentifier() == null) {
-            versionedFlow.setIdentifier(UUID.randomUUID().toString());
+        if (preserveSourceProperties) {
+            // Fan-out from leader: identifier must already be set to the leader-assigned UUID.
+            if (StringUtils.isBlank(versionedFlow.getIdentifier())) {
+                throw new IllegalArgumentException("Flow identifier must be present when preserveSourceProperties=true");
+            }
+        } else {
+            // Normal create: NiFi clients have historically sent an identifier, so we keep
+            // backwards compatibility — generate only when absent.
+            if (versionedFlow.getIdentifier() == null) {
+                versionedFlow.setIdentifier(UUID.randomUUID().toString());
+            }
         }
 
         final VersionedFlow createdFlow = createRevisableEntity(versionedFlow, VERSIONED_FLOW_ENTITY_TYPE, currentUserIdentity(),
