@@ -47,6 +47,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
+import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
 
 import javax.servlet.http.HttpServletResponse;
@@ -94,6 +95,7 @@ public class NiFiRegistrySecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(final HttpSecurity http) throws Exception {
         return http
+                .cors(cors -> cors.configurationSource(clusterCorsConfigurationSource()))
                 .addFilterBefore(x509AuthenticationFilter(), AnonymousAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthenticationFilter(), AnonymousAuthenticationFilter.class)
                 // Add Resource Authorization after Spring Security but before Jersey Resources
@@ -165,6 +167,10 @@ public class NiFiRegistrySecurityConfig {
                 nodeRegistry,
                 replicationClient,
                 properties.getClusterNodeInternalAuthToken());
+    }
+
+    private CorsConfigurationSource clusterCorsConfigurationSource() {
+        return new ClusterAwareCorsConfigurationSource(nodeRegistry, properties);
     }
 
     private ResourceAuthorizationFilter resourceAuthorizationFilter() {
