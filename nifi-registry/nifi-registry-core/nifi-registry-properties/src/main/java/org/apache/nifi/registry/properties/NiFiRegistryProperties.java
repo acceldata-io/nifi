@@ -132,6 +132,10 @@ public class NiFiRegistryProperties extends ApplicationProperties {
 
     // Shared secret required in X-Registry-Internal-Auth header for internal cluster endpoints.
     public static final String CLUSTER_NODE_INTERNAL_AUTH_TOKEN = "nifi.registry.cluster.node.internal.auth.token";
+
+    // Comma-separated additional origins (e.g. a load-balancer URL) that are permitted in
+    // CORS responses.  Cluster node base URLs are always added automatically.
+    public static final String CLUSTER_ALLOWED_ORIGINS = "nifi.registry.cluster.allowed.origins";
     public static final String CLUSTER_COORDINATION_DATABASE = "database";
     public static final String CLUSTER_COORDINATION_ZOOKEEPER = "zookeeper";
 
@@ -509,6 +513,22 @@ public class NiFiRegistryProperties extends ApplicationProperties {
 
     public String getClusterNodeInternalAuthToken() {
         return getPropertyAsTrimmedString(CLUSTER_NODE_INTERNAL_AUTH_TOKEN);
+    }
+
+    /**
+     * Returns the list of additional CORS origins configured via
+     * {@code nifi.registry.cluster.allowed.origins} (comma-separated).
+     * Returns an empty list when the property is absent or blank.
+     */
+    public List<String> getClusterAllowedOrigins() {
+        final String value = getPropertyAsTrimmedString(CLUSTER_ALLOWED_ORIGINS);
+        if (StringUtils.isBlank(value)) {
+            return Collections.emptyList();
+        }
+        return Arrays.stream(value.split(","))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .collect(java.util.stream.Collectors.toList());
     }
 
     // Helper functions for common ways of interpreting property values

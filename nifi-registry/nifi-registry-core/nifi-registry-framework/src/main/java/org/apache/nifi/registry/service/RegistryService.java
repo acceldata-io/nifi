@@ -120,8 +120,12 @@ public class RegistryService {
             throw new IllegalArgumentException("Bucket cannot be null");
         }
 
-        // set the created time, and clear out the flows since its read-only
-        bucket.setCreatedTimestamp(System.currentTimeMillis());
+        // Preserve a caller-supplied creation timestamp (e.g. leader→follower replication
+        // fan-out that sends the leader's response body with preserveSourceProperties=true).
+        // For normal browser creates the timestamp is 0/unset, so assign the current time.
+        if (bucket.getCreatedTimestamp() <= 0) {
+            bucket.setCreatedTimestamp(System.currentTimeMillis());
+        }
 
         if (bucket.isAllowBundleRedeploy() == null) {
             bucket.setAllowBundleRedeploy(false);
