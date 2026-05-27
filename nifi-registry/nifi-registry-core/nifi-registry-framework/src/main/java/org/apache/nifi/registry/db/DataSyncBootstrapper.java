@@ -42,14 +42,12 @@ import java.time.Duration;
 import java.util.Optional;
 
 /**
- * Synchronises the local H2 database from the cluster leader when a node
- * starts up with an empty database.
+ * Synchronises the local H2 database from the cluster leader on every
+ * follower startup.
  *
  * <p>This bean is active only when ZooKeeper cluster coordination is enabled
- * ({@code nifi.registry.cluster.coordination=zookeeper}). On every startup
- * it checks whether the local database is empty (zero rows in the
- * {@code BUCKET} table). If so, and if this node is not the elected leader,
- * it:
+ * ({@code nifi.registry.cluster.coordination=zookeeper}). On every startup,
+ * if this node is not the elected leader, it:
  * <ol>
  *   <li>Waits up to {@value #LEADER_WAIT_TIMEOUT_MS} ms for a leader to be
  *       elected and registered in ZooKeeper.</li>
@@ -58,9 +56,14 @@ import java.util.Optional;
  *   <li>Applies the returned H2 SQL script via {@code RUNSCRIPT FROM}.</li>
  * </ol>
  *
+ * <p>Syncing on every follower startup (not just when the DB is empty) ensures
+ * that a node which was down while writes occurred on the leader rejoins with
+ * a fully consistent database rather than stale data. The exported script uses
+ * {@code SCRIPT DROP}, so existing tables are dropped and recreated atomically.
+ *
  * <p>If the sync fails (leader unreachable, timeout, etc.) the node continues
- * with its empty database. Data will populate organically as write operations
- * are replicated to this node by {@link
+ * with its existing local data and a warning is logged. Data will populate
+ * organically as write operations are replicated to this node by {@link
  * org.apache.nifi.registry.web.security.replication.WriteReplicationFilter}.
  *
  * <p>This is intentionally H2-only. Operators using PostgreSQL or MySQL have
@@ -108,13 +111,8 @@ public class DataSyncBootstrapper {
             LOGGER.debug("DataSyncBootstrapper: database is not H2; skipping bootstrap sync.");
             return;
         }
-        if (!isLocalDbEmpty()) {
-            LOGGER.info("DataSyncBootstrapper: local database has existing data; skipping bootstrap sync.");
-            return;
-        }
 
-        LOGGER.info("DataSyncBootstrapper: local H2 database is empty and this node is a follower. "
-                + "Initiating bootstrap sync from leader.");
+        LOGGER.info("DataSyncBootstrapper: this node is a follower; syncing from leader to ensure consistency.");
 
         final String authToken = properties.getClusterNodeInternalAuthToken();
         if (authToken == null || authToken.isBlank()) {
@@ -147,7 +145,7 @@ public class DataSyncBootstrapper {
                     leader.getNodeId());
         } catch (final Exception e) {
             LOGGER.error("DataSyncBootstrapper: bootstrap sync from leader '{}' failed: {}. "
-                    + "This node will start with an empty database.",
+                    + "This node will start with its existing local data (may be stale).",
                     leader.getNodeId(), e.getMessage(), e);
         }
     }
@@ -161,20 +159,6 @@ public class DataSyncBootstrapper {
             return conn.getMetaData().getDatabaseProductName().contains("H2");
         } catch (final Exception e) {
             LOGGER.debug("DataSyncBootstrapper: could not determine database type.", e);
-            return false;
-        }
-    }
-
-    private boolean isLocalDbEmpty() {
-        try (Connection conn = dataSource.getConnection();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM BUCKET")) {
-            if (rs.next()) {
-                return rs.getInt(1) == 0;
-            }
-            return true;
-        } catch (final Exception e) {
-            LOGGER.debug("DataSyncBootstrapper: could not count BUCKET rows; assuming non-empty.", e);
             return false;
         }
     }
