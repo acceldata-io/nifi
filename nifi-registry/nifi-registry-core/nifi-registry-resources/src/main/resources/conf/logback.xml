@@ -58,19 +58,6 @@
         </encoder>
     </appender>
 
-    <appender name="REQUEST_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${org.apache.nifi.registry.bootstrap.config.log.dir}/nifi-registry-request.log</file>
-        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <fileNamePattern>${org.apache.nifi.registry.bootstrap.config.log.dir}/nifi-registry-request_%d{yyyy-MM-dd_HH}.%i.log</fileNamePattern>
-            <maxFileSize>100MB</maxFileSize>
-            <maxHistory>30</maxHistory>
-            <totalSizeCap>10GB</totalSizeCap>
-        </rollingPolicy>
-        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-            <pattern>%msg%n</pattern>
-        </encoder>
-    </appender>
-
     <appender name="EVENTS_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${org.apache.nifi.registry.bootstrap.config.log.dir}/nifi-registry-event.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
@@ -126,12 +113,6 @@
     <!-- This will log all events to a separate file when the LoggingEventHookProvider is enabled in providers.xml -->
     <logger name="org.apache.nifi.registry.provider.hook.LoggingEventHookProvider" level="INFO" additivity="false">
         <appender-ref ref="EVENTS_FILE" />
-    </logger>
-
-    <!-- Jetty access log emitted by CustomRequestLog (NCSA extended format). Routed to its own file
-         so observability tooling (e.g. Pulse) can parse request rate, status codes and per-request latency. -->
-    <logger name="org.apache.nifi.registry.web.server.RequestLog" level="INFO" additivity="false">
-        <appender-ref ref="REQUEST_FILE" />
     </logger>
 
     <root level="INFO">

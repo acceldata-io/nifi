@@ -23,12 +23,9 @@ import org.apache.nifi.registry.jetty.handler.HandlerProvider;
 import org.apache.nifi.registry.properties.NiFiRegistryProperties;
 import org.eclipse.jetty.annotations.AnnotationConfiguration;
 import org.eclipse.jetty.jmx.MBeanContainer;
-import org.eclipse.jetty.server.CustomRequestLog;
 import org.eclipse.jetty.server.Handler;
-import org.eclipse.jetty.server.RequestLog;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
-import org.eclipse.jetty.server.Slf4jRequestLogWriter;
 import org.eclipse.jetty.server.SslConnectionFactory;
 import org.eclipse.jetty.server.handler.StatisticsHandler;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
@@ -60,8 +57,6 @@ public class JettyServer {
     private static final String HTTP_SCHEME = "http";
 
     private static final String HOST_UNSPECIFIED = "0.0.0.0";
-
-    private static final String REQUEST_LOG_LOGGER_NAME = "org.apache.nifi.registry.web.server.RequestLog";
 
     private final NiFiRegistryProperties properties;
 
@@ -96,13 +91,6 @@ public class JettyServer {
             final StatisticsHandler statisticsHandler = new StatisticsHandler();
             statisticsHandler.setHandler(handler);
             server.setHandler(statisticsHandler);
-
-            // Emit NCSA-style request logs via SLF4J so that the logback configuration controls the file
-            // destination, rolling policy and retention (see REQUEST_FILE appender in conf/logback.xml).
-            final Slf4jRequestLogWriter requestLogWriter = new Slf4jRequestLogWriter();
-            requestLogWriter.setLoggerName(REQUEST_LOG_LOGGER_NAME);
-            final RequestLog requestLog = new CustomRequestLog(requestLogWriter, CustomRequestLog.EXTENDED_NCSA_FORMAT);
-            server.setRequestLog(requestLog);
         } catch (final Throwable t) {
             shutdown(t);
         }
