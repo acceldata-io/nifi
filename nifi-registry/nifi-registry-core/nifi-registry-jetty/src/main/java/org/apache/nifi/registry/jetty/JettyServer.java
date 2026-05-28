@@ -22,10 +22,12 @@ import org.apache.nifi.registry.jetty.connector.ApplicationServerConnectorFactor
 import org.apache.nifi.registry.jetty.handler.HandlerProvider;
 import org.apache.nifi.registry.properties.NiFiRegistryProperties;
 import org.eclipse.jetty.annotations.AnnotationConfiguration;
+import org.eclipse.jetty.jmx.MBeanContainer;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.SslConnectionFactory;
+import org.eclipse.jetty.server.handler.StatisticsHandler;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.webapp.Configuration;
 import org.eclipse.jetty.webapp.JettyWebXmlConfiguration;
@@ -33,6 +35,7 @@ import org.eclipse.jetty.webapp.WebAppContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.management.ManagementFactory;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
@@ -69,6 +72,11 @@ public class JettyServer {
         this.properties = properties;
         this.server = new Server(threadPool);
 
+        // Register Jetty's MBeans with the platform MBean server so that thread pool, connector and handler
+        // statistics are observable via JMX for tuning and monitoring.
+        final MBeanContainer mbeanContainer = new MBeanContainer(ManagementFactory.getPlatformMBeanServer());
+        server.addBean(mbeanContainer);
+
         // enable the annotation based configuration to ensure the jsp container is initialized properly
         final Configuration.ClassList classlist = Configuration.ClassList.setServerDefault(server);
         classlist.addBefore(JettyWebXmlConfiguration.class.getName(), AnnotationConfiguration.class.getName());
@@ -76,7 +84,13 @@ public class JettyServer {
         try {
             configureConnectors();
             final Handler handler = handlerProvider.getHandler(properties);
-            server.setHandler(handler);
+
+            // Wrap the application handler in a StatisticsHandler so that request counts, latency and response
+            // status totals are exposed via JMX. Required by Pulse to observe NiFi Registry HTTP activity
+            // (e.g. flow import/export) without changing per-endpoint code.
+            final StatisticsHandler statisticsHandler = new StatisticsHandler();
+            statisticsHandler.setHandler(handler);
+            server.setHandler(statisticsHandler);
         } catch (final Throwable t) {
             shutdown(t);
         }
