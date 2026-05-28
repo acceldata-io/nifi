@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.lang.management.ManagementFactory;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -108,6 +109,7 @@ import org.eclipse.jetty.ee11.servlet.FilterMapping;
 import org.eclipse.jetty.ee11.servlet.ResourceServlet;
 import org.eclipse.jetty.ee11.servlet.ServletHandler;
 import org.eclipse.jetty.ee11.webapp.MetaInfConfiguration;
+import org.eclipse.jetty.jmx.MBeanContainer;
 import org.eclipse.jetty.rewrite.handler.RedirectPatternRule;
 import org.eclipse.jetty.rewrite.handler.RewriteHandler;
 import org.eclipse.jetty.server.Handler;
@@ -210,6 +212,11 @@ public class JettyServer implements NiFiServer, ExtensionUiLoader {
 
             final ServerProvider serverProvider = new StandardServerProvider(sslContext);
             server = serverProvider.getServer(props);
+
+            // Register Jetty's MBeans with the platform MBean server so that thread pool, connector and handler
+            // statistics are observable via JMX for tuning and monitoring (e.g. nifi.web.jetty.threads sizing).
+            final MBeanContainer mbeanContainer = new MBeanContainer(ManagementFactory.getPlatformMBeanServer());
+            server.addBean(mbeanContainer);
 
             final Handler serverHandler = server.getHandler();
             if (serverHandler instanceof Handler.Collection serverHandlerCollection) {
