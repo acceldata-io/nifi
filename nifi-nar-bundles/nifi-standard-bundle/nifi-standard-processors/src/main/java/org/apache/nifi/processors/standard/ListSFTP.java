@@ -124,6 +124,7 @@ public class ListSFTP extends ListFileTransfer {
         properties.add(SFTPTransfer.KEY_ALGORITHMS_ALLOWED);
         properties.add(SFTPTransfer.KEY_EXCHANGE_ALGORITHMS_ALLOWED);
         properties.add(SFTPTransfer.MESSAGE_AUTHENTICATION_CODES_ALLOWED);
+        properties.add(SFTPTransfer.REMOTE_CHARSET);
         return properties;
     }
 

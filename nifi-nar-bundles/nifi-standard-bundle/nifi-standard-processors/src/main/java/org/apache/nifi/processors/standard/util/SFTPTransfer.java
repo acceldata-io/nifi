@@ -53,6 +53,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.DateFormat;
@@ -228,6 +230,18 @@ public class SFTPTransfer implements FileTransfer {
         .addValidator(StandardValidators.BOOLEAN_VALIDATOR)
         .allowableValues("true", "false")
         .defaultValue("false")
+        .build();
+
+    public static final PropertyDescriptor REMOTE_CHARSET = new PropertyDescriptor.Builder()
+        .name("remote-charset")
+        .displayName("Remote Charset")
+        .description("Character set used by the remote SFTP server to encode filenames. "
+            + "Defaults to UTF-8, which is the standard per RFC 4251. "
+            + "Set to the server's actual encoding (e.g. ISO-8859-1, Windows-1252) when filenames "
+            + "contain non-ASCII characters and appear corrupted in sftp.remote.filename.")
+        .required(false)
+        .addValidator(StandardValidators.CHARACTER_SET_VALIDATOR)
+        .defaultValue(StandardCharsets.UTF_8.name())
         .build();
 
     private static final ProxySpec[] PROXY_SPECS = {ProxySpec.HTTP_AUTH, ProxySpec.SOCKS_AUTH};
@@ -627,6 +641,12 @@ public class SFTPTransfer implements FileTransfer {
 
         final Map<String, String> attributes = flowFile == null ? Collections.emptyMap() : flowFile.getAttributes();
         this.sshClient = SSH_CLIENT_PROVIDER.getClient(ctx, attributes);
+
+        final String remoteCharsetName = ctx.getProperty(REMOTE_CHARSET).getValue();
+        if (remoteCharsetName != null && !remoteCharsetName.isEmpty()) {
+            this.sshClient.setRemoteCharset(Charset.forName(remoteCharsetName));
+        }
+
         this.sftpClient = new SFTPClient(new SFTPEngine(sshClient).init());
         activeHostname = evaledHostname;
         activePort = evaledPort;
