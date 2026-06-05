@@ -124,6 +124,7 @@ public class DeleteSFTP extends AbstractProcessor {
         PROPERTIES.add(SFTPTransfer.KEY_ALGORITHMS_ALLOWED);
         PROPERTIES.add(SFTPTransfer.KEY_EXCHANGE_ALGORITHMS_ALLOWED);
         PROPERTIES.add(SFTPTransfer.MESSAGE_AUTHENTICATION_CODES_ALLOWED);
+        PROPERTIES.add(SFTPTransfer.REMOTE_CHARSET);
         PROPERTIES = Collections.unmodifiableList(PROPERTIES);
     }
 
