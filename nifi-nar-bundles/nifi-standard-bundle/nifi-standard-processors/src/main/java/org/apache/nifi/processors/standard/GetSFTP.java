@@ -93,6 +93,7 @@ public class GetSFTP extends GetFileTransfer {
         properties.add(SFTPTransfer.KEY_ALGORITHMS_ALLOWED);
         properties.add(SFTPTransfer.KEY_EXCHANGE_ALGORITHMS_ALLOWED);
         properties.add(SFTPTransfer.MESSAGE_AUTHENTICATION_CODES_ALLOWED);
+        properties.add(SFTPTransfer.REMOTE_CHARSET);
         this.properties = Collections.unmodifiableList(properties);
     }
 

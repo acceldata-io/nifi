@@ -34,6 +34,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -42,6 +43,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
@@ -277,6 +279,51 @@ public class TestSFTPTransfer {
             final SFTPTransfer sftpTransfer = createSftpTransfer(processContext, sftpClient);
             final List<FileInfo> listing = sftpTransfer.getListing(false);
             assertEquals(2, listing.size());
+        }
+    }
+
+    @Test
+    public void testRemoteCharsetDefaultsToUtf8() {
+        // The Remote Charset property must default to UTF-8 so existing flows are unaffected,
+        // while still allowing servers that encode filenames differently to be configured.
+        assertEquals(StandardCharsets.UTF_8.name(), SFTPTransfer.REMOTE_CHARSET.getDefaultValue());
+    }
+
+    @Test
+    public void testGetListingPreservesFilenameWithNonAsciiCharacters() throws IOException {
+        // Regression guard for filenames that contain non-ASCII characters such as a non-breaking
+        // space (U+00A0). Once the bytes are decoded with the correct charset, the listing must carry
+        // the filename through verbatim without dropping or replacing characters.
+        final String filenameWithNbsp = "start\u00A0file.csv"; // contains a non-breaking space
+
+        final ProcessContext processContext = mock(ProcessContext.class);
+        when(processContext.getProperty(eq(FileTransfer.REMOTE_PATH))).thenReturn(new MockPropertyValue("."));
+        when(processContext.getProperty(eq(FileTransfer.IGNORE_DOTTED_FILES))).thenReturn(BOOLEAN_TRUE_PROPERTY_VALUE);
+        when(processContext.getProperty(eq(FileTransfer.RECURSIVE_SEARCH))).thenReturn(BOOLEAN_FALSE_PROPERTY_VALUE);
+        when(processContext.getProperty(eq(FileTransfer.FOLLOW_SYMLINK))).thenReturn(BOOLEAN_FALSE_PROPERTY_VALUE);
+        when(processContext.getProperty(eq(FileTransfer.FILE_FILTER_REGEX))).thenReturn(new MockPropertyValue(null));
+        when(processContext.getProperty(eq(FileTransfer.PATH_FILTER_REGEX))).thenReturn(new MockPropertyValue(null));
+
+        try (SFTPClient sftpClient = mock(SFTPClient.class)) {
+            when(sftpClient.ls(any(), any(RemoteResourceFilter.class))).then(invocation -> {
+                final Map<String, String> extended = new LinkedHashMap<>();
+                final List<RemoteResourceInfo> list = new ArrayList<>();
+                list.add(new RemoteResourceInfo(
+                        new PathComponents("./", filenameWithNbsp, "/"),
+                        new FileAttributes(FileAttributes.Flag.MODE.get(), 0, 0, 0, new FileMode(FILE_MASK_REGULAR_777), 0, 0, extended)));
+                final RemoteResourceFilter filter = invocation.getArgument(1, RemoteResourceFilter.class);
+                list.forEach(filter::accept);
+                return list;
+            });
+
+            final SFTPTransfer sftpTransfer = createSftpTransfer(processContext, sftpClient);
+            final List<FileInfo> listing = sftpTransfer.getListing(false);
+            assertEquals(1, listing.size());
+
+            final FileInfo fileInfo = listing.get(0);
+            assertEquals(filenameWithNbsp, fileInfo.getFileName());
+            // The decoded name must not contain the Unicode replacement character that signals a charset mismatch.
+            assertTrue(fileInfo.getFileName().indexOf('\uFFFD') < 0);
         }
     }
 }
