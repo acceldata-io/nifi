@@ -155,6 +155,9 @@
             </plugin>
         </plugins>
     </build>
+    <properties>
+        <curator.version>5.7.1</curator.version>
+    </properties>
 
     <dependencies>
         <dependency>
