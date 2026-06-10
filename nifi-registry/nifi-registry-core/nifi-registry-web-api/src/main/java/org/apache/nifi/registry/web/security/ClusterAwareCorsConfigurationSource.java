@@ -16,6 +16,7 @@
  */
 package org.apache.nifi.registry.web.security;
 
+import com.google.common.collect.ImmutableList;
 import org.apache.nifi.registry.cluster.NodeRegistry;
 import org.apache.nifi.registry.properties.NiFiRegistryProperties;
 import org.springframework.web.cors.CorsConfiguration;
@@ -46,7 +47,7 @@ import java.util.List;
 public class ClusterAwareCorsConfigurationSource implements CorsConfigurationSource {
 
     private static final List<String> ALLOWED_METHODS =
-            List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD");
+        ImmutableList.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD");
 
     private final NodeRegistry nodeRegistry;
     private final List<String> configuredOrigins;
