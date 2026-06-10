@@ -16,6 +16,7 @@
  */
 package org.apache.nifi.registry.web.security.replication;
 
+import com.google.common.collect.ImmutableSet;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
@@ -77,7 +78,7 @@ public class WriteReplicationFilter extends GenericFilterBean {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WriteReplicationFilter.class);
 
-    private static final Set<String> WRITE_METHODS = Set.of("POST", "PUT", "PATCH", "DELETE");
+    private static final Set<String> WRITE_METHODS = ImmutableSet.of("POST", "PUT", "PATCH", "DELETE");
     private static final String ACTUATOR_PATH_PREFIX = "/actuator/";
 
     /** Header the leader adds to fan-out requests; prevents forwarding loops. */
@@ -149,7 +150,7 @@ public class WriteReplicationFilter extends GenericFilterBean {
         //    write directly against the leader, preserving client credentials end-to-end.
         if (!leaderElectionManager.isLeader()) {
             final Optional<NodeAddress> leaderOpt = nodeRegistry.getLeaderAddress();
-            if (leaderOpt.isEmpty()) {
+            if (!leaderOpt.isPresent()) {
                 LOGGER.warn("Cannot redirect write {} {}: no leader is currently known.",
                         request.getMethod(), request.getRequestURI());
                 response.setStatus(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
@@ -231,7 +232,7 @@ public class WriteReplicationFilter extends GenericFilterBean {
     // -------------------------------------------------------------------------
 
     private boolean isValidInternalAuth(final HttpServletRequest request) {
-        if (expectedAuthToken == null || expectedAuthToken.isBlank()) {
+        if (expectedAuthToken == null || expectedAuthToken.trim().isEmpty()) {
             // Auth token not configured — cannot validate; reject for safety.
             return false;
         }
