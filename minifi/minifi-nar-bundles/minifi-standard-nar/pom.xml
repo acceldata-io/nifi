@@ -46,29 +46,29 @@ limitations under the License.
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-standard-processors</artifactId>
-            <version>2.7.2.3.3.6.5-SNAPSHOT</version>
+            <version>2.7.2.${odp.release.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-distributed-cache-client-service-api</artifactId>
-            <version>2.7.2.3.3.6.5-SNAPSHOT</version>
+            <version>2.7.2.${odp.release.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-standard-shared-nar</artifactId>
-            <version>2.7.2.3.3.6.5-SNAPSHOT</version>
+            <version>2.7.2.${odp.release.version}</version>
             <type>nar</type>
         </dependency>
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-standard-prioritizers</artifactId>
-            <version>2.7.2.3.3.6.5-SNAPSHOT</version>
+            <version>2.7.2.${odp.release.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-standard-reporting-tasks</artifactId>
-            <version>2.7.2.3.3.6.5-SNAPSHOT</version>
+            <version>2.7.2.${odp.release.version}</version>
         </dependency>
     </dependencies>
 </project>

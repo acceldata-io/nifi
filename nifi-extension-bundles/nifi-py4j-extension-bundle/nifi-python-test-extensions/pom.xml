@@ -22,4 +22,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>nifi-python-test-extensions</artifactId>
+    <properties>
+        <odp.release.version>3.3.6.5-SNAPSHOT</odp.release.version>
+    </properties>
 </project>

@@ -32,5 +32,8 @@
         <module>nifi-questdb-bundle</module>
         <module>nifi-single-user-iaa-providers-bundle</module>
     </modules>
+    <properties>
+        <odp.release.version>3.3.6.5-SNAPSHOT</odp.release.version>
+    </properties>
 </project>
 

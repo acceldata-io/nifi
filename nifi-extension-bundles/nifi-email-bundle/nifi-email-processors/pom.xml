@@ -25,6 +25,7 @@
     <artifactId>nifi-email-processors</artifactId>
     <packaging>jar</packaging>
     <properties>
+        <odp.release.version>3.3.6.5-SNAPSHOT</odp.release.version>
         <spring.integration.version>6.5.4</spring.integration.version>
     </properties>
 

@@ -21,5 +21,8 @@
     </parent>
     <artifactId>nifi-security-proxied-entity</artifactId>
     <description>Shared security components for handling Proxied Entities in HTTP requests and response</description>
+    <properties>
+        <odp.release.version>3.3.6.5-SNAPSHOT</odp.release.version>
+    </properties>
 </project>
 

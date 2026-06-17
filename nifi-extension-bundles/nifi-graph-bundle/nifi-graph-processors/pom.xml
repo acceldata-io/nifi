@@ -51,24 +51,24 @@
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-graph-client-service-api</artifactId>
-            <version>2.7.2.3.3.6.5-SNAPSHOT</version>
+            <version>2.7.2.${odp.release.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-graph-test-clients</artifactId>
-            <version>2.7.2.3.3.6.5-SNAPSHOT</version>
+            <version>2.7.2.${odp.release.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-record-path</artifactId>
-            <version>2.7.2.3.3.6.5-SNAPSHOT</version>
+            <version>2.7.2.${odp.release.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-json-utils</artifactId>
-            <version>2.7.2.3.3.6.5-SNAPSHOT</version>
+            <version>2.7.2.${odp.release.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -78,7 +78,7 @@
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-record-serialization-services</artifactId>
-            <version>2.7.2.3.3.6.5-SNAPSHOT</version>
+            <version>2.7.2.${odp.release.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -112,4 +112,7 @@
             </plugin>
         </plugins>
     </build>
+    <properties>
+        <odp.release.version>3.3.6.5-SNAPSHOT</odp.release.version>
+    </properties>
 </project>

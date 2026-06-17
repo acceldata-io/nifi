@@ -74,4 +74,7 @@ language governing permissions and limitations under the License. -->
             <scope>compile</scope>
         </dependency>
     </dependencies>
+    <properties>
+        <odp.release.version>3.3.6.5-SNAPSHOT</odp.release.version>
+    </properties>
 </project>

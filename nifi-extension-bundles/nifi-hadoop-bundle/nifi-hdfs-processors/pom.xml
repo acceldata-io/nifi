@@ -34,7 +34,7 @@
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-security-kerberos</artifactId>
-            <version>2.7.2.3.3.6.5-SNAPSHOT</version>
+            <version>2.7.2.${odp.release.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.nifi</groupId>
@@ -47,7 +47,7 @@
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-hadoop-utils</artifactId>
-            <version>2.7.2.3.3.6.5-SNAPSHOT</version>
+            <version>2.7.2.${odp.release.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.avro</groupId>
@@ -56,7 +56,7 @@
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-flowfile-packager</artifactId>
-            <version>2.7.2.3.3.6.5-SNAPSHOT</version>
+            <version>2.7.2.${odp.release.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.hadoop</groupId>
@@ -77,7 +77,7 @@
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-resource-transfer</artifactId>
-            <version>2.7.2.3.3.6.5-SNAPSHOT</version>
+            <version>2.7.2.${odp.release.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.nifi</groupId>
@@ -86,7 +86,7 @@
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-file-resource-service</artifactId>
-            <version>2.7.2.3.3.6.5-SNAPSHOT</version>
+            <version>2.7.2.${odp.release.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -144,4 +144,7 @@
             </plugin>
         </plugins>
     </build>
+    <properties>
+        <odp.release.version>3.3.6.5-SNAPSHOT</odp.release.version>
+    </properties>
 </project>

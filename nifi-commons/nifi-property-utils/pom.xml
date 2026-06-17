@@ -21,4 +21,7 @@
         <version>2.7.2.3.3.6.5-SNAPSHOT</version>
     </parent>
     <artifactId>nifi-property-utils</artifactId>
+    <properties>
+        <odp.release.version>3.3.6.5-SNAPSHOT</odp.release.version>
+    </properties>
 </project>

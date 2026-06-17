@@ -22,4 +22,7 @@
     <artifactId>nifi-distributed-cache-client-service-api</artifactId>
     <packaging>jar</packaging>
     <description>Provides an API for a Client that interfaces with a Distributed Cache</description>
+    <properties>
+        <odp.release.version>3.3.6.5-SNAPSHOT</odp.release.version>
+    </properties>
 </project>

@@ -24,6 +24,7 @@
     <artifactId>nifi-python-framework</artifactId>
 
     <properties>
+        <odp.release.version>3.3.6.5-SNAPSHOT</odp.release.version>
         <py4j.version>0.10.9.9</py4j.version>
         <py4j.url>https://files.pythonhosted.org/packages/bd/db/ea0203e495be491c85af87b66e37acfd3bf756fd985f87e46fc5e3bf022c/py4j-${py4j.version}-py2.py3-none-any.whl</py4j.url>
     </properties>

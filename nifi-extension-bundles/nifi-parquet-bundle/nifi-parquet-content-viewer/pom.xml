@@ -25,6 +25,7 @@
     <artifactId>nifi-parquet-content-viewer</artifactId>
     <packaging>war</packaging>
     <properties>
+        <odp.release.version>3.3.6.5-SNAPSHOT</odp.release.version>
         <source.skip>true</source.skip>
         <standard-content-viewer.ui.working.dir>${project.build.directory}/standard-content-viewer-ui-working-directory</standard-content-viewer.ui.working.dir>
     </properties>
@@ -32,23 +33,23 @@
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-framework-api</artifactId>
-            <version>2.7.2.3.3.6.5-SNAPSHOT</version>
+            <version>2.7.2.${odp.release.version}</version>
             <scope>provided</scope> <!-- expected to be provided by parent classloader -->
         </dependency>
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-content-viewer-utils</artifactId>
-            <version>2.7.2.3.3.6.5-SNAPSHOT</version>
+            <version>2.7.2.${odp.release.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-web-servlet-shared</artifactId>
-            <version>2.7.2.3.3.6.5-SNAPSHOT</version>
+            <version>2.7.2.${odp.release.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-frontend</artifactId>
-            <version>2.7.2.3.3.6.5-SNAPSHOT</version>
+            <version>2.7.2.${odp.release.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.jersey.core</groupId>
@@ -99,7 +100,7 @@
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-parquet-shared</artifactId>
-            <version>2.7.2.3.3.6.5-SNAPSHOT</version>
+            <version>2.7.2.${odp.release.version}</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

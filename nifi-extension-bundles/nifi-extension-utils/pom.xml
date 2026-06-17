@@ -49,4 +49,7 @@
         <module>nifi-syslog-utils</module>
         <module>nifi-git-flow-registry</module>
     </modules>
+    <properties>
+        <odp.release.version>3.3.6.5-SNAPSHOT</odp.release.version>
+    </properties>
 </project>

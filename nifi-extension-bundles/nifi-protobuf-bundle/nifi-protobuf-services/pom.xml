@@ -26,6 +26,7 @@
     <artifactId>nifi-protobuf-services</artifactId>
 
     <properties>
+        <odp.release.version>3.3.6.5-SNAPSHOT</odp.release.version>
         <protobuf.version>3.25.8</protobuf.version>
         <wire.version>5.4.0</wire.version>
     </properties>

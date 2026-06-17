@@ -30,4 +30,7 @@
 	    <module>nifi-registry-revision-entity-model</module>
 	    <module>nifi-registry-revision-entity-service</module>
     </modules>
+    <properties>
+        <odp.release.version>3.3.6.5-SNAPSHOT</odp.release.version>
+    </properties>
 </project>
