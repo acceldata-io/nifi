@@ -36,18 +36,18 @@
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-framework-api</artifactId>
-            <version>2.7.2.3.3.6.5-SNAPSHOT</version>
+            <version>2.7.2.${odp.release.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-system-test-extensions2</artifactId>
-            <version>2.7.2.3.3.6.5-SNAPSHOT</version>
+            <version>2.7.2.${odp.release.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-standard-services-api-nar</artifactId>
-            <version>2.7.2.3.3.6.5-SNAPSHOT</version>
+            <version>2.7.2.${odp.release.version}</version>
             <type>nar</type>
         </dependency>
     </dependencies>
@@ -63,4 +63,7 @@
             </plugin>
         </plugins>
     </build>
+    <properties>
+        <odp.release.version>3.3.6.5-SNAPSHOT</odp.release.version>
+    </properties>
 </project>

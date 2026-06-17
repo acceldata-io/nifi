@@ -29,6 +29,7 @@
     <packaging>jar</packaging>
 
     <properties>
+        <odp.release.version>3.3.6.5-SNAPSHOT</odp.release.version>
         <frontend.source>${basedir}/src/main/frontend</frontend.source>
         <frontend.working.dir>${project.build.directory}/frontend-working-directory</frontend.working.dir>
         <copy-rename-maven-plugin.version>1.0.1</copy-rename-maven-plugin.version>

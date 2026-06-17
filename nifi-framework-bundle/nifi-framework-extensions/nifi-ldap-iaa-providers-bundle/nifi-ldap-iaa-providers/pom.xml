@@ -31,17 +31,17 @@
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-utils</artifactId>
-            <version>2.7.2.3.3.6.5-SNAPSHOT</version>
+            <version>2.7.2.${odp.release.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-security-identity</artifactId>
-            <version>2.7.2.3.3.6.5-SNAPSHOT</version>
+            <version>2.7.2.${odp.release.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-security-ssl</artifactId>
-            <version>2.7.2.3.3.6.5-SNAPSHOT</version>
+            <version>2.7.2.${odp.release.version}</version>
         </dependency>
 
         <dependency>
@@ -81,7 +81,7 @@
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-expression-language</artifactId>
-            <version>2.7.2.3.3.6.5-SNAPSHOT</version>
+            <version>2.7.2.${odp.release.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -93,9 +93,12 @@
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-security-cert-builder</artifactId>
-            <version>2.7.2.3.3.6.5-SNAPSHOT</version>
+            <version>2.7.2.${odp.release.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
     <name>nifi-ldap-iaa-providers</name>
+    <properties>
+        <odp.release.version>3.3.6.5-SNAPSHOT</odp.release.version>
+    </properties>
 </project>

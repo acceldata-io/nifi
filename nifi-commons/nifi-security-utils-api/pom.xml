@@ -30,5 +30,8 @@
         This module cannot have any external compile time dependencies as it is referred to by many *-api modules
           -->
     </dependencies>
+    <properties>
+        <odp.release.version>3.3.6.5-SNAPSHOT</odp.release.version>
+    </properties>
 </project>
 

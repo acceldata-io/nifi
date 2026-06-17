@@ -66,7 +66,7 @@
         <dependency>
             <groupId>org.apache.hadoop</groupId>
             <artifactId>hadoop-common</artifactId>
-            <version>3.3.6.3.3.6.5-SNAPSHOT</version>
+            <version>3.3.6.${odp.release.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>*</groupId>
@@ -99,4 +99,7 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+    <properties>
+        <odp.release.version>3.3.6.5-SNAPSHOT</odp.release.version>
+    </properties>
 </project>

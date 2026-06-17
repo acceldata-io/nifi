@@ -39,6 +39,7 @@ limitations under the License.
         <module>minifi-integration-tests</module>
     </modules>
     <properties>
+        <odp.release.version>3.3.6.5-SNAPSHOT</odp.release.version>
         <system.rules.version>1.19.0</system.rules.version>
     </properties>
 </project>

@@ -41,7 +41,7 @@ language governing permissions and limitations under the License. -->
             <dependency>
                 <groupId>org.apache.nifi</groupId>
                 <artifactId>nifi-elasticsearch-restapi-processors</artifactId>
-                <version>2.7.2.3.3.6.5-SNAPSHOT</version>
+                <version>2.7.2.${odp.release.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.elasticsearch.client</groupId>

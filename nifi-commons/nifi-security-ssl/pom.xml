@@ -21,5 +21,8 @@
     </parent>
     <artifactId>nifi-security-ssl</artifactId>
     <description>Shared TLS security components without additional dependencies</description>
+    <properties>
+        <odp.release.version>3.3.6.5-SNAPSHOT</odp.release.version>
+    </properties>
 </project>
 

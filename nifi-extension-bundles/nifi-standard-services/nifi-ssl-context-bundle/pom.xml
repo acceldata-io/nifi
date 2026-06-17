@@ -25,4 +25,7 @@
         <module>nifi-ssl-context-service</module>
         <module>nifi-ssl-context-service-nar</module>
     </modules>
+    <properties>
+        <odp.release.version>3.3.6.5-SNAPSHOT</odp.release.version>
+    </properties>
 </project>
