@@ -22,6 +22,11 @@
     </parent>
     <groupId>org.apache.nifi</groupId>
     <artifactId>nifi-spark-receiver</artifactId>
+
+    <properties>
+        <odp.release.version>3.3.6.5-SNAPSHOT</odp.release.version>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.apache.spark</groupId>
@@ -50,7 +55,7 @@
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-site-to-site-client</artifactId>
-            <version>1.28.1.3.3.6.5-SNAPSHOT</version>
+            <version>1.28.1.${odp.release.version}</version>
         </dependency>
     </dependencies>
     <dependencyManagement>

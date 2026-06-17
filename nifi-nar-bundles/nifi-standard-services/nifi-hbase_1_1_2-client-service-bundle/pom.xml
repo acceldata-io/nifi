@@ -23,6 +23,7 @@
     <artifactId>nifi-hbase_1_1_2-client-service-bundle</artifactId>
     <packaging>pom</packaging>
     <properties>
+        <odp.release.version>3.3.6.5-SNAPSHOT</odp.release.version>
         <hadoop.version>2.7.3</hadoop.version>
     </properties>
     <modules>

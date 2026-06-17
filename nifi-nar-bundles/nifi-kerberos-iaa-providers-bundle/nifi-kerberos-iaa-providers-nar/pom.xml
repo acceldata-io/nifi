@@ -35,4 +35,7 @@
         </dependency>
     </dependencies>
     <name>nifi-kerberos-iaa-providers-nar</name>
+    <properties>
+        <odp.release.version>3.3.6.5-SNAPSHOT</odp.release.version>
+    </properties>
 </project>

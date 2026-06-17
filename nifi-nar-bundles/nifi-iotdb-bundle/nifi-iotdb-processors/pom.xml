@@ -85,4 +85,7 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+    <properties>
+        <odp.release.version>3.3.6.5-SNAPSHOT</odp.release.version>
+    </properties>
 </project>

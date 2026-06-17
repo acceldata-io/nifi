@@ -22,6 +22,10 @@
     </parent>
     <artifactId>nifi-h2-database-migrator</artifactId>
 
+    <properties>
+        <odp.release.version>3.3.6.5-SNAPSHOT</odp.release.version>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>com.h2database</groupId>
@@ -31,12 +35,12 @@
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-h2-database-v14</artifactId>
-            <version>1.28.1.3.3.6.5-SNAPSHOT</version>
+            <version>1.28.1.${odp.release.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-h2-database-v21</artifactId>
-            <version>1.28.1.3.3.6.5-SNAPSHOT</version>
+            <version>1.28.1.${odp.release.version}</version>
         </dependency>
     </dependencies>
 </project>

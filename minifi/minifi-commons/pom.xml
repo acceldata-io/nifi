@@ -30,4 +30,7 @@ limitations under the License.
         <module>minifi-utils</module>
         <module>minifi-commons-api</module>
     </modules>
+    <properties>
+        <odp.release.version>3.3.6.5-SNAPSHOT</odp.release.version>
+    </properties>
 </project>

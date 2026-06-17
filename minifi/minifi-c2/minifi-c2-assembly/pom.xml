@@ -26,6 +26,7 @@ limitations under the License.
     <packaging>pom</packaging>
     <description>This is the assembly of Apache MiNiFi's - Command And Control Server</description>
     <properties>
+        <odp.release.version>3.3.6.5-SNAPSHOT</odp.release.version>
         <minifi.c2.server.port>10090</minifi.c2.server.port>
 
         <minifi.c2.server.secure>false</minifi.c2.server.secure>

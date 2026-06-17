@@ -40,7 +40,7 @@
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-cassandra-services-api-nar</artifactId>
-            <version>1.28.1.3.3.6.5-SNAPSHOT</version>
+            <version>1.28.1.${odp.release.version}</version>
             <type>nar</type>
         </dependency>
         <dependency>
@@ -48,4 +48,7 @@
             <artifactId>nifi-cassandra-processors</artifactId>
         </dependency>
     </dependencies>
+    <properties>
+        <odp.release.version>3.3.6.5-SNAPSHOT</odp.release.version>
+    </properties>
 </project>

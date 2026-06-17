@@ -21,9 +21,10 @@
     <artifactId>dockerhub</artifactId>
 
     <properties>
+        <odp.release.version>3.3.6.5-SNAPSHOT</odp.release.version>
         <!-- files need to exist at https://archive.apache.org/dist/nifi/${docker.nifi.version}/nifi-[toolkit-]${docker.nifi.version}-bin.zip
             so this version needs to be *before* the current ${project.version} -->
-        <docker.nifi.version>1.28.1.3.3.6.5-SNAPSHOT</docker.nifi.version>
+        <docker.nifi.version>1.28.1.${odp.release.version}</docker.nifi.version>
     </properties>
 
     <profiles>

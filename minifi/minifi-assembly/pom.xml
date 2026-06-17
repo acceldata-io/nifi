@@ -129,13 +129,13 @@ limitations under the License.
         <dependency>
             <groupId>org.apache.nifi.minifi</groupId>
             <artifactId>minifi-framework-nar</artifactId>
-            <version>1.28.1.3.3.6.5-SNAPSHOT</version>
+            <version>1.28.1.${odp.release.version}</version>
             <type>nar</type>
         </dependency>
         <dependency>
             <groupId>org.apache.nifi.minifi</groupId>
             <artifactId>minifi-server-nar</artifactId>
-            <version>1.28.1.3.3.6.5-SNAPSHOT</version>
+            <version>1.28.1.${odp.release.version}</version>
             <type>nar</type>
         </dependency>
         <dependency>
@@ -303,6 +303,7 @@ limitations under the License.
     </dependencies>
 
     <properties>
+        <odp.release.version>3.3.6.5-SNAPSHOT</odp.release.version>
         <!--Bootstrap Properties -->
         <minifi.jvm.heap.mb>256</minifi.jvm.heap.mb>
         <minifi.jvm.permgen.mb>128</minifi.jvm.permgen.mb>

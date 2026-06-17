@@ -32,7 +32,7 @@
             <dependency>
                 <groupId>org.apache.nifi</groupId>
                 <artifactId>nifi-flume-processors</artifactId>
-                <version>1.28.1.3.3.6.5-SNAPSHOT</version>
+                <version>1.28.1.${odp.release.version}</version>
             </dependency>
             <!-- Override Netty 3 -->
             <dependency>
@@ -48,4 +48,7 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+    <properties>
+        <odp.release.version>3.3.6.5-SNAPSHOT</odp.release.version>
+    </properties>
 </project>

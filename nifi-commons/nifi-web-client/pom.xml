@@ -23,11 +23,15 @@
     <artifactId>nifi-web-client</artifactId>
     <description>Standard implementation of nifi-web-client-api using OkHttp</description>
 
+    <properties>
+        <odp.release.version>3.3.6.5-SNAPSHOT</odp.release.version>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-web-client-api</artifactId>
-            <version>1.28.1.3.3.6.5-SNAPSHOT</version>
+            <version>1.28.1.${odp.release.version}</version>
         </dependency>
         <dependency>
             <groupId>com.squareup.okhttp3</groupId>

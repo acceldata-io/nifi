@@ -24,7 +24,8 @@
     <packaging>pom</packaging>
 
     <properties>
-        <hwx.registry.version>1.0.0.3.3.6.5-SNAPSHOT</hwx.registry.version>
+        <odp.release.version>3.3.6.5-SNAPSHOT</odp.release.version>
+        <hwx.registry.version>1.0.0.${odp.release.version}</hwx.registry.version>
     </properties>
     <dependencyManagement>
         <dependencies>

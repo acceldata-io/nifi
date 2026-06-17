@@ -21,11 +21,16 @@
         <version>1.28.1.3.3.6.5-SNAPSHOT</version>
     </parent>
     <artifactId>nifi-flow-encryptor</artifactId>
+
+    <properties>
+        <odp.release.version>3.3.6.5-SNAPSHOT</odp.release.version>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-property-encryptor</artifactId>
-            <version>1.28.1.3.3.6.5-SNAPSHOT</version>
+            <version>1.28.1.${odp.release.version}</version>
             <exclusions>
                 <!-- Excluded to avoid unnecessary runtime dependencies -->
                 <exclusion>
@@ -37,7 +42,7 @@
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-xml-processing</artifactId>
-            <version>1.28.1.3.3.6.5-SNAPSHOT</version>
+            <version>1.28.1.${odp.release.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>

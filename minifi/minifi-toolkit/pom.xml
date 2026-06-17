@@ -29,4 +29,7 @@ limitations under the License.
         <module>minifi-toolkit-configuration</module>
         <module>minifi-toolkit-assembly</module>
     </modules>
+    <properties>
+        <odp.release.version>3.3.6.5-SNAPSHOT</odp.release.version>
+    </properties>
 </project>

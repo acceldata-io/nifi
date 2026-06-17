@@ -114,7 +114,7 @@
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-property-utils</artifactId>
-            <version>1.28.1.3.3.6.5-SNAPSHOT</version>
+            <version>1.28.1.${odp.release.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.nifi.registry</groupId>
@@ -138,7 +138,7 @@
             <groupId>org.apache.nifi.registry</groupId>
             <artifactId>nifi-registry-web-docs</artifactId>
             <type>war</type>
-            <version>1.28.1.3.3.6.5-SNAPSHOT</version>
+            <version>1.28.1.${odp.release.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.nifi.registry</groupId>
@@ -150,7 +150,7 @@
         <dependency>
             <groupId>org.apache.nifi.registry</groupId>
             <artifactId>nifi-registry-docs</artifactId>
-            <version>1.28.1.3.3.6.5-SNAPSHOT</version>
+            <version>1.28.1.${odp.release.version}</version>
             <classifier>resources</classifier>
             <scope>runtime</scope>
             <type>zip</type>
@@ -173,6 +173,7 @@
     </dependencies>
 
     <properties>
+        <odp.release.version>3.3.6.5-SNAPSHOT</odp.release.version>
         <!-- nifi-registry.properties: web properties -->
         <nifi.registry.web.war.directory>./lib</nifi.registry.web.war.directory>
         <nifi.registry.web.http.host />
@@ -408,7 +409,7 @@
                 <dependency>
                     <groupId>org.apache.nifi.registry</groupId>
                     <artifactId>nifi-registry-ranger-assembly</artifactId>
-                    <version>1.28.1.3.3.6.5-SNAPSHOT</version>
+                    <version>1.28.1.${odp.release.version}</version>
                     <classifier>bin</classifier>
                     <scope>runtime</scope>
                     <type>${nifi.registry.extension.archive.type}</type>
@@ -451,7 +452,7 @@
                 <dependency>
                     <groupId>org.apache.nifi.registry</groupId>
                     <artifactId>nifi-registry-aws-assembly</artifactId>
-                    <version>1.28.1.3.3.6.5-SNAPSHOT</version>
+                    <version>1.28.1.${odp.release.version}</version>
                     <classifier>bin</classifier>
                     <scope>runtime</scope>
                     <type>${nifi.registry.extension.archive.type}</type>

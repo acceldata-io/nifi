@@ -27,4 +27,7 @@
         <module>nifi-proxy-configuration</module>
         <module>nifi-proxy-configuration-nar</module>
     </modules>
+    <properties>
+        <odp.release.version>3.3.6.5-SNAPSHOT</odp.release.version>
+    </properties>
 </project>

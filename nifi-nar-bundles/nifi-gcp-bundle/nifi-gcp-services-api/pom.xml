@@ -58,4 +58,7 @@
             <artifactId>jackson-databind</artifactId>
         </dependency> <!-- TODO: Remove this when the next version of google-auth-library-oauth2-http is released and brings this in-->
     </dependencies>
+    <properties>
+        <odp.release.version>3.3.6.5-SNAPSHOT</odp.release.version>
+    </properties>
 </project>
