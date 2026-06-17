@@ -27,4 +27,7 @@
         <module>nifi-asn1-services</module>
         <module>nifi-asn1-nar</module>
     </modules>
+    <properties>
+        <odp.release.version>3.3.6.5-SNAPSHOT</odp.release.version>
+    </properties>
 </project>

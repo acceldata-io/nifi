@@ -20,5 +20,8 @@
         <version>1.28.1.3.3.6.5-SNAPSHOT</version>
     </parent>
     <artifactId>nifi-hashicorp-vault-api</artifactId>
+    <properties>
+        <odp.release.version>3.3.6.5-SNAPSHOT</odp.release.version>
+    </properties>
 </project>
 

@@ -29,6 +29,7 @@ limitations under the License.
     <packaging>pom</packaging>
 
     <properties>
+        <odp.release.version>3.3.6.5-SNAPSHOT</odp.release.version>
         <minifi.c2.version>${project.version}</minifi.c2.version>
     </properties>
 

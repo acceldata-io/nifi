@@ -35,4 +35,7 @@ limitations under the License.
         <module>minifi-c2-docker</module>
         <module>minifi-c2-integration-tests</module>
     </modules>
+    <properties>
+        <odp.release.version>3.3.6.5-SNAPSHOT</odp.release.version>
+    </properties>
 </project>

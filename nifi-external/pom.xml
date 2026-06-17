@@ -27,5 +27,8 @@
         <module>nifi-example-bundle</module>
         <module>nifi-kafka-connect</module>
     </modules>
+    <properties>
+        <odp.release.version>3.3.6.5-SNAPSHOT</odp.release.version>
+    </properties>
 </project>
 

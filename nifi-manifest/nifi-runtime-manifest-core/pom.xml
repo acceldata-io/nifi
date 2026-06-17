@@ -23,26 +23,30 @@
     <artifactId>nifi-runtime-manifest-core</artifactId>
     <packaging>jar</packaging>
 
+    <properties>
+        <odp.release.version>3.3.6.5-SNAPSHOT</odp.release.version>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>c2-protocol-component-api</artifactId>
-            <version>1.28.1.3.3.6.5-SNAPSHOT</version>
+            <version>1.28.1.${odp.release.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-api</artifactId>
-            <version>1.28.1.3.3.6.5-SNAPSHOT</version>
+            <version>1.28.1.${odp.release.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-extension-manifest-model</artifactId>
-            <version>1.28.1.3.3.6.5-SNAPSHOT</version>
+            <version>1.28.1.${odp.release.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-extension-manifest-parser</artifactId>
-            <version>1.28.1.3.3.6.5-SNAPSHOT</version>
+            <version>1.28.1.${odp.release.version}</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>

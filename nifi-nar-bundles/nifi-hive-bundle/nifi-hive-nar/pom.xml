@@ -25,6 +25,7 @@
     <artifactId>nifi-hive-nar</artifactId>
     <packaging>nar</packaging>
     <properties>
+        <odp.release.version>3.3.6.5-SNAPSHOT</odp.release.version>
         <!-- Need to override hadoop.version here, for Hive and hadoop-client transitive dependencies -->
         <hadoop.version>${hive.hadoop.version}</hadoop.version>
     </properties>
@@ -33,13 +34,13 @@
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-hive-services-api-nar</artifactId>
-            <version>1.28.1.3.3.6.5-SNAPSHOT</version>
+            <version>1.28.1.${odp.release.version}</version>
             <type>nar</type>
         </dependency>
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-hive-processors</artifactId>
-            <version>1.28.1.3.3.6.5-SNAPSHOT</version>
+            <version>1.28.1.${odp.release.version}</version>
         </dependency>
     </dependencies>
 </project>

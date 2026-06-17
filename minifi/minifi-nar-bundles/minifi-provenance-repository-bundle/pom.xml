@@ -31,4 +31,7 @@ limitations under the License.
         <module>minifi-provenance-repository-nar</module>
         <module>minifi-provenance-repositories</module>
     </modules>
+    <properties>
+        <odp.release.version>3.3.6.5-SNAPSHOT</odp.release.version>
+    </properties>
 </project>

@@ -30,17 +30,17 @@
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-utils</artifactId>
-            <version>1.28.1.3.3.6.5-SNAPSHOT</version>
+            <version>1.28.1.${odp.release.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-security-socket-ssl</artifactId>
-            <version>1.28.1.3.3.6.5-SNAPSHOT</version>
+            <version>1.28.1.${odp.release.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-event-transport</artifactId>
-            <version>1.28.1.3.3.6.5-SNAPSHOT</version>
+            <version>1.28.1.${odp.release.version}</version>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>
@@ -56,4 +56,7 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+    <properties>
+        <odp.release.version>3.3.6.5-SNAPSHOT</odp.release.version>
+    </properties>
 </project>

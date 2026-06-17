@@ -27,4 +27,7 @@
         several interfaces for interacting with Records. This module should not depend
         on any external libraries.
     </description>
+    <properties>
+        <odp.release.version>3.3.6.5-SNAPSHOT</odp.release.version>
+    </properties>
 </project>

@@ -33,17 +33,22 @@
         dependency.  The nifi-api can be thought of as a NiFi Application Container level
         dependency.
     </description>
+
+    <properties>
+        <odp.release.version>3.3.6.5-SNAPSHOT</odp.release.version>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-api</artifactId>
-            <version>1.28.1.3.3.6.5-SNAPSHOT</version>
+            <version>1.28.1.${odp.release.version}</version>
         </dependency>
         <!-- Included for StringUtils -->
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-property-utils</artifactId>
-            <version>1.28.1.3.3.6.5-SNAPSHOT</version>
+            <version>1.28.1.${odp.release.version}</version>
         </dependency>
         <dependency>
             <groupId>org.hamcrest</groupId>

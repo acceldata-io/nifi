@@ -22,6 +22,7 @@
     </parent>
     <artifactId>nifi-administration</artifactId>
     <properties>
+        <odp.release.version>3.3.6.5-SNAPSHOT</odp.release.version>
         <xodus.version>2.0.1</xodus.version>
     </properties>
     <dependencies>
@@ -60,7 +61,7 @@
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-h2-database-migrator</artifactId>
-            <version>1.28.1.3.3.6.5-SNAPSHOT</version>
+            <version>1.28.1.${odp.release.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>

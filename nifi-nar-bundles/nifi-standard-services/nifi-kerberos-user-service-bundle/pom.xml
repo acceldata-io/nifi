@@ -25,4 +25,7 @@
         <module>nifi-kerberos-user-service</module>
         <module>nifi-kerberos-user-service-nar</module>
     </modules>
+    <properties>
+        <odp.release.version>3.3.6.5-SNAPSHOT</odp.release.version>
+    </properties>
 </project>
