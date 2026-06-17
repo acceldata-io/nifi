@@ -28,4 +28,7 @@
         <module>nifi-registry-toolkit-persistence</module>
         <module>nifi-registry-toolkit-assembly</module>
     </modules>
+    <properties>
+        <odp.release.version>3.4.3.0-1</odp.release.version>
+    </properties>
 </project>

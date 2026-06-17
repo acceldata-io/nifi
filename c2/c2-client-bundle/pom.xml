@@ -33,4 +33,7 @@ limitations under the License.
         <module>c2-client-http</module>
         <module>c2-client-service</module>
     </modules>
+    <properties>
+        <odp.release.version>3.4.3.0-1</odp.release.version>
+    </properties>
 </project>

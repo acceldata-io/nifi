@@ -26,8 +26,14 @@
     <artifactId>nifi-protobuf-services</artifactId>
 
     <properties>
+<<<<<<< HEAD
         <protobuf.version>4.33.5</protobuf.version>
         <wire.version>5.5.0</wire.version>
+=======
+        <odp.release.version>3.4.3.0-1</odp.release.version>
+        <protobuf.version>3.25.8</protobuf.version>
+        <wire.version>5.4.0</wire.version>
+>>>>>>> 85acc642e1 (ODP-6864: Set odp.release.version property in pom.xml)
     </properties>
 
     <dependencies>

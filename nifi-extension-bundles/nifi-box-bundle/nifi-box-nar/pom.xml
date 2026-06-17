@@ -29,14 +29,13 @@
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-box-services-api-nar</artifactId>
-            <version>2.8.0.3.4.3.0-1</version>
+            <version>2.8.0.${odp.release.version}</version>           
             <type>nar</type>
         </dependency>
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-box-processors</artifactId>
-            <version>2.8.0.3.4.3.0-1</version>
-        </dependency>
+            <version>2.8.0.${odp.release.version}</version>        </dependency>
     </dependencies>
 
     <build>
@@ -71,4 +70,7 @@
             </plugin>
         </plugins>
     </build>
+    <properties>
+        <odp.release.version>3.4.3.0-1</odp.release.version>
+    </properties>
 </project>

@@ -131,7 +131,11 @@
                     <dependency>
                         <groupId>org.apache.nifi</groupId>
                         <artifactId>nifi-swagger-integration</artifactId>
+<<<<<<< HEAD
                         <version>2.8.0.3.4.3.0-1</version>
+=======
+                        <version>2.7.2.${odp.release.version}</version>
+>>>>>>> 85acc642e1 (ODP-6864: Set odp.release.version property in pom.xml)
                         <exclusions>
                             <exclusion>
                                 <groupId>io.swagger.core.v3</groupId>
@@ -187,13 +191,13 @@
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-site-to-site</artifactId>
-            <version>2.8.0.3.4.3.0-1</version>
+            <version>2.8.0.${odp.release.version}</version>           
             <scope>provided</scope> <!-- expected to be provided by parent classloader -->
         </dependency>
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-framework-cluster-protocol</artifactId>
-            <version>2.8.0.3.4.3.0-1</version>
+            <version>2.8.0.${odp.release.version}</version>           
             <scope>provided</scope> <!-- expected to be provided by parent classloader -->
         </dependency>
         <dependency>
@@ -238,7 +242,7 @@
         <dependency>
             <groupId>org.apache.nifi.registry</groupId>
             <artifactId>nifi-registry-flow-diff</artifactId>
-            <version>2.8.0.3.4.3.0-1</version>
+            <version>2.8.0.${odp.release.version}</version>           
             <scope>provided</scope> <!-- expected to be provided by parent classloader -->
         </dependency>
         <dependency>
@@ -254,7 +258,7 @@
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-metrics</artifactId>
-            <version>2.8.0.3.4.3.0-1</version>
+            <version>2.8.0.${odp.release.version}</version> 
         </dependency>
         <dependency>
             <groupId>org.apache.nifi</groupId>
@@ -283,7 +287,7 @@
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-content-viewer-utils</artifactId>
-            <version>2.8.0.3.4.3.0-1</version>
+            <version>2.8.0.${odp.release.version}</version>           
             <scope>provided</scope> <!-- expected to be provided by parent classloader -->
         </dependency>
         <dependency>
@@ -294,7 +298,7 @@
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-framework-status-history-shared</artifactId>
-            <version>2.8.0.3.4.3.0-1</version>
+            <version>2.8.0.${odp.release.version}</version>           
             <scope>provided</scope> <!-- expected to be provided by parent classloader -->
         </dependency>
         <dependency>
@@ -320,7 +324,7 @@
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>c2-protocol-component-api</artifactId>
-            <version>2.8.0.3.4.3.0-1</version>
+            <version>2.8.0.${odp.release.version}</version>           
             <scope>provided</scope> <!-- expected to be provided by parent classloader -->
         </dependency>
         <dependency>
@@ -351,13 +355,13 @@
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-framework-components</artifactId>
-            <version>2.8.0.3.4.3.0-1</version>
+            <version>2.8.0.${odp.release.version}</version>           
             <scope>provided</scope> <!-- expected to be provided by parent classloader -->
         </dependency>
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-data-provenance-utils</artifactId>
-            <version>2.8.0.3.4.3.0-1</version>
+            <version>2.8.0.${odp.release.version}</version>           
             <scope>provided</scope> <!-- expected to be provided by parent classloader -->
         </dependency>
         <dependency>
@@ -393,31 +397,31 @@
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-web-security</artifactId>
-            <version>2.8.0.3.4.3.0-1</version>
+            <version>2.8.0.${odp.release.version}</version>           
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-web-optimistic-locking</artifactId>
-            <version>2.8.0.3.4.3.0-1</version>
+            <version>2.8.0.${odp.release.version}</version> 
         </dependency>
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-ui-extension</artifactId>
-            <version>2.8.0.3.4.3.0-1</version>
+            <version>2.8.0.${odp.release.version}</version>           
             <scope>provided</scope> <!-- expected to be provided by parent classloader -->
         </dependency>
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-administration</artifactId>
-            <version>2.8.0.3.4.3.0-1</version>
+            <version>2.8.0.${odp.release.version}</version>           
             <scope>provided</scope> <!-- expected to be provided by parent classloader -->
         </dependency>
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-user-actions</artifactId>
-            <version>2.8.0.3.4.3.0-1</version>
+            <version>2.8.0.${odp.release.version}</version>           
             <scope>provided</scope> <!-- expected to be provided by parent classloader -->
         </dependency>
         <dependency>
@@ -525,7 +529,7 @@
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-volatile-provenance-repository</artifactId>
-            <version>2.8.0.3.4.3.0-1</version>
+            <version>2.8.0.${odp.release.version}</version>           
             <scope>test</scope>
         </dependency>
         <dependency>

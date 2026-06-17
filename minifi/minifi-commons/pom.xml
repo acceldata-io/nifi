@@ -31,4 +31,7 @@ limitations under the License.
         <module>minifi-commons-framework</module>
         <module>minifi-commons-utils</module>
     </modules>
+    <properties>
+        <odp.release.version>3.4.3.0-1</odp.release.version>
+    </properties>
 </project>

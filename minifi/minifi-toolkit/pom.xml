@@ -35,4 +35,7 @@ limitations under the License.
             <artifactId>slf4j-simple</artifactId>
         </dependency>
     </dependencies>
+    <properties>
+        <odp.release.version>3.4.3.0-1</odp.release.version>
+    </properties>
 </project>

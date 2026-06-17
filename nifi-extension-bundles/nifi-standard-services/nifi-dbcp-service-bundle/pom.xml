@@ -27,4 +27,7 @@
         <module>nifi-hikari-dbcp-service</module>
         <module>nifi-dbcp-service-nar</module>
     </modules>
+    <properties>
+        <odp.release.version>3.4.3.0-1</odp.release.version>
+    </properties>
 </project>
