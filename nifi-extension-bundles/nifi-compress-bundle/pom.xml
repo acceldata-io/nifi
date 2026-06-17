@@ -26,4 +26,7 @@
         <module>nifi-compress-nar</module>
         <module>nifi-compress-processors</module>
     </modules>
+    <properties>
+        <odp.release.version>3.4.3.0-1</odp.release.version>
+    </properties>
 </project>

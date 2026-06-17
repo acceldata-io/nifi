@@ -25,7 +25,12 @@
     <artifactId>nifi-email-processors</artifactId>
     <packaging>jar</packaging>
     <properties>
+<<<<<<< HEAD
         <spring.integration.version>7.0.2</spring.integration.version>
+=======
+        <odp.release.version>3.4.3.0-1</odp.release.version>
+        <spring.integration.version>6.5.4</spring.integration.version>
+>>>>>>> 85acc642e1 (ODP-6864: Set odp.release.version property in pom.xml)
     </properties>
 
     <dependencies>

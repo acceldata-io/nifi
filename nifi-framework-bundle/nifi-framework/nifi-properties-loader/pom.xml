@@ -22,4 +22,7 @@
     <artifactId>nifi-properties-loader</artifactId>
     <name>nifi-properties-loader</name>
     <packaging>jar</packaging>
+    <properties>
+        <odp.release.version>3.4.3.0-1</odp.release.version>
+    </properties>
 </project>

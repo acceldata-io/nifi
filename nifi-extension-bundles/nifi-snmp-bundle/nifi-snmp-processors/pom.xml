@@ -20,7 +20,12 @@ language governing permissions and limitations under the License. -->
     <packaging>jar</packaging>
 
     <properties>
+<<<<<<< HEAD
         <snmp4j.version>3.9.7</snmp4j.version>
+=======
+        <odp.release.version>3.4.3.0-1</odp.release.version>
+        <snmp4j.version>3.9.6</snmp4j.version>
+>>>>>>> 85acc642e1 (ODP-6864: Set odp.release.version property in pom.xml)
         <snmp4j-agent.version>3.8.3</snmp4j-agent.version>
     </properties>
 
@@ -49,8 +54,7 @@ language governing permissions and limitations under the License. -->
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-json-utils</artifactId>
-            <version>2.8.0.3.4.3.0-1</version>
-        </dependency>
+            <version>2.8.0.${odp.release.version}</version>        </dependency>
     </dependencies>
 
     <build>

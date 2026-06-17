@@ -66,7 +66,11 @@
         <dependency>
             <groupId>org.apache.hadoop</groupId>
             <artifactId>hadoop-common</artifactId>
+<<<<<<< HEAD
             <version>3.4.2</version>
+=======
+            <version>3.3.6.${odp.release.version}</version>
+>>>>>>> 85acc642e1 (ODP-6864: Set odp.release.version property in pom.xml)
             <exclusions>
                 <exclusion>
                     <groupId>*</groupId>
@@ -99,4 +103,7 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+    <properties>
+        <odp.release.version>3.4.3.0-1</odp.release.version>
+    </properties>
 </project>

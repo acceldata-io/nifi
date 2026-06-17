@@ -27,4 +27,7 @@
         <module>nifi-distributed-cache-server</module>
         <module>nifi-distributed-cache-services-nar</module>
     </modules>
+    <properties>
+        <odp.release.version>3.4.3.0-1</odp.release.version>
+    </properties>
 </project>

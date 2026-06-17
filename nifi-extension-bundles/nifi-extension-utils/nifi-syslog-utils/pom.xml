@@ -30,4 +30,7 @@
             <version>${simple-syslog-5424.version}</version>
         </dependency>
     </dependencies>
+    <properties>
+        <odp.release.version>3.4.3.0-1</odp.release.version>
+    </properties>
 </project>

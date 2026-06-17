@@ -28,4 +28,7 @@
         <module>nifi-registry-aws-assembly</module>
         <module>nifi-registry-aws-extensions</module>
     </modules>
+    <properties>
+        <odp.release.version>3.4.3.0-1</odp.release.version>
+    </properties>
 </project>

@@ -21,7 +21,12 @@
     </parent>
     <artifactId>nifi-hashicorp-vault</artifactId>
     <properties>
+<<<<<<< HEAD
         <spring.vault.version>4.0.0</spring.vault.version>
+=======
+        <odp.release.version>3.4.3.0-1</odp.release.version>
+        <spring.vault.version>3.2.0</spring.vault.version>
+>>>>>>> 85acc642e1 (ODP-6864: Set odp.release.version property in pom.xml)
     </properties>
     <dependencies>
         <dependency>
@@ -48,17 +53,21 @@
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-hashicorp-vault-api</artifactId>
-            <version>2.8.0.3.4.3.0-1</version>
+            <version>2.8.0.${odp.release.version}</version> 
         </dependency>
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-utils</artifactId>
+<<<<<<< HEAD
             <version>2.8.0.3.4.3.0-1</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>jcl-over-slf4j</artifactId>
             <scope>provided</scope>
+=======
+            <version>2.7.2.${odp.release.version}</version>
+>>>>>>> 85acc642e1 (ODP-6864: Set odp.release.version property in pom.xml)
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
@@ -71,7 +80,7 @@
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-security-utils-api</artifactId>
-            <version>2.8.0.3.4.3.0-1</version>
+            <version>2.8.0.${odp.release.version}</version>           
             <scope>test</scope>
         </dependency>
     </dependencies>

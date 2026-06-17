@@ -26,4 +26,7 @@
         <module>nifi-processor-bundle-archetype</module>
         <module>nifi-service-bundle-archetype</module>
     </modules>
+    <properties>
+        <odp.release.version>3.4.3.0-1</odp.release.version>
+    </properties>
 </project>

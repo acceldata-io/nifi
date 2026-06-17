@@ -33,4 +33,7 @@ limitations under the License.
         <module>minifi-properties-loader</module>
         <module>minifi-nar-unloader</module>
     </modules>
+    <properties>
+        <odp.release.version>3.4.3.0-1</odp.release.version>
+    </properties>
 </project>

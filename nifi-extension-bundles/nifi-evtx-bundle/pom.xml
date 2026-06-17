@@ -27,6 +27,7 @@
     <packaging>pom</packaging>
 
     <properties>
+        <odp.release.version>3.4.3.0-1</odp.release.version>
         <lucene.version>5.3.1</lucene.version>
     </properties>
 
