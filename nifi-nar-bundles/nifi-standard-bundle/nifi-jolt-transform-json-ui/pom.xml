@@ -13,7 +13,7 @@ language governing permissions and limitations under the License. -->
     <parent>
         <artifactId>nifi-standard-bundle</artifactId>
         <groupId>org.apache.nifi</groupId>
-        <version>1.28.1.3.2.3.7-2</version>
+        <version>1.28.1.${odp.release.version}</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -21,6 +21,7 @@ language governing permissions and limitations under the License. -->
 
     <packaging>war</packaging>
     <properties>
+    <odp.release.version>3.2.3.7-2</odp.release.version>
         <frontend.dependency.configs>${basedir}/src/main/frontend</frontend.dependency.configs>
         <frontend.working.dir>${project.build.directory}/frontend-working-directory</frontend.working.dir>
         <frontend.assets>${project.build.directory}/${project.build.finalName}/assets</frontend.assets>
@@ -30,32 +31,32 @@ language governing permissions and limitations under the License. -->
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-api</artifactId>
-            <version>1.28.1.3.2.3.7-2</version>
+            <version>1.28.1.${odp.release.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-framework-api</artifactId>
-            <version>1.28.1.3.2.3.7-2</version>
+            <version>1.28.1.${odp.release.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-utils</artifactId>
-            <version>1.28.1.3.2.3.7-2</version>
+            <version>1.28.1.${odp.release.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-custom-ui-utilities</artifactId>
-            <version>1.28.1.3.2.3.7-2</version>
+            <version>1.28.1.${odp.release.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-expression-language</artifactId>
-            <version>1.28.1.3.2.3.7-2</version>
+            <version>1.28.1.${odp.release.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-standard-utils</artifactId>
-            <version>1.28.1.3.2.3.7-2</version>
+            <version>1.28.1.${odp.release.version}</version>
         </dependency>
         <dependency>
             <groupId>javax.servlet.jsp</groupId>

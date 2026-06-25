@@ -14,12 +14,13 @@ language governing permissions and limitations under the License. -->
     <parent>
         <groupId>org.apache.nifi</groupId>
         <artifactId>nifi-snmp-bundle</artifactId>
-        <version>1.28.1.3.2.3.7-2</version>
+        <version>1.28.1.${odp.release.version}</version>
     </parent>
     <artifactId>nifi-snmp-processors</artifactId>
     <packaging>jar</packaging>
 
     <properties>
+    <odp.release.version>3.2.3.7-2</odp.release.version>
         <snmp4j.version>2.8.18</snmp4j.version>
         <snmp4j-agent.version>2.7.9</snmp4j-agent.version>
     </properties>
@@ -43,12 +44,12 @@ language governing permissions and limitations under the License. -->
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-utils</artifactId>
-            <version>1.28.1.3.2.3.7-2</version>
+            <version>1.28.1.${odp.release.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-mock</artifactId>
-            <version>1.28.1.3.2.3.7-2</version>
+            <version>1.28.1.${odp.release.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -58,7 +59,7 @@ language governing permissions and limitations under the License. -->
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-json-utils</artifactId>
-            <version>1.28.1.3.2.3.7-2</version>
+            <version>1.28.1.${odp.release.version}</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>
