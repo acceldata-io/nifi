@@ -18,11 +18,12 @@
     <parent>
         <groupId>org.apache.nifi</groupId>
         <artifactId>nifi-web</artifactId>
-        <version>1.28.1.3.2.3.7-2</version>
+        <version>1.28.1.${odp.release.version}</version>
     </parent>
     <artifactId>nifi-web-ui</artifactId>
     <packaging>war</packaging>
     <properties>
+    <odp.release.version>3.2.3.7-2</odp.release.version>
         <staging.dir>${project.build.directory}/tmp</staging.dir>
         <canvas.filter>canvas.properties</canvas.filter>
         <history.filter>history.properties</history.filter>
