@@ -18,12 +18,13 @@
     <parent>
         <groupId>org.apache.nifi</groupId>
         <artifactId>nifi-toolkit</artifactId>
-        <version>1.28.1.3.2.3.7-2</version>
+        <version>1.28.1.${odp.release.version}</version>
     </parent>
     <artifactId>nifi-toolkit-cli</artifactId>
     <description>Tooling to make tls configuration easier</description>
 
     <properties>
+    <odp.release.version>3.2.3.7-2</odp.release.version>
         <guava.version>33.3.1-jre</guava.version>
         <jline.version>3.27.1</jline.version>
     </properties>
@@ -53,7 +54,7 @@
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-security-ssl</artifactId>
-            <version>1.28.1.3.2.3.7-2</version>
+            <version>1.28.1.${odp.release.version}</version>
         </dependency>
         <dependency>
             <groupId>commons-cli</groupId>
@@ -62,7 +63,7 @@
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-client-dto</artifactId>
-            <version>1.28.1.3.2.3.7-2</version>
+            <version>1.28.1.${odp.release.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>ch.qos.logback</groupId>
