@@ -19,7 +19,7 @@
     </parent>
     <groupId>org.apache.nifi</groupId>
     <artifactId>nifi</artifactId>
-    <version>1.28.1.3.3.6.4-1</version>
+    <version>1.28.1.3.3.6.4-1000</version>
     <packaging>pom</packaging>
     <description>Apache NiFi is an easy to use, powerful, and reliable system to process and distribute data.</description>
     <modules>
@@ -125,7 +125,7 @@
         <testcontainers.version>1.20.3</testcontainers.version>
         <org.slf4j.version>2.0.16</org.slf4j.version>
         <com.jayway.jsonpath.version>2.9.0</com.jayway.jsonpath.version>
-        <ranger.version>2.5.0.3.3.6.4-1</ranger.version>
+        <ranger.version>2.5.0.3.3.6.4-1000</ranger.version>
         <ranger.solr.version>8.11.3</ranger.solr.version>
         <jetty.version>9.4.58.v20250814</jetty.version>
         <jackson.bom.version>2.18.1</jackson.bom.version>
@@ -137,8 +137,8 @@
         <nifi.groovy.version>3.0.23</nifi.groovy.version>
         <groovy.eclipse.batch.version>3.0.8-01</groovy.eclipse.batch.version>
         <surefire.version>3.5.2</surefire.version>
-        <hadoop.version>3.3.6.3.3.6.4-1</hadoop.version>
-        <ozone.version>1.4.1.3.3.6.4-1</ozone.version>
+        <hadoop.version>3.3.6.3.3.6.4-1000</hadoop.version>
+        <ozone.version>1.4.1.3.3.6.4-1000</ozone.version>
         <gcs.version>2.1.9</gcs.version>
         <aspectj.version>1.9.6</aspectj.version>
         <jersey.bom.version>2.46</jersey.bom.version>
@@ -152,7 +152,7 @@
         <spring.security.version>5.8.15</spring.security.version>
         <swagger.annotations.version>1.6.14</swagger.annotations.version>
         <h2.version>2.2.224</h2.version>
-        <zookeeper.version>3.8.4.3.3.6.4-1</zookeeper.version>
+        <zookeeper.version>3.8.4.3.3.6.4-1000</zookeeper.version>
         <caffeine.version>2.9.3</caffeine.version>
         <grpc.version>1.75.0</grpc.version>
         <protobuf.version>3.25.5</protobuf.version>
@@ -862,18 +862,18 @@
             <dependency>
                 <groupId>org.apache.nifi</groupId>
                 <artifactId>nifi-standard-shared-nar</artifactId>
-                <version>1.28.1.3.3.6.4-1</version>
+                <version>1.28.1.3.3.6.4-1000</version>
                 <type>nar</type>
             </dependency>
             <dependency>
                 <groupId>org.apache.nifi</groupId>
                 <artifactId>nifi-property-utils</artifactId>
-                <version>1.28.1.3.3.6.4-1</version>
+                <version>1.28.1.3.3.6.4-1000</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.nifi</groupId>
                 <artifactId>nifi-utils</artifactId>
-                <version>1.28.1.3.3.6.4-1</version>
+                <version>1.28.1.3.3.6.4-1000</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
