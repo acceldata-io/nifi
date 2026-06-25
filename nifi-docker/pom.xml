@@ -15,13 +15,14 @@ language governing permissions and limitations under the License. -->
     <parent>
         <groupId>org.apache.nifi</groupId>
         <artifactId>nifi</artifactId>
-        <version>1.28.1.3.2.3.7-2</version>
+        <version>1.28.1.${odp.release.version}</version>
     </parent>
 
     <artifactId>nifi-docker</artifactId>
     <packaging>pom</packaging>
 
     <properties>
+    <odp.release.version>3.2.3.7-2</odp.release.version>
         <nifi.version>${project.version}</nifi.version>
         <docker.image.name>eclipse-temurin</docker.image.name>
         <docker.image.tag>11-jre</docker.image.tag>
