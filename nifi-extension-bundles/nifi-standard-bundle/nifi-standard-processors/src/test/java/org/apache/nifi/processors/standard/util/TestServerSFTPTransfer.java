@@ -79,6 +79,11 @@ public class TestServerSFTPTransfer {
     private static final String FILE_2 = "file2.txt";
     private static final String DOT_FILE = ".foo.txt";
 
+    // Directory holding a file whose name contains a non-breaking space (U+00A0), reproducing the
+    // scenario where sftp.remote.filename was corrupted before the Remote Charset property existed.
+    private static final String NON_ASCII_DIRECTORY = "dir-non-ascii";
+    private static final String NON_ASCII_FILE = "start\u00A0file.csv"; // contains a non-breaking space
+
     private static final boolean FILTERING_ENABLED = true;
 
     @TempDir
@@ -137,6 +142,50 @@ public class TestServerSFTPTransfer {
             final FileInfo file2Info = listing.stream().filter(f -> f.getFileName().equals(FILE_2)).findFirst().orElse(null);
             assertNotNull(file2Info);
             assertFalse(file2Info.isDirectory());
+        }
+    }
+
+    @Test
+    public void testGetListingWithDefaultCharsetPreservesNonAsciiFilename() throws IOException {
+        // The file name is stored on disk as UTF-8 bytes (0xC2 0xA0 for the non-breaking space).
+        // With the default UTF-8 Remote Charset, the listing must decode the name back to its
+        // original form without dropping or replacing the non-ASCII character.
+        writeFile(NON_ASCII_DIRECTORY, NON_ASCII_FILE);
+
+        final Map<PropertyDescriptor, String> properties = createBaseProperties();
+        properties.put(SFTPTransfer.REMOTE_PATH, NON_ASCII_DIRECTORY);
+
+        try (final SFTPTransfer transfer = createSFTPTransfer(properties)) {
+            final List<FileInfo> listing = transfer.getListing(FILTERING_ENABLED);
+            assertNotNull(listing);
+            assertEquals(1, listing.size());
+
+            final FileInfo fileInfo = listing.get(0);
+            assertEquals(NON_ASCII_FILE, fileInfo.getFileName());
+            // No Unicode replacement character, which is the symptom of a charset mismatch.
+            assertTrue(fileInfo.getFileName().indexOf('\uFFFD') < 0);
+        }
+    }
+
+    @Test
+    public void testGetListingHonorsConfiguredRemoteCharset() throws IOException {
+        // Decoding the same UTF-8 bytes (0xC2 0xA0) with ISO-8859-1 yields two characters
+        // ('Â' followed by ' '). This proves the Remote Charset property is threaded
+        // through to the SSH client and actually governs how remote filenames are decoded.
+        writeFile(NON_ASCII_DIRECTORY, NON_ASCII_FILE);
+
+        final Map<PropertyDescriptor, String> properties = createBaseProperties();
+        properties.put(SFTPTransfer.REMOTE_PATH, NON_ASCII_DIRECTORY);
+        properties.put(SFTPTransfer.REMOTE_CHARSET, StandardCharsets.ISO_8859_1.name());
+
+        try (final SFTPTransfer transfer = createSFTPTransfer(properties)) {
+            final List<FileInfo> listing = transfer.getListing(FILTERING_ENABLED);
+            assertNotNull(listing);
+            assertEquals(1, listing.size());
+
+            final FileInfo fileInfo = listing.get(0);
+            final String expectedLatin1Name = new String(NON_ASCII_FILE.getBytes(StandardCharsets.UTF_8), StandardCharsets.ISO_8859_1);
+            assertEquals(expectedLatin1Name, fileInfo.getFileName());
         }
     }
 
