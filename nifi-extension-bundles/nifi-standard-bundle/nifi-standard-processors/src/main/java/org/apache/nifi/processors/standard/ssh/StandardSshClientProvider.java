@@ -67,6 +67,7 @@ import static org.apache.nifi.processors.standard.util.SFTPTransfer.HOST_KEY_FIL
 import static org.apache.nifi.processors.standard.util.SFTPTransfer.KEY_ALGORITHMS_ALLOWED;
 import static org.apache.nifi.processors.standard.util.SFTPTransfer.KEY_EXCHANGE_ALGORITHMS_ALLOWED;
 import static org.apache.nifi.processors.standard.util.SFTPTransfer.MESSAGE_AUTHENTICATION_CODES_ALLOWED;
+import static org.apache.nifi.processors.standard.util.SFTPTransfer.REMOTE_CHARSET;
 import static org.apache.nifi.processors.standard.util.SFTPTransfer.PORT;
 import static org.apache.nifi.processors.standard.util.SFTPTransfer.PRIVATE_KEY_PASSPHRASE;
 import static org.apache.nifi.processors.standard.util.SFTPTransfer.PRIVATE_KEY_PATH;
