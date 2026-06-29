@@ -114,7 +114,8 @@ public class ListSFTP extends ListFileTransfer {
             SFTPTransfer.CIPHERS_ALLOWED,
             SFTPTransfer.KEY_ALGORITHMS_ALLOWED,
             SFTPTransfer.KEY_EXCHANGE_ALGORITHMS_ALLOWED,
-            SFTPTransfer.MESSAGE_AUTHENTICATION_CODES_ALLOWED
+            SFTPTransfer.MESSAGE_AUTHENTICATION_CODES_ALLOWED,
+            SFTPTransfer.REMOTE_CHARSET
     );
 
     private volatile Predicate<FileInfo> fileFilter;

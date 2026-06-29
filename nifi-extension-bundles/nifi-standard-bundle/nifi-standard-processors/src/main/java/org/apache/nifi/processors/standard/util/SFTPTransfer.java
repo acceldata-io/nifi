@@ -16,6 +16,8 @@
  */
 package org.apache.nifi.processors.standard.util;
 
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import org.apache.nifi.components.DescribedValue;
 import org.apache.nifi.components.PropertyDescriptor;
 import org.apache.nifi.components.PropertyValue;
@@ -230,6 +232,19 @@ public class SFTPTransfer implements FileTransfer {
         .addValidator(StandardValidators.BOOLEAN_VALIDATOR)
         .allowableValues("true", "false")
         .defaultValue("false")
+        .build();
+
+
+    public static final PropertyDescriptor REMOTE_CHARSET = new PropertyDescriptor.Builder()
+        .name("remote-charset")
+        .displayName("Remote Charset")
+        .description("Character set used by the remote SFTP server to encode filenames. "
+            + "Defaults to UTF-8, which is the standard per RFC 4251. "
+            + "Set to the server's actual encoding (e.g. ISO-8859-1, Windows-1252) when filenames "
+            + "contain non-ASCII characters and appear corrupted in sftp.remote.filename.")
+        .required(false)
+        .addValidator(StandardValidators.CHARACTER_SET_VALIDATOR)
+        .defaultValue(StandardCharsets.UTF_8.name())
         .build();
 
     public enum AlgorithmConfiguration implements DescribedValue {
@@ -648,6 +663,13 @@ public class SFTPTransfer implements FileTransfer {
 
         final SftpClientFactory sftpClientFactory = SftpClientFactory.instance();
         sftpClient = sftpClientFactory.createSftpClient(clientSession);
+
+        final String remoteCharsetName = ctx.getProperty(REMOTE_CHARSET).getValue();
+        final Charset charset = (remoteCharsetName != null && !remoteCharsetName.isEmpty())
+            ? Charset.forName(remoteCharsetName)
+            : StandardCharsets.UTF_8;
+
+        sftpClient.setNameDecodingCharset(charset);
 
         activeHostname = evaledHostname;
         activePort = evaledPort;
