@@ -15,7 +15,7 @@
     <parent>
         <groupId>org.apache.nifi</groupId>
         <artifactId>nifi-docker</artifactId>
-        <version>2.7.2.3.3.6.4-1</version>
+        <version>2.7.2.3.3.6.4-1000</version>
     </parent>
 
     <artifactId>dockermaven</artifactId>

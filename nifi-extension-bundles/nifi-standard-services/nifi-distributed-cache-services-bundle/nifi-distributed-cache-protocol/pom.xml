@@ -17,11 +17,11 @@
     <parent>
         <groupId>org.apache.nifi</groupId>
         <artifactId>nifi-distributed-cache-services-bundle</artifactId>
-        <version>2.7.2.3.3.6.4-1</version>
+        <version>2.7.2.3.3.6.4-1000</version>
     </parent>
     <artifactId>nifi-distributed-cache-protocol</artifactId>
     <description>
-        Defines the communications protocol that is used between clients and servers 
+        Defines the communications protocol that is used between clients and servers
         for the Distributed Cache services
     </description>
     <dependencies>

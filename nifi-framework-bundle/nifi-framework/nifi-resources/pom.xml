@@ -18,7 +18,7 @@
     <parent>
         <groupId>org.apache.nifi</groupId>
         <artifactId>nifi-framework</artifactId>
-        <version>2.7.2.3.3.6.4-1</version>
+        <version>2.7.2.3.3.6.4-1000</version>
     </parent>
     <artifactId>nifi-resources</artifactId>
     <packaging>pom</packaging>
@@ -261,7 +261,7 @@
         <nifi.python.working.directory>./work/python</nifi.python.working.directory>
         <nifi.python.max.processes>100</nifi.python.max.processes>
         <nifi.python.max.processes.per.extension.type>10</nifi.python.max.processes.per.extension.type>
-        
+
         <nifi.cluster.leader.election.kubernetes.lease.prefix />
 
         <nifi.performance.tracking.percentage>0</nifi.performance.tracking.percentage>

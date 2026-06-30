@@ -18,32 +18,32 @@
     <parent>
         <groupId>org.apache.nifi</groupId>
         <artifactId>nifi-record-utils</artifactId>
-        <version>2.7.2.3.3.6.4-1</version>
+        <version>2.7.2.3.3.6.4-1000</version>
     </parent>
-    
+
     <artifactId>nifi-standard-record-utils</artifactId>
 
     <dependencies>
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-security-utils-api</artifactId>
-            <version>2.7.2.3.3.6.4-1</version>
+            <version>2.7.2.3.3.6.4-1000</version>
         </dependency>
         <!-- Other modules using nifi-standard-record-utils are expected to have these APIs available, typically through a NAR dependency -->
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-schema-registry-service-api</artifactId>
-            <version>2.7.2.3.3.6.4-1</version>
+            <version>2.7.2.3.3.6.4-1000</version>
         </dependency>
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-record-serialization-service-api</artifactId>
-            <version>2.7.2.3.3.6.4-1</version>
+            <version>2.7.2.3.3.6.4-1000</version>
         </dependency>
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-record</artifactId>
-            <version>2.7.2.3.3.6.4-1</version>
+            <version>2.7.2.3.3.6.4-1000</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
