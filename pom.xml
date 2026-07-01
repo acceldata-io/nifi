@@ -154,6 +154,7 @@
         <swagger.annotations.version>1.6.14</swagger.annotations.version>
         <h2.version>2.2.224</h2.version>
         <zookeeper.version>3.8.4.${odp.release.version}</zookeeper.version>
+        <curator.version>5.7.1</curator.version>
         <caffeine.version>2.9.3</caffeine.version>
         <grpc.version>1.75.0</grpc.version>
         <protobuf.version>3.25.5</protobuf.version>
