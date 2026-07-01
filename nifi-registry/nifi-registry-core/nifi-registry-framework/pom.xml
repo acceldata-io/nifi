@@ -503,5 +503,7 @@
     </profiles>
     <properties>
         <odp.release.version>3.3.6.5-SNAPSHOT</odp.release.version>
+        <curator.version>5.7.1</curator.version>
+        <zookeeper.version>3.8.4.${odp.release.version}</zookeeper.version>
     </properties>
 </project>

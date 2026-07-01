@@ -36,6 +36,8 @@
     </modules>
     <properties>
         <odp.release.version>3.3.6.5-SNAPSHOT</odp.release.version>
+        <curator.version>5.7.1</curator.version>
+        <zookeeper.version>3.8.4.${odp.release.version}</zookeeper.version>
         <jax.rs.api.version>2.1.1</jax.rs.api.version>
         <spring.boot.version>2.7.18</spring.boot.version>
         <flyway.version>8.5.13</flyway.version>
