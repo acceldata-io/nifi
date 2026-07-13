@@ -36,7 +36,7 @@
     </modules>
     <properties>
         <spring.boot.version>4.1.0</spring.boot.version>
-        <flyway.version>12.9.0</flyway.version>
+        <flyway.version>12.11.0</flyway.version>
         <odp.release.version>3.4.3.0-SNAPSHOT</odp.release.version>
         <undertow.version>2.3.21.Final</undertow.version>
         <flyway.tests.version>10.0.0</flyway.tests.version>
