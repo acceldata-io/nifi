@@ -16,6 +16,7 @@
  */
 package org.apache.nifi.registry.cluster;
 
+import java.util.Collections;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.recipes.cache.ChildData;
 import org.apache.curator.framework.recipes.cache.CuratorCache;
@@ -115,17 +116,20 @@ public class ZkNodeRegistry implements NodeRegistry, DisposableBean {
 
     @Override
     public List<NodeAddress> getAllNodes() {
-        return members.entrySet().stream()
+        return Collections.unmodifiableList(
+            members.entrySet().stream()
                 .map(e -> new NodeAddress(e.getKey(), e.getValue()))
-                .collect(Collectors.toUnmodifiableList());
+                .collect(Collectors.toList())
+        );
     }
 
     @Override
     public List<NodeAddress> getOtherNodes() {
-        return members.entrySet().stream()
-                .filter(e -> !selfNodeId.equals(e.getKey()))
+        return Collections.unmodifiableList(
+            members.entrySet().stream()
                 .map(e -> new NodeAddress(e.getKey(), e.getValue()))
-                .collect(Collectors.toUnmodifiableList());
+                .collect(Collectors.toList())
+        );
     }
 
     @Override
@@ -182,17 +186,20 @@ public class ZkNodeRegistry implements NodeRegistry, DisposableBean {
     private void onMemberEvent(final CuratorCacheListener.Type type,
             final ChildData oldData, final ChildData newData) {
         switch (type) {
-            case NODE_CREATED, NODE_CHANGED -> {
+            case NODE_CREATED:
+            case NODE_CHANGED:
                 if (newData != null && newData.getData() != null && newData.getData().length > 0) {
                     final String nodeId = extractNodeId(newData.getPath());
                     if (!nodeId.isEmpty()) {
-                        final String baseUrl = new String(newData.getData(), StandardCharsets.UTF_8);
+                        final String baseUrl = new String(newData.getData(),
+                            StandardCharsets.UTF_8);
                         members.put(nodeId, baseUrl);
-                        LOGGER.info("Cluster member registered/updated: '{}' at {}.", nodeId, baseUrl);
+                        LOGGER.info("Cluster member registered/updated: '{}' at {}.", nodeId,
+                            baseUrl);
                     }
                 }
-            }
-            case NODE_DELETED -> {
+                break;
+            case NODE_DELETED:
                 if (oldData != null) {
                     final String nodeId = extractNodeId(oldData.getPath());
                     if (!nodeId.isEmpty()) {
@@ -200,7 +207,7 @@ public class ZkNodeRegistry implements NodeRegistry, DisposableBean {
                         LOGGER.info("Cluster member removed: '{}'.", nodeId);
                     }
                 }
-            }
+                break;
         }
     }
 

@@ -17,6 +17,12 @@
 package org.apache.nifi.registry.db;
 
 import javax.annotation.PostConstruct;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.apache.nifi.registry.cluster.LeaderElectionManager;
 import org.apache.nifi.registry.cluster.NodeAddress;
 import org.apache.nifi.registry.cluster.NodeRegistry;
@@ -28,18 +34,15 @@ import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
 import java.io.IOException;
+import java.io.InterruptedIOException;
 import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.Statement;
-import java.time.Duration;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Synchronises the local H2 database from the cluster leader on every
@@ -63,8 +66,8 @@ import java.util.Optional;
  *
  * <p>If the sync fails (leader unreachable, timeout, etc.) the node continues
  * with its existing local data and a warning is logged. Data will populate
- * organically as write operations are replicated to this node by {@link
- * org.apache.nifi.registry.web.security.replication.WriteReplicationFilter}.
+ * organically as write operations are replicated to this node by
+ * {@code WriteReplicationFilter}.
  *
  * <p>This is intentionally H2-only. Operators using PostgreSQL or MySQL have
  * a shared database and do not need this sync.
@@ -76,8 +79,8 @@ public class DataSyncBootstrapper {
 
     static final long LEADER_WAIT_TIMEOUT_MS = 30_000L;
     static final long LEADER_POLL_INTERVAL_MS = 1_000L;
-    private static final Duration HTTP_CONNECT_TIMEOUT = Duration.ofSeconds(10);
-    private static final Duration HTTP_REQUEST_TIMEOUT = Duration.ofSeconds(120);
+    private static final int HTTP_CONNECT_TIMEOUT_MS = (int) TimeUnit.SECONDS.toMillis(10);
+    private static final int HTTP_REQUEST_TIMEOUT_MS = (int) TimeUnit.SECONDS.toMillis(120);
 
     private final NiFiRegistryProperties properties;
     private final DataSource dataSource;
@@ -115,7 +118,7 @@ public class DataSyncBootstrapper {
         LOGGER.info("DataSyncBootstrapper: this node is a follower; syncing from leader to ensure consistency.");
 
         final String authToken = properties.getClusterNodeInternalAuthToken();
-        if (authToken == null || authToken.isBlank()) {
+        if (authToken == null || authToken.trim().isEmpty()) {
             LOGGER.warn("DataSyncBootstrapper: '{}' is not configured. "
                     + "Skipping bootstrap sync to avoid repeated 403 errors. "
                     + "This node will start with an empty database and populate via write replication.",
@@ -180,36 +183,46 @@ public class DataSyncBootstrapper {
         return null;
     }
 
-    private String fetchExportScript(final NodeAddress leader) throws IOException, InterruptedException {
+    private String fetchExportScript(final NodeAddress leader) throws IOException {
         final String url = leader.getBaseUrl() + "/nifi-registry-api/internal/sync/export";
         LOGGER.debug("DataSyncBootstrapper: requesting export from {}.", url);
 
-        final HttpClient httpClient = HttpClient.newBuilder()
-                .connectTimeout(HTTP_CONNECT_TIMEOUT)
+        final RequestConfig requestConfig = RequestConfig.custom()
+                .setConnectTimeout(HTTP_CONNECT_TIMEOUT_MS)
+                .setConnectionRequestTimeout(HTTP_REQUEST_TIMEOUT_MS)
+                .setSocketTimeout(HTTP_REQUEST_TIMEOUT_MS)
                 .build();
 
-        final HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(url))
-                .header("X-Registry-Internal-Auth", properties.getClusterNodeInternalAuthToken())
-                .GET()
-                .timeout(HTTP_REQUEST_TIMEOUT)
+        final HttpGet request = new HttpGet(URI.create(url));
+        request.addHeader("X-Registry-Internal-Auth", properties.getClusterNodeInternalAuthToken());
+
+        try (CloseableHttpClient httpClient = HttpClients.custom()
+                .setDefaultRequestConfig(requestConfig)
                 .build();
+             CloseableHttpResponse response = httpClient.execute(request)) {
 
-        final HttpResponse<String> response =
-                httpClient.send(request, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
+            final int statusCode = response.getStatusLine().getStatusCode();
+            final String responseBody = response.getEntity() == null
+                    ? ""
+                    : EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8);
 
-        if (response.statusCode() != 200) {
-            throw new IOException("Leader returned HTTP " + response.statusCode()
-                    + " for export request (body: " + response.body() + ")");
+            if (statusCode != 200) {
+                throw new IOException("Leader returned HTTP " + statusCode
+                        + " for export request (body: " + responseBody + ")");
+            }
+
+            return responseBody;
+        } catch (final InterruptedIOException e) {
+            Thread.currentThread().interrupt();
+            throw new IOException("Interrupted while requesting export from leader", e);
         }
-        return response.body();
     }
 
     private void applyScript(final String script) throws Exception {
         // Write to a temp file because H2's RUNSCRIPT command takes a file path.
         final Path tempFile = Files.createTempFile("registry-bootstrap-", ".sql");
         try {
-            Files.writeString(tempFile, script, StandardCharsets.UTF_8);
+            Files.write(tempFile, script.getBytes(StandardCharsets.UTF_8));
 
             // Escape backslashes on Windows paths.
             final String safePath = tempFile.toAbsolutePath().toString().replace("\\", "/");

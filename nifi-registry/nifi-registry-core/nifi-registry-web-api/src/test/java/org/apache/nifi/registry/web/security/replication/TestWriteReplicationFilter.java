@@ -16,6 +16,7 @@
  */
 package org.apache.nifi.registry.web.security.replication;
 
+import com.google.common.collect.ImmutableList;
 import javax.servlet.FilterChain;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.nifi.registry.cluster.LeaderElectionManager;
@@ -245,7 +246,7 @@ public class TestWriteReplicationFilter {
     public void testLeaderFansOutOn2xx() throws Exception {
         when(leaderElectionManager.isLeader()).thenReturn(true);
         final NodeAddress follower = new NodeAddress("follower-1", "http://follower:18080");
-        when(nodeRegistry.getOtherNodes()).thenReturn(List.of(follower));
+        when(nodeRegistry.getOtherNodes()).thenReturn(ImmutableList.of(follower));
 
         final MockHttpServletRequest request = new MockHttpServletRequest("POST", "/nifi-registry-api/buckets");
         request.setContent("{\"name\":\"test\"}".getBytes());
