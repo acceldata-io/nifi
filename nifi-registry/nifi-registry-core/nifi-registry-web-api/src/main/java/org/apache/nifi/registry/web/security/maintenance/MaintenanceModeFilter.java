@@ -16,6 +16,7 @@
  */
 package org.apache.nifi.registry.web.security.maintenance;
 
+import com.google.common.collect.ImmutableSet;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
@@ -40,7 +41,7 @@ import java.util.Set;
  */
 public class MaintenanceModeFilter extends GenericFilterBean {
 
-    private static final Set<String> WRITE_METHODS = Set.of("POST", "PUT", "PATCH", "DELETE");
+    private static final Set<String> WRITE_METHODS = ImmutableSet.of("POST", "PUT", "PATCH", "DELETE");
     private static final String ACTUATOR_PATH_PREFIX = "/actuator/";
     private static final int RETRY_AFTER_SECONDS = 60;
     private static final String MAINTENANCE_RESPONSE_BODY = "NiFi Registry is in maintenance mode. Write operations are temporarily disabled. Please try again later.";

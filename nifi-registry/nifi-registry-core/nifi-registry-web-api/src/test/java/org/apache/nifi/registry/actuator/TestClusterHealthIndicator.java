@@ -16,6 +16,7 @@
  */
 package org.apache.nifi.registry.actuator;
 
+import com.google.common.collect.ImmutableList;
 import org.apache.nifi.registry.cluster.LeaderElectionManager;
 import org.apache.nifi.registry.cluster.NodeAddress;
 import org.apache.nifi.registry.cluster.NodeRegistry;
@@ -120,7 +121,7 @@ public class TestClusterHealthIndicator {
         when(leaderElectionManager.isLeader()).thenReturn(true);
         when(leaderElectionManager.getLeaderNodeId()).thenReturn(Optional.empty());
 
-        final List<NodeAddress> members = List.of(
+        final List<NodeAddress> members = ImmutableList.of(
                 new NodeAddress("node1", "http://node1:18080"),
                 new NodeAddress("node2", "http://node2:18080"),
                 new NodeAddress("node3", "http://node3:18080"));
