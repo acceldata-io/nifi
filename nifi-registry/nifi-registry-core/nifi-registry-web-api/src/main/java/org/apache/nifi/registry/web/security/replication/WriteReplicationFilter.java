@@ -179,22 +179,51 @@ public class WriteReplicationFilter extends GenericFilterBean {
 
         chain.doFilter(cachedRequest, cachedResponse);
 
-        // Always flush the buffered response body back to the client first.
         final int status = cachedResponse.getStatus();
-        cachedResponse.copyBodyToResponse();
 
         // Fan out only on success; a failed write should not be replicated.
+        // IMPORTANT: capture body bytes BEFORE calling copyBodyToResponse().
+        // ContentCachingResponseWrapper.copyBodyToResponse() resets its internal
+        // byte buffer to empty after writing to the client, so getContentAsByteArray()
+        // must be called first.
         if (status >= 200 && status < 300) {
             final List<NodeAddress> followers = nodeRegistry.getOtherNodes();
-            if (!followers.isEmpty()) {
-                final byte[] body = cachedRequest.getContentAsByteArray();
-                final String path = buildPath(request);
+            if (followers.isEmpty()) {
+                LOGGER.warn("Leader processed {} {} (HTTP {}) but no followers are registered in the cluster — " +
+                        "write will NOT be replicated. Check ZooKeeper connectivity and that all nodes have registered.",
+                        request.getMethod(), buildPath(request), status);
+            } else {
+                // For POST (create) operations the leader has already assigned all resource
+                // identifiers (UUID, createdTimestamp, etc.) and written them into the
+                // response body.  Fan out the RESPONSE body — not the original request body —
+                // so every follower stores the exact same identifier.
+                //
+                // Appending ?preserveSourceProperties=true tells the follower's create
+                // endpoint to accept and use the identifier already present in the body
+                // instead of generating a new random UUID.
+                //
+                // For all other methods (PUT, PATCH, DELETE) the request body is correct as-is.
+                final byte[] body;
+                final String path;
+                if ("POST".equalsIgnoreCase(request.getMethod())) {
+                    body = cachedResponse.getContentAsByteArray();  // capture before flush
+                    final String rawPath = buildPath(request);
+                    path = rawPath.contains("?")
+                            ? rawPath + "&preserveSourceProperties=true"
+                            : rawPath + "?preserveSourceProperties=true";
+                } else {
+                    body = cachedRequest.getContentAsByteArray();
+                    path = buildPath(request);
+                }
                 final Map<String, String> headers = collectHeaders(request);
                 LOGGER.debug("Leader fanning out {} {} to {} follower(s).",
                         request.getMethod(), path, followers.size());
                 replicationClient.replicateToFollowers(path, request.getMethod(), headers, body, followers);
             }
         }
+
+        // Flush the buffered response body back to the client after replication body is captured.
+        cachedResponse.copyBodyToResponse();
     }
 
     // -------------------------------------------------------------------------

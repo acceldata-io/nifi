@@ -78,7 +78,7 @@ public class InternalSyncResource {
      *
      * <p>The response body is a plain-text SQL script compatible with H2's
      * {@code RUNSCRIPT FROM} command.  It is generated via H2's built-in
-     * {@code SCRIPT DROP NOPASSWORDS NOSETTINGS} statement.
+     * {@code SCRIPT DROP} statement.
      *
      * @param authToken Value of the {@code X-Registry-Internal-Auth} header.
      */
@@ -131,7 +131,7 @@ public class InternalSyncResource {
     }
 
     /**
-     * Executes H2's {@code SCRIPT DROP NOPASSWORDS NOSETTINGS} and returns
+     * Executes H2's {@code SCRIPT DROP} and returns
      * the result as a single newline-delimited string.
      *
      * <p>This is H2-specific; the endpoint returns {@code 501 Not Implemented}
@@ -147,7 +147,7 @@ public class InternalSyncResource {
 
             final StringBuilder sb = new StringBuilder(1024 * 64);
             try (Statement stmt = conn.createStatement();
-                 ResultSet rs = stmt.executeQuery("SCRIPT DROP NOPASSWORDS NOSETTINGS")) {
+                 ResultSet rs = stmt.executeQuery("SCRIPT DROP")) {
                 while (rs.next()) {
                     sb.append(rs.getString(1)).append('\n');
                 }
