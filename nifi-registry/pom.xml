@@ -38,6 +38,7 @@
         <odp.release.version>3.3.6.5-SNAPSHOT</odp.release.version>
         <jakarta.ws.rs-api.version>3.1.0</jakarta.ws.rs-api.version>
         <jersey.bom.version>3.1.11</jersey.bom.version>
+        <undertow.version>2.3.21.Final</undertow.version>
         <spring.boot.version>3.5.8</spring.boot.version>
         <flyway.version>11.19.0</flyway.version>
         <flyway.tests.version>10.0.0</flyway.tests.version>
@@ -250,7 +251,23 @@
                 <artifactId>sshd-sftp</artifactId>
                 <version>${org.apache.sshd.version}</version>
             </dependency>
-        </dependencies>
+        
+            <dependency>
+                <groupId>io.undertow</groupId>
+                <artifactId>undertow-core</artifactId>
+                <version>${undertow.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.undertow</groupId>
+                <artifactId>undertow-servlet</artifactId>
+                <version>${undertow.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.undertow</groupId>
+                <artifactId>undertow-websockets-jsr</artifactId>
+                <version>${undertow.version}</version>
+            </dependency>
+</dependencies>
     </dependencyManagement>
     <build>
         <pluginManagement>
