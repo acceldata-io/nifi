@@ -32,6 +32,7 @@ import org.apache.nifi.components.ValidationContext;
 import org.apache.nifi.components.ValidationResult;
 import org.apache.nifi.components.Validator;
 import org.apache.nifi.expression.ExpressionLanguageScope;
+import org.apache.nifi.fileresource.service.api.FileResource;
 import org.apache.nifi.flowfile.FlowFile;
 import org.apache.nifi.flowfile.attributes.CoreAttributes;
 import org.apache.nifi.logging.ComponentLog;
@@ -42,11 +43,14 @@ import org.apache.nifi.processor.ProcessorInitializationContext;
 import org.apache.nifi.processor.Relationship;
 import org.apache.nifi.processor.exception.ProcessException;
 import org.apache.nifi.processor.util.StandardValidators;
+import org.apache.nifi.processors.transfer.ResourceTransferSource;
 import org.apache.nifi.util.StopWatch;
 
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.PosixFileAttributeView;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.nio.file.attribute.UserPrincipalLookupService;
@@ -59,10 +63,15 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static org.apache.nifi.processors.transfer.ResourceTransferProperties.FILE_RESOURCE_SERVICE;
+import static org.apache.nifi.processors.transfer.ResourceTransferProperties.RESOURCE_TRANSFER_SOURCE;
+import static org.apache.nifi.processors.transfer.ResourceTransferUtils.getFileResource;
 
 @EventDriven
 @SupportsBatching
@@ -201,6 +210,8 @@ public class PutFile extends AbstractProcessor {
         supDescriptors.add(CHANGE_PERMISSIONS);
         supDescriptors.add(CHANGE_OWNER);
         supDescriptors.add(CHANGE_GROUP);
+        supDescriptors.add(RESOURCE_TRANSFER_SOURCE);
+        supDescriptors.add(FILE_RESOURCE_SERVICE);
         properties = Collections.unmodifiableList(supDescriptors);
     }
 
@@ -332,7 +343,16 @@ public class PutFile extends AbstractProcessor {
                 }
             }
 
-            session.exportTo(flowFile, dotCopyFile, false);
+            final ResourceTransferSource resourceTransferSource = ResourceTransferSource.valueOf(
+                    context.getProperty(RESOURCE_TRANSFER_SOURCE).getValue());
+            final Optional<FileResource> fileResource = getFileResource(resourceTransferSource, context, flowFile.getAttributes());
+            if (fileResource.isPresent()) {
+                try (InputStream in = fileResource.get().getInputStream()) {
+                    Files.copy(in, dotCopyFile, StandardCopyOption.REPLACE_EXISTING);
+                }
+            } else {
+                session.exportTo(flowFile, dotCopyFile, false);
+            }
 
             final String lastModifiedTime = context.getProperty(CHANGE_LAST_MODIFIED_TIME).evaluateAttributeExpressions(flowFile).getValue();
             if (lastModifiedTime != null && !lastModifiedTime.trim().isEmpty()) {
