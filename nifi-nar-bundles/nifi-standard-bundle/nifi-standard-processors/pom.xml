@@ -45,6 +45,21 @@
         </dependency>
         <dependency>
             <groupId>org.apache.nifi</groupId>
+            <artifactId>nifi-resource-transfer</artifactId>
+            <version>1.28.1.${odp.release.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.nifi</groupId>
+            <artifactId>nifi-file-resource-service-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.nifi</groupId>
+            <artifactId>nifi-file-resource-service</artifactId>
+            <version>1.28.1.${odp.release.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-bin-manager</artifactId>
             <version>1.28.1.${odp.release.version}</version>
         </dependency>
