@@ -21,10 +21,10 @@
     <packaging>pom</packaging>
 
     <properties>
-        <guava.version>33.6.0-jre</guava.version>
-        <protobuf.version>4.35.1</protobuf.version>
-        <grpc.version>1.82.2</grpc.version>
-        <snowflake-jdbc-thin.version>4.3.1</snowflake-jdbc-thin.version>
+        <guava.version>33.7.1-jre</guava.version>
+        <protobuf.version>4.36.0</protobuf.version>
+        <grpc.version>1.83.1</grpc.version>
+        <snowflake-jdbc-thin.version>4.3.3</snowflake-jdbc-thin.version>
         <parquet.version>1.17.0</parquet.version>
         <!-- Check Ingest SDK and JDBC compatibility when upgrading -->
         <snowflake-ingest-sdk.version>4.4.2-unshaded</snowflake-ingest-sdk.version>
