@@ -70,8 +70,8 @@
         <module>nifi-calcite-utils</module>
     </modules>
     <properties>
+        <guava.version>33.7.1-jre</guava.version>
         <odp.release.version>3.4.3.0-SNAPSHOT</odp.release.version>
-        <guava.version>33.5.0-jre</guava.version>
     </properties>
     <dependencyManagement>
         <dependencies>
