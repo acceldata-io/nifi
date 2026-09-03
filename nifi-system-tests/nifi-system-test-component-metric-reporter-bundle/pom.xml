@@ -31,11 +31,6 @@
             <version>2.8.0.${odp.release.version}</version>
             <type>nar</type>
         </dependency>
-        <dependency>
-            <groupId>org.apache.nifi</groupId>
-            <artifactId>nifi-asana-services-api</artifactId>
-            <version>2.8.0.${odp.release.version}</version>
-        </dependency>
     </dependencies>
 
     <modules>
