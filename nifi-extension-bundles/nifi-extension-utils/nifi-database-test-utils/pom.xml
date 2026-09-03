@@ -22,11 +22,8 @@
     </parent>
 
     <artifactId>nifi-database-test-utils</artifactId>
-<<<<<<< HEAD
-=======
 
     <properties>
         <odp.release.version>3.4.3.0-1</odp.release.version>
     </properties>
->>>>>>> 85acc642e1 (ODP-6864: Set odp.release.version property in pom.xml)
 </project>
