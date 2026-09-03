@@ -24,29 +24,26 @@
     <artifactId>nifi-system-test-component-metric-reporter-bundle</artifactId>
     <packaging>pom</packaging>
 
-<<<<<<< HEAD:nifi-system-tests/nifi-system-test-component-metric-reporter-bundle/pom.xml
-    <modules>
-        <module>nifi-system-test-component-metric-reporter</module>
-        <module>nifi-system-test-component-metric-reporter-nar</module>
-    </modules>
-</project>
-=======
     <dependencies>
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-standard-services-api-nar</artifactId>
-            <version>2.7.2.${odp.release.version}</version>
+            <version>2.8.0.${odp.release.version}</version>
             <type>nar</type>
         </dependency>
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-asana-services-api</artifactId>
-            <version>2.7.2.${odp.release.version}</version>
+            <version>2.8.0.${odp.release.version}</version>
         </dependency>
     </dependencies>
+
+    <modules>
+        <module>nifi-system-test-component-metric-reporter</module>
+        <module>nifi-system-test-component-metric-reporter-nar</module>
+    </modules>
 
     <properties>
         <odp.release.version>3.4.3.0-1</odp.release.version>
     </properties>
 </project>
->>>>>>> 85acc642e1 (ODP-6864: Set odp.release.version property in pom.xml):nifi-extension-bundles/nifi-asana-bundle/nifi-asana-services-api-nar/pom.xml
