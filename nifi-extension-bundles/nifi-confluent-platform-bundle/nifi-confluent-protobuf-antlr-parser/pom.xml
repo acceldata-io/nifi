@@ -15,14 +15,14 @@
     <parent>
         <groupId>org.apache.nifi</groupId>
         <artifactId>nifi-confluent-platform-bundle</artifactId>
-        <version>2.8.0.3.4.3.0-1</version>
+        <version>2.8.0.3.4.3.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>nifi-confluent-protobuf-antlr-parser</artifactId>
     <packaging>jar</packaging>
 
     <properties>
-        <odp.release.version>3.4.3.0-1</odp.release.version>
+        <odp.release.version>3.4.3.0-SNAPSHOT</odp.release.version>
         <antlr4.version>4.13.2</antlr4.version>
         <antlr4.protobuf3.grammar.url>https://raw.githubusercontent.com/antlr/grammars-v4/e1491245d045474fa5393fb7be03b3b8ed22080f/protobuf3/Protobuf3.g4</antlr4.protobuf3.grammar.url>
         <antlr4.generated.sources>target/generated-sources/antlr4</antlr4.generated.sources>

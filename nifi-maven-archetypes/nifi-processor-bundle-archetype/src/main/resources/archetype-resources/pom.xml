@@ -33,6 +33,6 @@
     </modules>
 
     <properties>
-        <odp.release.version>3.4.3.0-1</odp.release.version>
+        <odp.release.version>3.4.3.0-SNAPSHOT</odp.release.version>
     </properties>
 </project>
