@@ -22,7 +22,7 @@ limitations under the License.
     <parent>
         <groupId>org.apache.nifi</groupId>
         <artifactId>nifi-hwx-schema-registry-bundle</artifactId>
-        <version>1.28.1.3.3.6.5-SNAPSHOT</version>
+        <version>1.28.1.3.3.6.6-SNAPSHOT</version>
     </parent>
 
     <artifactId>nifi-hwx-schema-registry-service</artifactId>
@@ -132,6 +132,6 @@ limitations under the License.
         </plugins>
     </build>
     <properties>
-        <odp.release.version>3.3.6.5-SNAPSHOT</odp.release.version>
+        <odp.release.version>3.3.6.6-SNAPSHOT</odp.release.version>
     </properties>
 </project>

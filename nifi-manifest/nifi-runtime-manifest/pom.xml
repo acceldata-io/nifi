@@ -18,13 +18,13 @@
     <parent>
         <groupId>org.apache.nifi</groupId>
         <artifactId>nifi-manifest</artifactId>
-        <version>1.28.1.3.3.6.5-SNAPSHOT</version>
+        <version>1.28.1.3.3.6.6-SNAPSHOT</version>
     </parent>
     <artifactId>nifi-runtime-manifest</artifactId>
     <packaging>jar</packaging>
 
     <properties>
-        <odp.release.version>3.3.6.5-SNAPSHOT</odp.release.version>
+        <odp.release.version>3.3.6.6-SNAPSHOT</odp.release.version>
         <extension.manifest.unpack.dir>${project.build.directory}</extension.manifest.unpack.dir>
         <build.properties.file>${project.build.directory}/classes/build.properties</build.properties.file>
         <runtime.manifest.file>${project.build.directory}/classes/nifi-runtime-manifest.json</runtime.manifest.file>

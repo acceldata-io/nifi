@@ -20,13 +20,13 @@ limitations under the License.
     <parent>
         <artifactId>minifi</artifactId>
         <groupId>org.apache.nifi.minifi</groupId>
-        <version>1.28.1.3.3.6.5-SNAPSHOT</version>
+        <version>1.28.1.3.3.6.6-SNAPSHOT</version>
     </parent>
     <artifactId>minifi-integration-tests</artifactId>
     <packaging>jar</packaging>
 
     <properties>
-        <odp.release.version>3.3.6.5-SNAPSHOT</odp.release.version>
+        <odp.release.version>3.3.6.6-SNAPSHOT</odp.release.version>
         <minifi.version>${project.version}</minifi.version>
         <minifi.c2.version>${project.version}</minifi.c2.version>
     </properties>

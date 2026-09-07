@@ -19,13 +19,13 @@
     <parent>
         <groupId>org.apache.nifi</groupId>
         <artifactId>nifi-commons</artifactId>
-        <version>1.28.1.3.3.6.5-SNAPSHOT</version>
+        <version>1.28.1.3.3.6.6-SNAPSHOT</version>
     </parent>
 
     <artifactId>nifi-site-to-site-client</artifactId>
 
     <properties>
-        <odp.release.version>3.3.6.5-SNAPSHOT</odp.release.version>
+        <odp.release.version>3.3.6.6-SNAPSHOT</odp.release.version>
         <httpclient.group>org.apache.httpcomponents</httpclient.group>
         <httpclient.artifact>httpclient</httpclient.artifact>
         <httpclient.version>${org.apache.httpcomponents.httpclient.version}</httpclient.version>

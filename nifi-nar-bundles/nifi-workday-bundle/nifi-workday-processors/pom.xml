@@ -20,7 +20,7 @@
     <parent>
         <groupId>org.apache.nifi</groupId>
         <artifactId>nifi-workday-bundle</artifactId>
-        <version>1.28.1.3.3.6.5-SNAPSHOT</version>
+        <version>1.28.1.3.3.6.6-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -100,6 +100,6 @@
     </dependencies>
 
     <properties>
-        <odp.release.version>3.3.6.5-SNAPSHOT</odp.release.version>
+        <odp.release.version>3.3.6.6-SNAPSHOT</odp.release.version>
     </properties>
 </project>

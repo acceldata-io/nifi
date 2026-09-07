@@ -19,7 +19,7 @@
     <parent>
         <groupId>org.apache.nifi</groupId>
         <artifactId>nifi</artifactId>
-        <version>1.28.1.3.3.6.5-SNAPSHOT</version>
+        <version>1.28.1.3.3.6.6-SNAPSHOT</version>
     </parent>
     <groupId>org.apache.nifi.registry</groupId>
     <artifactId>nifi-registry</artifactId>
@@ -35,7 +35,7 @@
         <module>nifi-registry-docker-maven</module>
     </modules>
     <properties>
-        <odp.release.version>3.3.6.5-SNAPSHOT</odp.release.version>
+        <odp.release.version>3.3.6.6-SNAPSHOT</odp.release.version>
         <curator.version>5.7.1</curator.version>
         <zookeeper.version>3.8.4.${odp.release.version}</zookeeper.version>
         <jax.rs.api.version>2.1.1</jax.rs.api.version>

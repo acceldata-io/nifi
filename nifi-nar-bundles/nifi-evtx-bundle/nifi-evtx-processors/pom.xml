@@ -20,7 +20,7 @@
     <parent>
         <artifactId>nifi-evtx-bundle</artifactId>
         <groupId>org.apache.nifi</groupId>
-        <version>1.28.1.3.3.6.5-SNAPSHOT</version>
+        <version>1.28.1.3.3.6.6-SNAPSHOT</version>
     </parent>
 
     <artifactId>nifi-evtx-processors</artifactId>
@@ -70,6 +70,6 @@
         </dependency>
     </dependencies>
     <properties>
-        <odp.release.version>3.3.6.5-SNAPSHOT</odp.release.version>
+        <odp.release.version>3.3.6.6-SNAPSHOT</odp.release.version>
     </properties>
 </project>

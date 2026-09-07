@@ -12,13 +12,13 @@
     <parent>
         <groupId>org.apache.nifi</groupId>
         <artifactId>nifi-spring-bundle</artifactId>
-        <version>1.28.1.3.3.6.5-SNAPSHOT</version>
+        <version>1.28.1.3.3.6.6-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>nifi-spring-processors</artifactId>
     <packaging>jar</packaging>
     <properties>
-        <odp.release.version>3.3.6.5-SNAPSHOT</odp.release.version>
+        <odp.release.version>3.3.6.6-SNAPSHOT</odp.release.version>
         <spring.integration.version>5.5.20</spring.integration.version>
     </properties>
     <dependencies>

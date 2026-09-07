@@ -14,14 +14,14 @@ language governing permissions and limitations under the License. -->
     <parent>
         <artifactId>nifi-windows-event-log-bundle</artifactId>
         <groupId>org.apache.nifi</groupId>
-        <version>1.28.1.3.3.6.5-SNAPSHOT</version>
+        <version>1.28.1.3.3.6.6-SNAPSHOT</version>
     </parent>
 
     <artifactId>nifi-windows-event-log-processors</artifactId>
     <packaging>jar</packaging>
 
     <properties>
-        <odp.release.version>3.3.6.5-SNAPSHOT</odp.release.version>
+        <odp.release.version>3.3.6.6-SNAPSHOT</odp.release.version>
         <jna.version>5.15.0</jna.version>
         <javassist.version>3.30.2-GA</javassist.version>
     </properties>

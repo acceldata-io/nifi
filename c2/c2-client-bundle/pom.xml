@@ -21,7 +21,7 @@ limitations under the License.
     <parent>
         <artifactId>c2</artifactId>
         <groupId>org.apache.nifi</groupId>
-        <version>1.28.1.3.3.6.5-SNAPSHOT</version>
+        <version>1.28.1.3.3.6.6-SNAPSHOT</version>
     </parent>
 
     <artifactId>c2-client-bundle</artifactId>
@@ -34,6 +34,6 @@ limitations under the License.
         <module>c2-client-service</module>
     </modules>
     <properties>
-        <odp.release.version>3.3.6.5-SNAPSHOT</odp.release.version>
+        <odp.release.version>3.3.6.6-SNAPSHOT</odp.release.version>
     </properties>
 </project>

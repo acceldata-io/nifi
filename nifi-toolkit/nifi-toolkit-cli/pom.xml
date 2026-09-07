@@ -18,13 +18,13 @@
     <parent>
         <groupId>org.apache.nifi</groupId>
         <artifactId>nifi-toolkit</artifactId>
-        <version>1.28.1.3.3.6.5-SNAPSHOT</version>
+        <version>1.28.1.3.3.6.6-SNAPSHOT</version>
     </parent>
     <artifactId>nifi-toolkit-cli</artifactId>
     <description>Tooling to make tls configuration easier</description>
 
     <properties>
-        <odp.release.version>3.3.6.5-SNAPSHOT</odp.release.version>
+        <odp.release.version>3.3.6.6-SNAPSHOT</odp.release.version>
         <guava.version>33.3.1-jre</guava.version>
         <jline.version>3.27.1</jline.version>
     </properties>

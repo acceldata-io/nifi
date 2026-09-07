@@ -20,7 +20,7 @@ limitations under the License.
     <parent>
         <groupId>org.apache.nifi</groupId>
         <artifactId>nifi</artifactId>
-        <version>1.28.1.3.3.6.5-SNAPSHOT</version>
+        <version>1.28.1.3.3.6.6-SNAPSHOT</version>
     </parent>
 
     <groupId>org.apache.nifi.minifi</groupId>
@@ -40,7 +40,7 @@ limitations under the License.
         <module>minifi-integration-tests</module>
     </modules>
     <properties>
-        <odp.release.version>3.3.6.5-SNAPSHOT</odp.release.version>
+        <odp.release.version>3.3.6.6-SNAPSHOT</odp.release.version>
         <system.rules.version>1.19.0</system.rules.version>
         <yammer.metrics.version>2.2.0</yammer.metrics.version>
     </properties>

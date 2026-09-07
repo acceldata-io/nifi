@@ -17,14 +17,14 @@
     <parent>
         <artifactId>nifi-kafka-connect</artifactId>
         <groupId>org.apache.nifi</groupId>
-        <version>1.28.1.3.3.6.5-SNAPSHOT</version>
+        <version>1.28.1.3.3.6.6-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>nifi-kafka-connector-tests</artifactId>
 
     <properties>
-        <odp.release.version>3.3.6.5-SNAPSHOT</odp.release.version>
+        <odp.release.version>3.3.6.6-SNAPSHOT</odp.release.version>
     </properties>
 
     <dependencies>

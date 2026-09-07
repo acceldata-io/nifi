@@ -19,14 +19,14 @@
     <parent>
         <groupId>org.apache.nifi</groupId>
         <artifactId>nifi-hive-bundle</artifactId>
-        <version>1.28.1.3.3.6.5-SNAPSHOT</version>
+        <version>1.28.1.3.3.6.6-SNAPSHOT</version>
     </parent>
 
     <artifactId>nifi-hive_1_1-processors</artifactId>
     <packaging>jar</packaging>
 
     <properties>
-        <odp.release.version>3.3.6.5-SNAPSHOT</odp.release.version>
+        <odp.release.version>3.3.6.6-SNAPSHOT</odp.release.version>
         <!-- Need to override hadoop.version here, for Hive and hadoop-client transitive dependencies -->
         <hadoop.version>${hive11.hadoop.version}</hadoop.version>
     </properties>

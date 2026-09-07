@@ -20,7 +20,7 @@ limitations under the License.
     <parent>
         <artifactId>minifi-c2-provider</artifactId>
         <groupId>org.apache.nifi.minifi</groupId>
-        <version>1.28.1.3.3.6.5-SNAPSHOT</version>
+        <version>1.28.1.3.3.6.6-SNAPSHOT</version>
     </parent>
     <artifactId>minifi-c2-provider-util</artifactId>
     <packaging>jar</packaging>
@@ -37,6 +37,6 @@ limitations under the License.
         </dependency>
     </dependencies>
     <properties>
-        <odp.release.version>3.3.6.5-SNAPSHOT</odp.release.version>
+        <odp.release.version>3.3.6.6-SNAPSHOT</odp.release.version>
     </properties>
 </project>

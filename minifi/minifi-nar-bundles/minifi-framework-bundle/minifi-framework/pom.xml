@@ -20,7 +20,7 @@ limitations under the License.
     <parent>
         <artifactId>minifi-framework-bundle</artifactId>
         <groupId>org.apache.nifi.minifi</groupId>
-        <version>1.28.1.3.3.6.5-SNAPSHOT</version>
+        <version>1.28.1.3.3.6.6-SNAPSHOT</version>
     </parent>
     <artifactId>minifi-framework</artifactId>
     <packaging>pom</packaging>
@@ -38,6 +38,6 @@ limitations under the License.
         </dependency>
     </dependencies>
     <properties>
-        <odp.release.version>3.3.6.5-SNAPSHOT</odp.release.version>
+        <odp.release.version>3.3.6.6-SNAPSHOT</odp.release.version>
     </properties>
 </project>

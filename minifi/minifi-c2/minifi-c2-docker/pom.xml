@@ -21,15 +21,15 @@ limitations under the License.
     <parent>
         <groupId>org.apache.nifi.minifi</groupId>
         <artifactId>minifi-c2</artifactId>
-        <version>1.28.1.3.3.6.5-SNAPSHOT</version>
+        <version>1.28.1.3.3.6.6-SNAPSHOT</version>
     </parent>
 
     <artifactId>minifi-c2-docker</artifactId>
-    <version>1.28.1.3.3.6.5-SNAPSHOT</version>
+    <version>1.28.1.3.3.6.6-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <properties>
-        <odp.release.version>3.3.6.5-SNAPSHOT</odp.release.version>
+        <odp.release.version>3.3.6.6-SNAPSHOT</odp.release.version>
         <minifi.c2.version>${project.version}</minifi.c2.version>
     </properties>
 

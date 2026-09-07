@@ -19,13 +19,13 @@
     <parent>
         <groupId>org.apache.nifi.registry</groupId>
         <artifactId>nifi-registry-core</artifactId>
-        <version>1.28.1.3.3.6.5-SNAPSHOT</version>
+        <version>1.28.1.3.3.6.6-SNAPSHOT</version>
     </parent>
     <artifactId>nifi-registry-web-api</artifactId>
     <packaging>war</packaging>
 
     <properties>
-        <odp.release.version>3.3.6.5-SNAPSHOT</odp.release.version>
+        <odp.release.version>3.3.6.6-SNAPSHOT</odp.release.version>
         <swagger.source.dir>${project.basedir}/src/main/resources/swagger</swagger.source.dir>
         <swagger.generated.dir>${project.build.directory}/swagger</swagger.generated.dir>
         <asciidoc.source.dir>${project.basedir}/src/main/asciidoc</asciidoc.source.dir>

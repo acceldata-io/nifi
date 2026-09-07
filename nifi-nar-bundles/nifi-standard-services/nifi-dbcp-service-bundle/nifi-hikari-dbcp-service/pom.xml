@@ -17,12 +17,12 @@
     <parent>
         <groupId>org.apache.nifi</groupId>
         <artifactId>nifi-dbcp-service-bundle</artifactId>
-        <version>1.28.1.3.3.6.5-SNAPSHOT</version>
+        <version>1.28.1.3.3.6.6-SNAPSHOT</version>
     </parent>
     <artifactId>nifi-hikari-dbcp-service</artifactId>
     <packaging>jar</packaging>
     <properties>
-        <odp.release.version>3.3.6.5-SNAPSHOT</odp.release.version>
+        <odp.release.version>3.3.6.6-SNAPSHOT</odp.release.version>
         <derby.version>10.14.2.0</derby.version>
     </properties>
     <dependencies>
