@@ -15,7 +15,7 @@
     <parent>
         <groupId>org.apache.nifi</groupId>
         <artifactId>nifi-azure-bundle</artifactId>
-        <version>2.7.2.3.3.6.5-SNAPSHOT</version>
+        <version>2.7.2.3.3.6.501-SNAPSHOT</version>
     </parent>
     <artifactId>nifi-azure-processors</artifactId>
     <packaging>jar</packaging>
@@ -217,6 +217,6 @@
         </plugins>
     </build>
     <properties>
-        <odp.release.version>3.3.6.5-SNAPSHOT</odp.release.version>
+        <odp.release.version>3.3.6.501-SNAPSHOT</odp.release.version>
     </properties>
 </project>
