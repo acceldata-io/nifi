@@ -15,7 +15,7 @@
     <parent>
         <groupId>org.apache.nifi</groupId>
         <artifactId>nifi-standard-services</artifactId>
-        <version>1.28.1.3.3.6.5-SNAPSHOT</version>
+        <version>1.28.1.3.3.6.501-SNAPSHOT</version>
     </parent>
 
     <artifactId>nifi-db-schema-registry-bundle</artifactId>
@@ -25,6 +25,6 @@
         <module>nifi-db-schema-registry-service-nar</module>
     </modules>
     <properties>
-        <odp.release.version>3.3.6.5-SNAPSHOT</odp.release.version>
+        <odp.release.version>3.3.6.501-SNAPSHOT</odp.release.version>
     </properties>
 </project>

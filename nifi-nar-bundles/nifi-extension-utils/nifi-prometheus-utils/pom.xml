@@ -18,7 +18,7 @@
     <parent>
         <groupId>org.apache.nifi</groupId>
         <artifactId>nifi-extension-utils</artifactId>
-        <version>1.28.1.3.3.6.5-SNAPSHOT</version>
+        <version>1.28.1.3.3.6.501-SNAPSHOT</version>
     </parent>
     <artifactId>nifi-prometheus-utils</artifactId>
     <packaging>jar</packaging>
@@ -31,7 +31,7 @@
         as this increases the cost of utilizing this module in various nars.
     </description>
     <properties>
-        <odp.release.version>3.3.6.5-SNAPSHOT</odp.release.version>
+        <odp.release.version>3.3.6.501-SNAPSHOT</odp.release.version>
         <prometheus.version>0.16.0</prometheus.version>
     </properties>
     <dependencies>
