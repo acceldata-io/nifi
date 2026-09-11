@@ -25,7 +25,7 @@
 
     <properties>
         <odp.release.version>3.3.6.6-SNAPSHOT</odp.release.version>
-        <jline.version>3.30.6</jline.version>
+        <jline.version>3.30.14</jline.version>
     </properties>
 
     <build>
