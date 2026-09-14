@@ -40,6 +40,8 @@
         <zookeeper.version>3.8.4.${odp.release.version}</zookeeper.version>
         <jax.rs.api.version>2.1.1</jax.rs.api.version>
         <spring.boot.version>2.7.18</spring.boot.version>
+        <!-- Override Spring Boot 2.7 managed Undertow 2.2.28 -> 2.2.39.Final (fixes 9 Undertow CVEs). -->
+        <undertow.version>2.2.39.Final</undertow.version>
         <flyway.version>8.5.13</flyway.version>
         <flyway.tests.version>7.0.0</flyway.tests.version>
         <swagger.ui.version>3.12.0</swagger.ui.version>

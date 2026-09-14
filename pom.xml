@@ -129,7 +129,8 @@
         <ranger.version>2.5.0.${odp.release.version}</ranger.version>
         <ranger.solr.version>8.11.3</ranger.solr.version>
         <jetty.version>9.4.58.v20250814</jetty.version>
-        <jackson.bom.version>2.18.6</jackson.bom.version>
+        <jackson.bom.version>2.21.4</jackson.bom.version>
+        <jackson.annotations.version>2.21</jackson.annotations.version>
         <avro.version>1.11.4</avro.version>
         <jaxb.runtime.version>2.3.9</jaxb.runtime.version>
         <javax.annotation-api.version>1.3.2</javax.annotation-api.version>
@@ -148,7 +149,7 @@
         <logback.version>1.3.16</logback.version>
         <netty.3.version>3.10.6.Final</netty.3.version>
         <snakeyaml.version>2.3</snakeyaml.version>
-        <netty.4.version>4.1.135.Final</netty.4.version>
+        <netty.4.version>4.1.137.Final</netty.4.version>
         <spring.version>5.3.39</spring.version>
         <spring.security.version>5.8.15</spring.security.version>
         <swagger.annotations.version>1.6.14</swagger.annotations.version>
@@ -666,6 +667,11 @@
                 <version>${jackson.bom.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-annotations</artifactId>
+                <version>${jackson.annotations.version}</version>
             </dependency>
             <!-- Set snappy-java version for compatibility across multiple Java versions -->
             <dependency>
