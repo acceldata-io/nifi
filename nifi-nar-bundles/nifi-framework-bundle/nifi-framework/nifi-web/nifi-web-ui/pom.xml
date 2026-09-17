@@ -23,7 +23,7 @@
     <artifactId>nifi-web-ui</artifactId>
     <packaging>war</packaging>
     <properties>
-    <odp.release.version>3.2.3.7-2</odp.release.version>
+    <odp.release.version>3.2.3.701-2</odp.release.version>
         <staging.dir>${project.build.directory}/tmp</staging.dir>
         <canvas.filter>canvas.properties</canvas.filter>
         <history.filter>history.properties</history.filter>

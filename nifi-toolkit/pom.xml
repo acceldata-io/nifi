@@ -36,7 +36,7 @@
         <module>nifi-toolkit-kafka-migrator</module>
     </modules>
     <properties>
-    <odp.release.version>3.2.3.7-2</odp.release.version>
+    <odp.release.version>3.2.3.701-2</odp.release.version>
         <toolkit.groovy.version>3.0.23</toolkit.groovy.version>
     </properties>
     <dependencyManagement>

@@ -34,7 +34,7 @@
         <module>nifi-standard-utils</module>
     </modules>
     <properties>
-    <odp.release.version>3.2.3.7-2</odp.release.version>
+    <odp.release.version>3.2.3.701-2</odp.release.version>
         <yammer.metrics.version>2.2.0</yammer.metrics.version>
         <jolt.version>0.1.8</jolt.version>
         <org.apache.sshd.version>2.14.0</org.apache.sshd.version>

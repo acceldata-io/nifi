@@ -26,7 +26,7 @@
     <packaging>jar</packaging>
 
     <properties>
-    <odp.release.version>3.2.3.7-2</odp.release.version>
+    <odp.release.version>3.2.3.701-2</odp.release.version>
         <!-- Need to override hadoop.version here, for Hive and hadoop-client transitive dependencies -->
         <hadoop.version>${hive11.hadoop.version}</hadoop.version>
     </properties>

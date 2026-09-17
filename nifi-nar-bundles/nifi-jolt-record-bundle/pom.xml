@@ -32,7 +32,7 @@
     </modules>
 
     <properties>
-    <odp.release.version>3.2.3.7-2</odp.release.version>
+    <odp.release.version>3.2.3.701-2</odp.release.version>
         <jolt.version>0.1.8</jolt.version>
     </properties>
 

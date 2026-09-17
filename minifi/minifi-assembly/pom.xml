@@ -303,7 +303,7 @@ limitations under the License.
     </dependencies>
 
     <properties>
-    <odp.release.version>3.2.3.7-2</odp.release.version>
+    <odp.release.version>3.2.3.701-2</odp.release.version>
         <!--Bootstrap Properties -->
         <minifi.jvm.heap.mb>256</minifi.jvm.heap.mb>
         <minifi.jvm.permgen.mb>128</minifi.jvm.permgen.mb>

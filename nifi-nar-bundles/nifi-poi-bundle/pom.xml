@@ -26,7 +26,7 @@
     <artifactId>nifi-poi-bundle</artifactId>
     <packaging>pom</packaging>
     <properties>
-    <odp.release.version>3.2.3.7-2</odp.release.version>
+    <odp.release.version>3.2.3.701-2</odp.release.version>
         <poi.version>5.2.5</poi.version>
     </properties>
     <modules>

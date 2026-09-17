@@ -1385,7 +1385,7 @@ language governing permissions and limitations under the License. -->
                 <activeByDefault>false</activeByDefault>
             </activation>
             <properties>
-	<odp.release.version>3.2.3.7-2</odp.release.version>
+	<odp.release.version>3.2.3.701-2</odp.release.version>
                 <nifi.run.as>nifi</nifi.run.as>
             </properties>
             <build>

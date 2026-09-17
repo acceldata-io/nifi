@@ -25,7 +25,7 @@
     <artifactId>nifi-site-to-site-client</artifactId>
 
     <properties>
-    <odp.release.version>3.2.3.7-2</odp.release.version>
+    <odp.release.version>3.2.3.701-2</odp.release.version>
         <httpclient.group>org.apache.httpcomponents</httpclient.group>
         <httpclient.artifact>httpclient</httpclient.artifact>
         <httpclient.version>${org.apache.httpcomponents.httpclient.version}</httpclient.version>

@@ -24,7 +24,7 @@
         <version>1.28.1.${odp.release.version}</version>
     </parent>
     <properties>
-    <odp.release.version>3.2.3.7-2</odp.release.version>
+    <odp.release.version>3.2.3.701-2</odp.release.version>
         <curator.version>5.7.1</curator.version>
     </properties>
     <dependencies>

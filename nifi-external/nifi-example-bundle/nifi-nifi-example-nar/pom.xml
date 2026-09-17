@@ -25,7 +25,7 @@
     <artifactId>nifi-nifi-example-nar</artifactId>
     <packaging>nar</packaging>
     <properties>
-    <odp.release.version>3.2.3.7-2</odp.release.version>
+    <odp.release.version>3.2.3.701-2</odp.release.version>
         <maven.javadoc.skip>true</maven.javadoc.skip>
         <source.skip>true</source.skip>
     </properties>
