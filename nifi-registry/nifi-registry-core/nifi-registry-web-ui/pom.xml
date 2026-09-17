@@ -26,7 +26,7 @@
     <version>1.28.1.${odp.release.version}</version>
     <packaging>war</packaging>
     <properties>
-    <odp.release.version>3.2.3.7-2</odp.release.version>
+    <odp.release.version>3.2.3.701-2</odp.release.version>
         <frontend.source>${basedir}/src/main</frontend.source>
         <frontend.dependency.configs>${basedir}/src/main</frontend.dependency.configs>
         <frontend.working.dir>${project.build.directory}/frontend-working-directory</frontend.working.dir>

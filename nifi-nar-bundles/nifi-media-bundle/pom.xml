@@ -26,7 +26,7 @@
     <packaging>pom</packaging>
 
     <properties>
-    <odp.release.version>3.2.3.7-2</odp.release.version>
+    <odp.release.version>3.2.3.701-2</odp.release.version>
         <poi.version>5.2.5</poi.version>
         <mime4j.version>0.8.11</mime4j.version>
     </properties>

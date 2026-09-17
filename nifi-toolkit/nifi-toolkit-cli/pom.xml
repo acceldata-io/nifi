@@ -24,7 +24,7 @@
     <description>Tooling to make tls configuration easier</description>
 
     <properties>
-    <odp.release.version>3.2.3.7-2</odp.release.version>
+    <odp.release.version>3.2.3.701-2</odp.release.version>
         <guava.version>33.3.1-jre</guava.version>
         <jline.version>3.27.1</jline.version>
     </properties>

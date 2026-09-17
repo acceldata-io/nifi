@@ -23,7 +23,7 @@
     <packaging>pom</packaging>
 
     <properties>
-    <odp.release.version>3.2.3.7-2</odp.release.version>
+    <odp.release.version>3.2.3.701-2</odp.release.version>
         <kafka1.0.version>1.0.2</kafka1.0.version>
         <kafka2.0.version>2.0.0</kafka2.0.version>
         <kafka2.6.version>2.6.3</kafka2.6.version>

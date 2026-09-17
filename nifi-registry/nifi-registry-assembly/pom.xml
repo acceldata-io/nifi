@@ -173,7 +173,7 @@
     </dependencies>
 
     <properties>
-    <odp.release.version>3.2.3.7-2</odp.release.version>
+    <odp.release.version>3.2.3.701-2</odp.release.version>
         <!-- nifi-registry.properties: web properties -->
         <nifi.registry.web.war.directory>./lib</nifi.registry.web.war.directory>
         <nifi.registry.web.http.host />

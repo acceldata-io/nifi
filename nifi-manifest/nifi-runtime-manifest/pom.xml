@@ -24,7 +24,7 @@
     <packaging>jar</packaging>
 
     <properties>
-    <odp.release.version>3.2.3.7-2</odp.release.version>
+    <odp.release.version>3.2.3.701-2</odp.release.version>
         <extension.manifest.unpack.dir>${project.build.directory}</extension.manifest.unpack.dir>
         <build.properties.file>${project.build.directory}/classes/build.properties</build.properties.file>
         <runtime.manifest.file>${project.build.directory}/classes/nifi-runtime-manifest.json</runtime.manifest.file>

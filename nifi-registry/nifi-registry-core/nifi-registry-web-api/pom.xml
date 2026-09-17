@@ -25,7 +25,7 @@
     <packaging>war</packaging>
 
     <properties>
-    <odp.release.version>3.2.3.7-2</odp.release.version>
+    <odp.release.version>3.2.3.701-2</odp.release.version>
         <swagger.source.dir>${project.basedir}/src/main/resources/swagger</swagger.source.dir>
         <swagger.generated.dir>${project.build.directory}/swagger</swagger.generated.dir>
         <asciidoc.source.dir>${project.basedir}/src/main/asciidoc</asciidoc.source.dir>

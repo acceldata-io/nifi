@@ -24,7 +24,7 @@
     <artifactId>nifi-easyrules-service</artifactId>
     <packaging>jar</packaging>
     <properties>
-    <odp.release.version>3.2.3.7-2</odp.release.version>
+    <odp.release.version>3.2.3.701-2</odp.release.version>
         <easy.rules.version>4.1.0</easy.rules.version>
     </properties>
     <dependencies>

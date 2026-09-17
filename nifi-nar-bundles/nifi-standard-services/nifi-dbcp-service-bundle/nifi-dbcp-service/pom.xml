@@ -22,7 +22,7 @@
     <artifactId>nifi-dbcp-service</artifactId>
     <packaging>jar</packaging>
     <properties>
-    <odp.release.version>3.2.3.7-2</odp.release.version>
+    <odp.release.version>3.2.3.701-2</odp.release.version>
         <derby.version>10.14.2.0</derby.version>
     </properties>
     <dependencies>

@@ -22,7 +22,7 @@
     </parent>
     <artifactId>nifi-property-protection-gcp</artifactId>
     <properties>
-    <odp.release.version>3.2.3.7-2</odp.release.version>
+    <odp.release.version>3.2.3.701-2</odp.release.version>
         <guava.version>33.3.1-jre</guava.version>
         <google-cloud-kms.version>2.89.0</google-cloud-kms.version>
     </properties>

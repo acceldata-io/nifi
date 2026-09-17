@@ -20,7 +20,7 @@ language governing permissions and limitations under the License. -->
     <artifactId>nifi-elasticsearch-restapi-nar</artifactId>
     <packaging>nar</packaging>
     <properties>
-    <odp.release.version>3.2.3.7-2</odp.release.version>
+    <odp.release.version>3.2.3.701-2</odp.release.version>
         <lucene.version>6.2.1</lucene.version>
     </properties>
 

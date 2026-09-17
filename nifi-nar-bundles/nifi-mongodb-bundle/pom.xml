@@ -36,7 +36,7 @@
     </modules>
 
     <properties>
-    <odp.release.version>3.2.3.7-2</odp.release.version>
+    <odp.release.version>3.2.3.701-2</odp.release.version>
         <mongo.driver.version>4.11.5</mongo.driver.version>
     </properties>
 
