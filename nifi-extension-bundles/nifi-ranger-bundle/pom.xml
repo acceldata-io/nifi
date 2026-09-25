@@ -19,7 +19,7 @@
 
     <parent>
         <groupId>org.apache.nifi</groupId>
-        <artifactId>nifi-nar-bundles</artifactId>
+        <artifactId>nifi-extension-bundles</artifactId>
         <version>2.8.0.3.4.3.0-SNAPSHOT</version>
     </parent>
 
@@ -35,6 +35,10 @@
     <properties>
         <odp.release.version>3.4.3.0-SNAPSHOT</odp.release.version>
         <ranger.hadoop.version>3.4.3.${odp.release.version}</ranger.hadoop.version>
+        <ranger.version>2.9.0.${odp.release.version}</ranger.version>
+        <ranger.solr.version>9.7.0</ranger.solr.version>
+        <commons.beanutils.version>1.9.4</commons.beanutils.version>
+        <gcs.version>2.1.5</gcs.version>
     </properties>
 
     <dependencyManagement>
