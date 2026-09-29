@@ -16,7 +16,7 @@
  */
 package org.apache.nifi.registry.ranger;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.security.UserGroupInformation;
 import org.apache.nifi.deprecation.log.DeprecationLogger;
