@@ -32,11 +32,19 @@
 
     <dependencyManagement>
         <dependencies>
-            <!-- Override SolrJ 8.6.3 from Ranger -->
+            <!-- SolrJ 8.11.3, not 9.x: the Ranger audit destination is built against SolrJ 8.11 and calls
+                 CloudSolrClient.Builder.withHttpClient(HttpClient), which SolrJ 9 does not have; SolrJ 9 also links its Kerberos
+                 client against Jetty 12 (NoClassDefFoundError). SolrJ 8.11 is Apache HttpClient based and needs no Jetty. -->
             <dependency>
                 <groupId>org.apache.solr</groupId>
                 <artifactId>solr-solrj</artifactId>
                 <version>${ranger.solr.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.eclipse.jetty</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <!-- Override nimbus-jose-jwt 9.8.1 from hadoop-auth -->
             <dependency>
@@ -101,6 +109,6 @@
     <properties>
         <odp.release.version>3.4.3.0-SNAPSHOT</odp.release.version>
         <ranger.version>2.9.0.${odp.release.version}</ranger.version>
-        <ranger.solr.version>9.7.0</ranger.solr.version>
+        <ranger.solr.version>8.11.3</ranger.solr.version>
     </properties>
 </project>
