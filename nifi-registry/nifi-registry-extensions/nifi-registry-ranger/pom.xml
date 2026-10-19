@@ -32,20 +32,20 @@
 
     <dependencyManagement>
         <dependencies>
-            <!-- Override jetty-server:9.4.20 -->
+            <!-- Override jetty-server:9.4.20 - Using ee11 namespace for Jetty 12+ -->
             <dependency>
-                <groupId>org.eclipse.jetty</groupId>
-                <artifactId>jetty-server</artifactId>
+                <groupId>org.eclipse.jetty.ee11</groupId>
+                <artifactId>jetty-ee11-server</artifactId>
                 <version>${jetty.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.jetty</groupId>
-                <artifactId>jetty-servlet</artifactId>
+                <groupId>org.eclipse.jetty.ee11</groupId>
+                <artifactId>jetty-ee11-servlet</artifactId>
                 <version>${jetty.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.jetty</groupId>
-                <artifactId>jetty-webapp</artifactId>
+                <groupId>org.eclipse.jetty.ee11</groupId>
+                <artifactId>jetty-ee11-webapp</artifactId>
                 <version>${jetty.version}</version>
             </dependency>
             <!-- Override SolrJ 8.6.3 from Ranger -->
