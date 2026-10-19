@@ -70,5 +70,7 @@
     </dependencyManagement>
     <properties>
         <odp.release.version>3.3.6.6-SNAPSHOT</odp.release.version>
+        <ranger.version>2.5.0.${odp.release.version}</ranger.version>
+        <ranger.solr.version>9.7.0</ranger.solr.version>
     </properties>
 </project>
