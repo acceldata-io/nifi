@@ -145,6 +145,11 @@
                           <groupId>org.bouncycastle</groupId>
                           <artifactId>bcpkix-jdk15on</artifactId>
                       </exclusion>
+                      <!-- Exclude banned reload4j binding to satisfy NiFi's maven-enforcer-plugin -->
+                      <exclusion>
+                          <groupId>org.slf4j</groupId>
+                          <artifactId>slf4j-reload4j</artifactId>
+                      </exclusion>
                     </exclusions>
                 </dependency>
                 <dependency>
