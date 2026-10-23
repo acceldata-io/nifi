@@ -26,6 +26,7 @@
 
     <modules>
         <module>nifi-registry-aws</module>
+        <module>nifi-registry-ranger</module>
     </modules>
     <properties>
         <odp.release.version>3.3.6.6-SNAPSHOT</odp.release.version>

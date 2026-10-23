@@ -976,6 +976,28 @@ language governing permissions and limitations under the License. -->
             </dependencies>
         </profile>
         <profile>
+            <id>include-ranger</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+                <property>
+                    <name>allProfiles</name>
+                </property>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>org.apache.nifi</groupId>
+                    <artifactId>nifi-ranger-nar</artifactId>
+                    <version>2.7.2.${odp.release.version}</version>
+                    <type>nar</type>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.nifi</groupId>
+                    <artifactId>nifi-ranger-resources</artifactId>
+                    <version>2.7.2.${odp.release.version}</version>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
             <id>include-hadoop</id>
             <activation>
                 <activeByDefault>false</activeByDefault>
