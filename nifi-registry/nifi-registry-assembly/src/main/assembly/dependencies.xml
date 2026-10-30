@@ -65,6 +65,9 @@
             <includes>
                 <include>*:nifi-registry-properties-loader</include>
                 <include>software.amazon.awssdk:*</include>
+                <include>com.fasterxml.jackson.core:jackson-annotations</include>
+                <include>com.fasterxml.jackson.core:jackson-databind</include>
+                <include>com.fasterxml.jackson.core:jackson-core</include>
             </includes>
         </dependencySet>
 
@@ -100,6 +103,11 @@
                 <exclude>*:nifi-registry-ranger-assembly</exclude>
                 <exclude>*:nifi-registry-aws-assembly</exclude>
                 <exclude>*:nifi-registry-properties-loader</exclude>
+
+                <!-- Exclude Jackson dependencies because they will be in lib/spp -->
+                <exclude>com.fasterxml.jackson.core:jackson-annotations</exclude>
+                <exclude>com.fasterxml.jackson.core:jackson-databind</exclude>
+                <exclude>com.fasterxml.jackson.core:jackson-core</exclude>
 
                 <!-- Exclude any jaxb dependencies because they will be in lib/java11 -->
                 <!-- TODO: remove these once minimum Java version is 11 and these can be bundle directly into the application -->
