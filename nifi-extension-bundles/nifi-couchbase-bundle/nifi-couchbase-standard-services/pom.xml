@@ -20,7 +20,7 @@
     <parent>
         <groupId>org.apache.nifi</groupId>
         <artifactId>nifi-couchbase-bundle</artifactId>
-        <version>2.8.0.3.4.3.0-SNAPSHOT</version>
+        <version>2.8.0.3.4.3.1-SNAPSHOT</version>
     </parent>
 
     <artifactId>nifi-couchbase-standard-services</artifactId>
@@ -28,7 +28,7 @@
 
     <properties>
         <couchbase.version>3.12.1</couchbase.version>
-        <odp.release.version>3.4.3.0-SNAPSHOT</odp.release.version>
+        <odp.release.version>3.4.3.1-SNAPSHOT</odp.release.version>
     </properties>
 
     <dependencies>

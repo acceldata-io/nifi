@@ -19,7 +19,7 @@
     <parent>
         <groupId>org.apache.nifi</groupId>
         <artifactId>nifi</artifactId>
-        <version>2.8.0.3.4.3.0-SNAPSHOT</version>
+        <version>2.8.0.3.4.3.1-SNAPSHOT</version>
     </parent>
     <groupId>org.apache.nifi.registry</groupId>
     <artifactId>nifi-registry</artifactId>
@@ -37,7 +37,7 @@
     <properties>
         <spring.boot.version>4.1.1</spring.boot.version>
         <flyway.version>13.3.0</flyway.version>
-        <odp.release.version>3.4.3.0-SNAPSHOT</odp.release.version>
+        <odp.release.version>3.4.3.1-SNAPSHOT</odp.release.version>
         <undertow.version>2.3.21.Final</undertow.version>
         <flyway.tests.version>10.0.0</flyway.tests.version>
         <swagger.ui.version>3.12.0</swagger.ui.version>
