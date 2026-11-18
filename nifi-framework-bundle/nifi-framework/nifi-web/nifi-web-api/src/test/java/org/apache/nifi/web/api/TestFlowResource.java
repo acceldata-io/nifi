@@ -69,7 +69,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.net.HttpURLConnection
+import java.net.HttpURLConnection;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.ArrayList;
